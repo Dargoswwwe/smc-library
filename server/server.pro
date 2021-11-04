@@ -4,7 +4,7 @@
 ######################################################################
 
 TEMPLATE = app
-TARGET = smc-library-project
+TARGET = server
 INCLUDEPATH += .
 
 QT       += core gui

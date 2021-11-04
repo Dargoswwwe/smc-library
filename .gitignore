@@ -5,6 +5,7 @@ release/
 .gdb_history
 .vimspector.json
 .qmake.stash
+Makefile
 smc-library-project.pro.user
 compile_flags.txt
 build_and_run.sh
