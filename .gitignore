@@ -2,6 +2,9 @@ intermediates/
 bin/
 debug/
 release/
+Debug/
+Release/
+.vs
 .gdb_history
 .vimspector.json
 .qmake.stash
