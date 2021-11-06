@@ -68,6 +68,89 @@ std::ostream& operator<<(std::ostream& fout, const Book& book)
 }
 
 
+void Book::Availability()
+{
+	if (GetExemplars_available() == 0)
+	{
+		this->available = false;
+	}
+
+}
+
+void Book::ReadBookFromFile(std::ifstream& fin)
+{
+	//read title 
+	getline(fin, title);
+
+
+	//read authors	
+	std::string line;
+	std::regex dividers(",");
+	getline(fin, line);
+
+	std::sregex_token_iterator iterator(line.begin(), line.end(), dividers, -1);
+	std::sregex_token_iterator end;
+
+	for (/*Empty*/; iterator != end; iterator++)
+	{
+		std::string aux = *iterator;
+		authors.push_back(aux);
+	}
+
+
+	//read langueage
+	getline(fin, language);
+
+
+	//read original publication
+	getline(fin, line);
+	original_publication = std::stof(line);
+
+
+	//read avarage rating
+	getline(fin, line);
+	avarage_rating = std::stof(line);
+
+
+	//read rating_count
+	getline(fin, line);
+	ratings_count = std::stof(line);
+
+
+	//read isbn
+	getline(fin, isbn);
+
+
+	//read exemplars_available
+	getline(fin, line);
+	exemplars_available = std::stof(line);
+
+
+	//read content
+	content.clear();
+	getline(fin, line);
+	std::regex dividers1("\\s+");
+
+	iterator = std::sregex_token_iterator(line.begin(), line.end(), dividers1, -1);
+
+	for (/*Empty*/; iterator != end; iterator++)
+	{
+		std::string aux = *iterator;
+		content.push_back(aux);
+	}
+
+
+	//read availability
+	getline(fin, line);
+	if (line == "true")
+		available = true;
+	else if (line == "false")
+		available = false;
+
+}
+
+
+
 //Constructors
 Book::Book()
 {
@@ -105,7 +188,7 @@ Book::Book(const Book& book)
 
 
 
-//Getters & setters
+//Getters and setters
 std::string Book::GetTitle()const
 {
 	return title;

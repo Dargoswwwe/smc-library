@@ -3,6 +3,7 @@
 #include <vector>
 #include<fstream>
 #include<cassert>
+#include<regex>
 
 class Book
 {
@@ -56,10 +57,11 @@ public:
 	//Auxiliar functions & operators
 	std::vector<std::string>DefaultContent(std::ifstream& fin);
 	Book& operator=(const Book& book);
-	bool operator ==(const Book& book);
+	bool operator ==(const Book& book);	
 	friend std::ostream& operator <<(std::ostream& fout, const std::vector<std::string>& authors_or_content);
 	friend std::ostream& operator <<(std::ostream& fout, const Book& book);
-
-
+	
+	void Availability();
+	void ReadBookFromFile(std::ifstream& fin);
 };
 
