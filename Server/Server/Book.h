@@ -53,8 +53,12 @@ public:
 	void SetAvailability(const bool& available);
 
 
-	//Auxiliar function
+	//Auxiliar functions & operators
 	std::vector<std::string>DefaultContent(std::ifstream& fin);
+	Book& operator=(const Book& book);
+	bool operator ==(const Book& book);
+	friend std::ostream& operator <<(std::ostream& fout, const std::vector<std::string>& authors_or_content);
+	friend std::ostream& operator <<(std::ostream& fout, const Book& book);
 
 
 };

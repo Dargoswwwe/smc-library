@@ -1,7 +1,7 @@
 #include "Book.h"
 
 
-//Auxiliar function
+//Auxiliar functions & operators
 std::ifstream fin;
 
 std::vector<std::string> Book::DefaultContent(std::ifstream& fin)
@@ -18,6 +18,55 @@ std::vector<std::string> Book::DefaultContent(std::ifstream& fin)
 	return default_content;
 }
 
+Book& Book::operator=(const Book& book)
+{
+	this->title = book.title;
+	this->authors = book.authors;
+	this->language = book.language;
+	this->original_publication = book.original_publication;
+	this->avarage_rating = book.avarage_rating;
+	this->ratings_count = book.ratings_count;
+	this->isbn = book.isbn;
+	this->exemplars_available = book.exemplars_available;
+	this->content = book.content;
+	this->available = book.available;
+
+	return *this;
+}
+
+bool Book::operator==(const Book& book)
+{
+	if (this->authors == book.authors && this->content == book.content && this->isbn == book.isbn &&
+		this->avarage_rating == book.avarage_rating && this->language == book.language &&
+		this->original_publication == book.original_publication && this->ratings_count == book.ratings_count &&
+		this->title == book.title)
+		return true;
+	return false;
+}
+
+std::ostream& operator<<(std::ostream& fout, const std::vector<std::string>& authors_or_content)
+{
+	for (uint32_t index = 0; index < authors_or_content.size(); index++)
+		fout << authors_or_content[index] << " ";
+	return fout;
+}
+
+std::ostream& operator<<(std::ostream& fout, const Book& book)
+{
+
+	fout << book.GetTitle() << std::endl
+		<< book.GetAuthors() << std::endl
+		<< book.GetLanguage() << std::endl
+		<< book.GetOriginal_publication() << std::endl
+		<< book.GetAvarage_rating() << std::endl
+		<< book.GetRatings_count() << std::endl
+		<< book.GetIsbn() << std::endl
+		<< book.GetExemplars_available() << std::endl
+		<< book.GetContent() << std::endl
+		<< book.GetAvailability() << std::endl;
+	return fout;
+}
+
 
 //Constructors
 Book::Book()
@@ -32,6 +81,7 @@ Book::Book()
 	exemplars_available = 0;
 	content = Book::DefaultContent(fin);
 	available = false;
+
 
 	assert(exemplars_available >= 0 && exemplars_available <= 3);
 
