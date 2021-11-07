@@ -9,7 +9,7 @@ Release/
 .vimspector.json
 .qmake.stash
 Makefile
-smc-library-project.pro.user
+*.pro.user
 compile_flags.txt
 build_and_run.sh
 readme.html
