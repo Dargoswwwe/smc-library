@@ -30,5 +30,10 @@ public:
 	void SetBorrowedBooks(std::vector<Book> _borrowedBooks);
 	void SetUsers(std::vector<User> _users);
 
+	void addBook(Book book);
+	void removeBook(Book book);
+	void borrowBook(Book book);
+	void returnBook(Book book);
+
 	~Library();
 };

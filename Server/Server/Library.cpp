@@ -63,6 +63,8 @@ std::vector<User> Library::GetUsers() const
 {
 	return users;
 }
+
+
 void Library::SetAllBooks(std::vector<Book> _allBooks)
 {
 	allBooks = _allBooks;
@@ -78,6 +80,41 @@ void Library::SetBorrowedBooks(std::vector<Book> _borrowedBooks)
 void Library::SetUsers(std::vector<User> _users)
 {
 	users = _users;
+}
+
+
+void Library::addBook(Book book)
+{
+	allBooks.push_back(book);
+	availableBooks.push_back(book);
+}
+
+void Library::removeBook(Book book)
+{
+	allBooks.erase(find(allBooks.begin(), allBooks.end(), book));
+}
+
+void Library::borrowBook(Book book)
+{
+	if (book.GetAvailability())
+	{
+		book.Availability();
+		borrowedBooks.push_back(book);
+		book.SetExemplars_available(book.GetExemplars_available() - 1);
+		availableBooks.erase(find(availableBooks.begin(), availableBooks.end(), book));
+	}
+	else
+	{
+		std::cout << "Book not available";
+	}
+}
+
+void Library::returnBook(Book book)
+{
+	if (book.GetAvailability() == false) { book.SetAvailability(true); }
+	book.SetExemplars_available(book.GetExemplars_available() + 1);
+	availableBooks.push_back(book);
+	borrowedBooks.erase(find(borrowedBooks.begin(), borrowedBooks.end(), book));
 }
 
 Library::~Library()
