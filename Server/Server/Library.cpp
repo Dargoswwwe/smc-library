@@ -117,6 +117,48 @@ void Library::returnBook(Book book)
 	borrowedBooks.erase(find(borrowedBooks.begin(), borrowedBooks.end(), book));
 }
 
+void Library::readBooksFromFile(std::ifstream& fin)
+{
+	while (!fin.eof())
+	{
+		Book b;
+		b.ReadBookFromFile(fin);
+		addBook(b);
+	}
+}
+
+void sortAvailableBooks(std::vector<Book>& availableBooks)
+{
+	auto comparator = [](const Book& b1, const Book& b2) {return b1.GetTitle() < b2.GetTitle(); };
+	std::sort(availableBooks.begin(), availableBooks.end(), comparator);
+}
+
+std::ostream& operator<<(std::ostream& fout, Library& lib)
+{
+
+	fout << "The library has: " << lib.allBooks.size() << " book(s), from which " << lib.availableBooks.size() << " available.\n";
+	if (lib.availableBooks.size() != 0)
+	{
+		sortAvailableBooks(lib.availableBooks);
+		fout << " The available books are:\n";
+		for (Book availableBook : lib.availableBooks)
+		{
+			fout << availableBook << "\n";
+		}
+	}
+	return fout;
+}
+
+std::ostream& operator<<(std::ostream& out, std::vector<Book> booksList_or_usersList)
+{
+	sortAvailableBooks(booksList_or_usersList);
+	for (auto current : booksList_or_usersList)
+	{
+		out << current << "\n";
+	}
+	return out;
+}
+
 Library::~Library()
 {
 }
