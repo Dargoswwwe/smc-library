@@ -42,34 +42,58 @@
              <property name="formAlignment">
               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
              </property>
-             <item row="0" column="0">
+             <item row="1" column="0">
               <widget class="QLabel" name="labelLoginUsername">
                <property name="text">
                 <string>Username:</string>
                </property>
               </widget>
              </item>
-             <item row="0" column="1">
+             <item row="1" column="1">
               <widget class="QLineEdit" name="lineLoginUsername"/>
              </item>
-             <item row="1" column="0">
+             <item row="2" column="0">
               <widget class="QLabel" name="labelLoginPassword">
                <property name="text">
                 <string>Password:</string>
                </property>
               </widget>
              </item>
-             <item row="1" column="1">
+             <item row="2" column="1">
               <widget class="QLineEdit" name="lineLoginPassword">
                <property name="echoMode">
                 <enum>QLineEdit::Password</enum>
                </property>
               </widget>
              </item>
-             <item row="2" column="0" colspan="2">
+             <item row="3" column="0" colspan="2">
               <widget class="QPushButton" name="buttonLogin">
                <property name="text">
                 <string>Login</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0" colspan="2">
+              <widget class="QLabel" name="labelLogin">
+               <property name="font">
+                <font>
+                 <pointsize>24</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>Log in:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="0" colspan="2">
+              <widget class="QPushButton" name="buttonRegisterInstead">
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>Don't have an account yet? Create one!</string>
                </property>
               </widget>
              </item>
@@ -96,31 +120,43 @@
              <property name="formAlignment">
               <set>Qt::AlignCenter</set>
              </property>
-             <item row="0" column="0">
+             <item row="0" column="0" colspan="2">
+              <widget class="QLabel" name="labelRegister">
+               <property name="font">
+                <font>
+                 <pointsize>24</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>Create account:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
               <widget class="QLabel" name="labelRegisterUsername">
                <property name="text">
                 <string>Username:</string>
                </property>
               </widget>
              </item>
-             <item row="0" column="1">
+             <item row="1" column="1">
               <widget class="QLineEdit" name="lineRegisterUsername"/>
              </item>
-             <item row="1" column="0">
+             <item row="2" column="0">
               <widget class="QLabel" name="labelRegisterPassword">
                <property name="text">
                 <string>Password:</string>
                </property>
               </widget>
              </item>
-             <item row="1" column="1">
+             <item row="2" column="1">
               <widget class="QLineEdit" name="lineRegisterPassword">
                <property name="echoMode">
                 <enum>QLineEdit::Password</enum>
                </property>
               </widget>
              </item>
-             <item row="2" column="0">
+             <item row="3" column="0">
               <widget class="QLabel" name="labelRegisterConfirmPassword">
                <property name="text">
                 <string>Confirm:</string>
@@ -130,17 +166,29 @@
                </property>
               </widget>
              </item>
-             <item row="2" column="1">
+             <item row="3" column="1">
               <widget class="QLineEdit" name="lineRegisterConfirmPassword">
                <property name="echoMode">
                 <enum>QLineEdit::Password</enum>
                </property>
               </widget>
              </item>
-             <item row="3" column="0" colspan="2">
+             <item row="4" column="0" colspan="2">
               <widget class="QPushButton" name="buttonRegister">
                <property name="text">
                 <string>Register</string>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="0" colspan="2">
+              <widget class="QPushButton" name="buttonLoginInstead">
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>Already have an account? Login instead</string>
                </property>
               </widget>
              </item>

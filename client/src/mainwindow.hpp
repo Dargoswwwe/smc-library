@@ -15,6 +15,9 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+public slots:
+    void switchPage(int pageIndex);
+
 private:
     Ui::MainWindow *ui;
 };
