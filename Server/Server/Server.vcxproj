@@ -141,9 +141,11 @@
   <ItemGroup>
     <ClCompile Include="Book.cpp" />
     <ClCompile Include="Server.cpp" />
+    <ClCompile Include="User.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Book.h" />
+    <ClInclude Include="User.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="default_content.in" />
