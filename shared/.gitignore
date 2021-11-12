@@ -1,0 +1,7 @@
+intermediates/
+bin/
+.gdb_history
+.vimspector.json
+.qmake.stash
+shared.pro.user
+compile_flags.txt

@@ -1,9 +1,8 @@
 TEMPLATE = app
-TARGET = client
+TARGET = server
+INCLUDEPATH += . ../shared/src/
 
-QT       += core gui
-
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT       += core network
 
 CONFIG += c++latest
 
@@ -11,14 +10,9 @@ CONFIG += c++latest
 
 # Input
 SOURCES += \
-    src/main.cpp \
-    src/mainwindow.cpp
+    src/main.cpp
 
 HEADERS += \
-    src/mainwindow.hpp
-
-FORMS += \
-    src/mainwindow.ui
 
 # Directories
 DESTDIR=bin                 #Target file directory
