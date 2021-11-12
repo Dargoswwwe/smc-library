@@ -1,12 +1,11 @@
-#include "user.hpp"
-#include "book.hpp"
-#include <iostream>
-#include <QtNetwork/qsctpsocket.h>
+#include <QCoreApplication>
 
-int main(int argc, char *argv[])
+#include "server.hpp"
+
+int main(int argc, char* argv[])
 {
-    User u("name", "password");
-    std::cout << u.GetPassword();
-    Book b;
-    return 0;
+    QCoreApplication app(argc, argv);
+    QCoreApplication::setApplicationName("Library server");
+    Server server;
+    return app.exec();
 }

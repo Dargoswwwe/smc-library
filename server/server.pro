@@ -2,7 +2,7 @@ TEMPLATE = app
 TARGET = server
 INCLUDEPATH += . ../shared/src/
 
-QT       += core network
+QT       += core network sql
 
 CONFIG += c++latest
 
@@ -10,9 +10,11 @@ CONFIG += c++latest
 
 # Input
 SOURCES += \
-    src/main.cpp
+    src/main.cpp \
+    src/server.cpp
 
 HEADERS += \
+    src/server.hpp
 
 # Directories
 DESTDIR=bin                 #Target file directory
