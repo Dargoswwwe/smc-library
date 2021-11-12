@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>871</width>
-    <height>483</height>
+    <width>436</width>
+    <height>342</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,15 +24,21 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="pageLogin">
        <layout class="QGridLayout" name="gridLayout">
         <item row="0" column="0">
          <widget class="QFrame" name="frame">
+          <property name="minimumSize">
+           <size>
+            <width>400</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="maximumSize">
            <size>
-            <width>300</width>
+            <width>400</width>
             <height>16777215</height>
            </size>
           </property>
@@ -87,11 +93,6 @@
              </item>
              <item row="4" column="0" colspan="2">
               <widget class="QPushButton" name="buttonRegisterInstead">
-               <property name="font">
-                <font>
-                 <pointsize>10</pointsize>
-                </font>
-               </property>
                <property name="text">
                 <string>Don't have an account yet? Create one!</string>
                </property>
@@ -108,9 +109,15 @@
        <layout class="QGridLayout" name="gridLayout_2">
         <item row="0" column="0">
          <widget class="QFrame" name="frame_2">
+          <property name="minimumSize">
+           <size>
+            <width>400</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="maximumSize">
            <size>
-            <width>300</width>
+            <width>400</width>
             <height>16777215</height>
            </size>
           </property>
@@ -182,11 +189,6 @@
              </item>
              <item row="5" column="0" colspan="2">
               <widget class="QPushButton" name="buttonLoginInstead">
-               <property name="font">
-                <font>
-                 <pointsize>10</pointsize>
-                </font>
-               </property>
                <property name="text">
                 <string>Already have an account? Login instead</string>
                </property>
@@ -204,7 +206,16 @@
     </item>
    </layout>
   </widget>
-  <widget class="QMenuBar" name="menubar"/>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>436</width>
+     <height>26</height>
+    </rect>
+   </property>
+  </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>
