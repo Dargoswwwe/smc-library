@@ -35,7 +35,7 @@ public:
     void borrowBook(Book book);
     void returnBook(Book book);
 
-    void readBooksFromFile(std::ifstream& fin);
+    void readBooksFromFile();
     friend std::ostream& operator<<(std::ostream& fout, Library& lib);
     friend std::ostream& operator<<(std::ostream& out, std::vector<Book> booksList_or_usersList);
 

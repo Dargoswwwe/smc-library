@@ -5,7 +5,7 @@
 Library::Library() { }
 
 Library::Library(std::vector<Book> _allBooks, std::vector<Book> _availableBooks, std::vector<Book> _borrowedBooks,
-    std::vector<User> _users)
+                 std::vector<User> _users)
     : allBooks(_allBooks)
     , availableBooks(_availableBooks)
     , borrowedBooks(_borrowedBooks)
@@ -84,12 +84,20 @@ void Library::returnBook(Book book)
     borrowedBooks.erase(find(borrowedBooks.begin(), borrowedBooks.end(), book));
 }
 
-void Library::readBooksFromFile(std::ifstream& fin)
+void Library::readBooksFromFile()
 {
-    while (!fin.eof()) {
-        Book b;
-        b.ReadBookFromFile(fin);
-        addBook(b);
+    std::fstream fin;
+    fin.open("smc-library-project\\shared\\books.csv", std::ios::in);
+    int rows = 0;
+    std::string line;
+    while (getline(fin, line))
+        rows++;
+
+    for(int index=0;index<rows-1;index++)
+    {
+        Book book;
+        book.ReadBookFromFile(index);
+        addBook(book);
     }
 }
 
