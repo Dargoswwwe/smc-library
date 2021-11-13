@@ -16,13 +16,10 @@ CONFIG += c++latest
 # Input
 SOURCES += \
     src/book.cpp \
-    src/user.cpp \
-    src/library.cpp \
 
 HEADERS += \
     src/book.hpp \
-    src/user.hpp \
-    src/library.hpp \
+    src/rapidcsv.h \
 
 # Directories
 DESTDIR=lib                 #Target file directory
@@ -35,3 +32,6 @@ unix {
     target.path = /usr/lib
 }
 !isEmpty(target.path): INSTALLS += target
+
+DISTFILES += \
+    books.csv
