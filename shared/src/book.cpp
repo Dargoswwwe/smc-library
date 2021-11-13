@@ -22,9 +22,9 @@ Book& Book::operator=(const Book& book)
 bool Book::operator==(const Book& book)
 {
     if (this->authors == book.authors && this->content == book.content && this->isbn == book.isbn &&
-        this->avarage_rating == book.avarage_rating && this->language == book.language &&
-        this->original_publication == book.original_publication && this->ratings_count == book.ratings_count &&
-        this->title == book.title && this->url == book.url)
+            this->avarage_rating == book.avarage_rating && this->language == book.language &&
+            this->original_publication == book.original_publication && this->ratings_count == book.ratings_count &&
+            this->title == book.title && this->url == book.url)
         return true;
     return false;
 }
@@ -49,34 +49,37 @@ std::ostream& operator<<(std::ostream& fout, const Book& book)
 {
 
     fout
-        << book.GetTitle() << std::endl
-        << book.GetAuthors() << std::endl
-        << book.GetLanguage() << std::endl
-        << book.GetOriginal_publication() << std::endl
-        << book.GetAvarage_rating() << std::endl
-        << book.GetRatings_count() << std::endl
-        << book.GetIsbn() << std::endl
-        << book.GetExemplars_available() << std::endl
-        << book.GetContent() << std::endl
-        << book.GetAvailability() << std::endl;
+            << book.GetTitle() << std::endl
+            << book.GetAuthors() << std::endl
+            << book.GetLanguage() << std::endl
+            << book.GetOriginal_publication() << std::endl
+            << book.GetAvarage_rating() << std::endl
+            << book.GetRatings_count() << std::endl
+            << book.GetIsbn() << std::endl
+            << book.GetExemplars_available() << std::endl
+            << book.GetContent() << std::endl
+            << book.GetAvailability() << std::endl;
     return fout;
 }
 
 void Book::ReadBookFromFile(int index)
 {
-        rapidcsv::Document doc("smc-library-project\\shared\\books.csv",
-                               rapidcsv::LabelParams(0, 0));
+    rapidcsv::Document doc("smc-library-project\\shared\\books.csv",
+                           rapidcsv::LabelParams(0, 0));
 
-        //Get row from index "index"
-        std::vector<std::string> line;
-        line = doc.GetRow<std::string>(index);
+    //Get row from index "index"
+    std::vector<std::string> line;
+    line = doc.GetRow<std::string>(index);
 
-        //Assign to the specific attribute
-        //
-        //Title
+    //Assign to the specific attribute
+    //
+    //Title
+    if (!line[0].empty())
         title = line[0];
 
-        //Authors
+    //Authors
+    if (!line[1].empty())
+    {
         std::string lineOfAuthors = line[1];
         std::regex dividers(",");
 
@@ -88,26 +91,30 @@ void Book::ReadBookFromFile(int index)
             std::string aux = *iterator;
             authors.push_back(aux);
         }
+    }
 
-        //Language
+    //Language
+    if (!line[2].empty())
         language = line[2];
 
-        //Original publication
+    //Original publication
+    if (!line[3].empty())
         original_publication = std::stof(line[3]);
 
-        //Avarage rating
+    //Avarage rating
+    if (!line[4].empty())
         avarage_rating = std::stof(line[4]);
 
-
-        //Ratings count
+    //Ratings count
+    if (!line[5].empty())
         ratings_count = std::stof(line[5]);
 
+    //Read isbn
+    if (!line[6].empty())
+        isbn = line[6];
 
-        //Read isbn
-        isbn= line[6];
-
-
-        //Read URL
+    //Read URL
+    if (!line[7].empty())
         url = line[7];
 
 }
@@ -132,21 +139,21 @@ Book::Book()
 }
 
 Book::Book(const std::string& title, const std::vector<std::string>& authors,
-    const std::string& language, const uint32_t& original_publication, const float& avarage_rating,
-    uint32_t& ratings_count, const std::string& isbn, const uint32_t& exemplars_available,
-    const std::string& content, const bool& available, const std::string& url)
+           const std::string& language, const uint32_t& original_publication, const float& avarage_rating,
+           uint32_t& ratings_count, const std::string& isbn, const uint32_t& exemplars_available,
+           const std::string& content, const bool& available, const std::string& url)
     : title{ title }, authors{ authors }, language{ language }, original_publication{ original_publication },
-    avarage_rating{ avarage_rating }, ratings_count{ ratings_count }, isbn{ isbn },
-    exemplars_available{ exemplars_available }, content{ content }, available{ available }, url{ url }
+      avarage_rating{ avarage_rating }, ratings_count{ ratings_count }, isbn{ isbn },
+      exemplars_available{ exemplars_available }, content{ content }, available{ available }, url{ url }
 {
     assert(exemplars_available >= 0 && exemplars_available <= 3);
 }
 
 Book::Book(const Book& book)
     :
-    title{ book.title }, authors{ book.authors }, language{ book.language }, original_publication{ book.original_publication },
-    avarage_rating{ book.avarage_rating }, ratings_count{ book.ratings_count }, isbn{ book.isbn },
-    exemplars_available{ book.exemplars_available }, content{ book.content }, available{ book.available }, url{ book.url }
+      title{ book.title }, authors{ book.authors }, language{ book.language }, original_publication{ book.original_publication },
+      avarage_rating{ book.avarage_rating }, ratings_count{ book.ratings_count }, isbn{ book.isbn },
+      exemplars_available{ book.exemplars_available }, content{ book.content }, available{ book.available }, url{ book.url }
 {}
 
 
