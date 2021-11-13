@@ -39,6 +39,69 @@ void deleteBook(QString title)
         qDebug() << "Error deleting a book." << query.lastError().text();
 }
 
+void deleteUser(QString username)
+{
+    QSqlQuery query;
+    query.prepare("DELETE FROM Users WHERE username =  (:username)");
+    query.bindValue(":username",username);
+
+    if (!query.exec())
+        qDebug() << "Error deleting a user." << query.lastError().text();
+}
+
+void addValuesIntoBookTable(int id,QString title,QString authors, QString language, int original_publication_year,float avarage_rating,
+                            int ratings_count, QString isbn, QString image_url  )
+{
+    QSqlQuery query;
+
+    query.prepare("INSERT into Books ("
+                  "id, "
+                  "title, "
+                  "authors, "
+                  "language, "
+                  "original_publication_year, "
+                  "avarage_rating,"
+                  "ratings_count, "
+                  "isbn, "
+                  "image_url)"
+                  "VALUES (?,?,?,?,?,?,?,?,?);");
+
+    query.addBindValue(id);
+    query.addBindValue(title);
+    query.addBindValue(authors);
+    query.addBindValue(language);
+    query.addBindValue(original_publication_year);
+    query.addBindValue(avarage_rating);
+    query.addBindValue(ratings_count);
+    query.addBindValue(isbn);
+    query.addBindValue(image_url);
+
+    if(!query.exec())
+        qDebug()<<"Error adding value.";
+
+}
+
+void addValuesIntoUsersTable(int id,QString username,QString password)
+{
+    QSqlQuery query;
+
+    query.prepare("INSERT into Users ("
+                  "id, "
+                  "username, "
+                  "password)"
+
+                  "VALUES (?,?,?);");
+
+    query.addBindValue(id);
+    query.addBindValue(username);
+    query.addBindValue(password);
+
+
+    if(!query.exec())
+        qDebug()<<"Error adding value.";
+
+}
+
 void Server::initDatabase()
 {
     QObject::connect(tcpServer, &QTcpServer::newConnection, this, &Server::newConnection);
