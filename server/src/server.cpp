@@ -17,6 +17,28 @@ void Server::initServer()
     } else qDebug() << "Started library server on port" << tcpServer->serverPort();
 }
 
+void deleteUsersTable()
+{
+    QSqlQuery query;
+    query.exec("Drop table Users ");
+}
+
+void deleteBookTable()
+{
+    QSqlQuery query;
+    query.exec("Drop table Books ");
+}
+
+void deleteBook(QString title)
+{
+    QSqlQuery query;
+    query.prepare("DELETE FROM Books WHERE title =  (:title)");
+    query.bindValue(":title",title);
+
+    if (!query.exec())
+        qDebug() << "Error deleting a book." << query.lastError().text();
+}
+
 void Server::initDatabase()
 {
     QObject::connect(tcpServer, &QTcpServer::newConnection, this, &Server::newConnection);
