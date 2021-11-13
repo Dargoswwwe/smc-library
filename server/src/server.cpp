@@ -102,6 +102,28 @@ void addValuesIntoUsersTable(int id,QString username,QString password)
 
 }
 
+void changeUserPassword(QString username,QString password)
+{
+    QSqlQuery query;
+
+    query.prepare("UPDATE Users SET password = (:password) WHERE username = (:username)");
+    query.bindValue(":password",password);
+    query.bindValue(":username",username);
+
+    query.exec();
+}
+
+void changeUsername(QString username,QString password)
+{
+    QSqlQuery query;
+
+    query.prepare("UPDATE Users SET  username = (:username) WHERE password = (:password)");
+    query.bindValue(":username",username);
+    query.bindValue(":password",password);
+
+    query.exec();
+}
+
 void Server::initDatabase()
 {
     QObject::connect(tcpServer, &QTcpServer::newConnection, this, &Server::newConnection);
