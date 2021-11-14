@@ -1,7 +1,10 @@
 #include "user.hpp"
+#include <random>
+
 
 User::User()
 {
+    Setsalt();
     username = '\0';
     password = '\0';
     read = {};
@@ -12,6 +15,7 @@ User::User()
 
 User::User(const std::string& name, const std::string& pswrd)
 {
+    Setsalt();
     username = name;
     password = pswrd;
     read = {};
@@ -23,6 +27,7 @@ User::User(const std::string& name, const std::string& pswrd)
 User::User(const std::string& name, const std::string& pswrd, const std::vector<Book>& booksRead,
     const std::vector<Book>& booksBorrowing, const std::vector<Book>& booksBorrowed, const bool& activ)
 {
+    Setsalt();
     username = name;
     password = pswrd;
     read = booksRead;
@@ -54,6 +59,33 @@ bool User::HasBook(const Book& book)
     else return false;
 }
 
+std::string User::gen_random(const int len)
+{
+
+    static const char alphanum[] =
+        "0123456789"
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        "abcdefghijklmnopqrstuvwxyz";
+    std::string tmp_s;
+    tmp_s.reserve(len);
+
+    for (int i = 0; i < len; ++i) {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<> distr(0, 999999);
+
+        int randomIndex = distr(gen);
+        tmp_s += alphanum[randomIndex % (sizeof(alphanum) - 1)];
+    }
+
+    return tmp_s;
+}
+
+void User::Setsalt()
+{
+   salt= gen_random(8);//lenght of salt
+}
+
 void User::SetActivity(const bool& actv) { active = actv; }
 
 void User::SetUsername(const std::string& name) { username = name; }
@@ -75,5 +107,7 @@ std::vector<Book> User::GetBorrowed() const { return borrowed; }
 std::string User::GetUsername() const { return username; }
 
 std::string User::GetPassword() const { return password; }
+
+std::string User::GetSalt() const { return salt; }
 
 bool User::GetActivity() const { return active; }

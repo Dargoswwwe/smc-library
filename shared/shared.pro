@@ -16,11 +16,13 @@ CONFIG += c++latest
 # Input
 SOURCES += \
     src/book.cpp \
-    src/library.cpp
+    src/library.cpp \
+    src/user.cpp
 
 HEADERS += \
     src/book.hpp \
     src/library.hpp \
+    src/user.hpp \
     src/rapidcsv.h \
 
 # Directories
