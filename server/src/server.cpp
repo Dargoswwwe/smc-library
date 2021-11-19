@@ -181,15 +181,20 @@ void Server::newConnection()
     connect(clientSocket, &QAbstractSocket::disconnected, this, &Server::disconnect);
     connections[clientSocket] = std::nullopt;
 
+    qDebug() << "New client connected: " << clientSocket->peerAddress().toString() << ":" << clientSocket->peerPort();
+    qDebug() << "Connections: " << connections.size();
+
+    QJsonObject json { { "header", "testMessage" }, { "messge", "hello, client" } };
+    sendData(clientSocket, json);
+}
+
+void Server::sendData(QTcpSocket* clientSocket, const QJsonObject& data)
+{
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_15);
-    out << "Hello client, this is the server.";
+    out << data;
     clientSocket->write(block);
-
-    qDebug() << "New client connected: " << clientSocket->peerAddress().toString() << ":" << clientSocket->peerPort();
-
-    qDebug() << "connections: " << connections.size();
 }
 
 void Server::disconnect()
@@ -197,5 +202,5 @@ void Server::disconnect()
     QTcpSocket* clientSocket = static_cast<QTcpSocket*>(sender());
     qDebug() << "Client disconnected: " << clientSocket->peerAddress().toString() << ":" << clientSocket->peerPort();
     connections.erase(clientSocket);
-    qDebug() << "connections: " << connections.size();
+    qDebug() << "Connections: " << connections.size();
 }

@@ -23,6 +23,7 @@ public:
 
 private slots:
     void newConnection();
+    void sendData(QTcpSocket* clientSocket, const QJsonObject& data);
     void disconnect();
 
 private:
