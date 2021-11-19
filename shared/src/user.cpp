@@ -17,7 +17,8 @@ User::User(const std::string& name, const std::string& pswrd)
 {
     Setsalt();
     username = name;
-    password = pswrd;
+    password=pswrd+salt;
+    password = QCryptographicHash::hash(password.c_str(), QCryptographicHash::Sha3_256).toBase64().toStdString();
     read = {};
     borrowed = {};
     borrowing = {};
@@ -29,7 +30,8 @@ User::User(const std::string& name, const std::string& pswrd, const std::vector<
 {
     Setsalt();
     username = name;
-    password = pswrd;
+    password=pswrd+salt;
+    password = QCryptographicHash::hash(password.c_str(), QCryptographicHash::Sha3_256).toBase64().toStdString();
     read = booksRead;
     borrowed = booksBorrowed;
     borrowing = booksBorrowing;
@@ -90,7 +92,11 @@ void User::SetActivity(const bool& actv) { active = actv; }
 
 void User::SetUsername(const std::string& name) { username = name; }
 
-void User::SetPassword(const std::string& pswrd) { password = pswrd; }
+void User::SetPassword(const std::string& pswrd)
+{
+    password=pswrd+salt;
+    password = QCryptographicHash::hash(password.c_str(), QCryptographicHash::Sha3_256).toBase64().toStdString();
+}
 
 void User::SetRead(const std::vector<Book>& booksRead) { read = booksRead; }
 

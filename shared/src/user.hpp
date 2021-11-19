@@ -3,6 +3,7 @@
 #include "shared_global.hpp"
 #include <string>
 #include <vector>
+#include <QCryptographicHash>
 
 class SHARED_EXPORT User {
 private:
