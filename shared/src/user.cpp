@@ -116,4 +116,15 @@ std::string User::GetPassword() const { return password; }
 
 std::string User::GetSalt() const { return salt; }
 
+bool User::CheckPassword(std::string& pswrd)
+{
+    pswrd=pswrd+salt;
+    if(password == QCryptographicHash::hash(pswrd.c_str(), QCryptographicHash::Sha3_256).toBase64().toStdString())
+    {
+        return true;
+    }
+    else
+        return false;
+}
+
 bool User::GetActivity() const { return active; }

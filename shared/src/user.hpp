@@ -40,5 +40,6 @@ public:
     std::string GetPassword() const;
     std::string GetSalt() const;
 
+    bool CheckPassword(std::string& pswrd);
     bool GetActivity() const;
 };
