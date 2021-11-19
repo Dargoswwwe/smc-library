@@ -22,6 +22,7 @@ public slots:
     void connected();
 
 private:
+    void connectToServer(const QHostAddress& address = QHostAddress::LocalHost, qint16 port = 4200);
     Ui::MainWindow* ui;
     QTcpSocket* tcpSocket;
 };
