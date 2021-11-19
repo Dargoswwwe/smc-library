@@ -8,10 +8,16 @@ Server::Server(QObject* parent)
     initDatabase();
 }
 
+Server::~Server()
+{
+    for (auto [clientSocket, user] : connections)
+        clientSocket->disconnectFromHost();
+}
+
 void Server::initServer()
 {
     tcpServer = new QTcpServer(this);
-    if (!tcpServer->listen(QHostAddress::LocalHost, 4200)) {
+    if (!tcpServer->listen(QHostAddress::Any, 4200)) {
         qWarning() << "Cannot start server: " << tcpServer->serverError();
         throw tcpServer->serverError();
     } else qDebug() << "Started library server on port" << tcpServer->serverPort();
@@ -33,24 +39,22 @@ void deleteBook(QString title)
 {
     QSqlQuery query;
     query.prepare("DELETE FROM Books WHERE title =  (:title)");
-    query.bindValue(":title",title);
+    query.bindValue(":title", title);
 
-    if (!query.exec())
-        qDebug() << "Error deleting a book." << query.lastError().text();
+    if (!query.exec()) qDebug() << "Error deleting a book." << query.lastError().text();
 }
 
 void deleteUser(QString username)
 {
     QSqlQuery query;
     query.prepare("DELETE FROM Users WHERE username =  (:username)");
-    query.bindValue(":username",username);
+    query.bindValue(":username", username);
 
-    if (!query.exec())
-        qDebug() << "Error deleting a user." << query.lastError().text();
+    if (!query.exec()) qDebug() << "Error deleting a user." << query.lastError().text();
 }
 
-void addValuesIntoBookTable(int id,QString title,QString authors, QString language, int original_publication_year,float avarage_rating,
-                            int ratings_count, QString isbn, QString image_url  )
+void addValuesIntoBookTable(int id, QString title, QString authors, QString language, int original_publication_year,
+    float avarage_rating, int ratings_count, QString isbn, QString image_url)
 {
     QSqlQuery query;
 
@@ -76,12 +80,10 @@ void addValuesIntoBookTable(int id,QString title,QString authors, QString langua
     query.addBindValue(isbn);
     query.addBindValue(image_url);
 
-    if(!query.exec())
-        qDebug()<<"Error adding value.";
-
+    if (!query.exec()) qDebug() << "Error adding value.";
 }
 
-void addValuesIntoUsersTable(int id,QString username,QString password)
+void addValuesIntoUsersTable(int id, QString username, QString password)
 {
     QSqlQuery query;
 
@@ -96,44 +98,40 @@ void addValuesIntoUsersTable(int id,QString username,QString password)
     query.addBindValue(username);
     query.addBindValue(password);
 
-
-    if(!query.exec())
-        qDebug()<<"Error adding value.";
-
+    if (!query.exec()) qDebug() << "Error adding value.";
 }
 
-void changeUserPassword(QString username,QString password)
+void changeUserPassword(QString username, QString password)
 {
     QSqlQuery query;
 
     query.prepare("UPDATE Users SET password = (:password) WHERE username = (:username)");
-    query.bindValue(":password",password);
-    query.bindValue(":username",username);
+    query.bindValue(":password", password);
+    query.bindValue(":username", username);
 
     query.exec();
 }
 
-void changeUsername(QString username,QString password)
+void changeUsername(QString username, QString password)
 {
     QSqlQuery query;
 
     query.prepare("UPDATE Users SET  username = (:username) WHERE password = (:password)");
-    query.bindValue(":username",username);
-    query.bindValue(":password",password);
+    query.bindValue(":username", username);
+    query.bindValue(":password", password);
 
     query.exec();
 }
 
 void Server::initDatabase()
 {
-    QObject::connect(tcpServer, &QTcpServer::newConnection, this, &Server::newConnection);
+    connect(tcpServer, &QTcpServer::newConnection, this, &Server::newConnection);
 
     database = QSqlDatabase::addDatabase("QSQLITE");
 
     std::string databaseDir = QDir::homePath().toStdString();
 #ifdef Q_OS_LINUX
     databaseDir += "/.local/share/smc-library/";
-    qDebug() << "LINUX";
 #elif defined(Q_OS_WINDOWS)
     databaseDir += "\\Documents\\smc-library\\";
 #else
@@ -150,10 +148,9 @@ void Server::initDatabase()
         database.setDatabaseName(":memory:");
     }
 
-
-    //Check if data base is empty and create book table into it
-    if(!database.contains(QLatin1String("Books")))
-    { QSqlQuery query;
+    // Check if data base is empty and create book table into it
+    if (!database.contains(QLatin1String("Books"))) {
+        QSqlQuery query;
         query.exec("create table Books "
                    "(id integer primary key, "
                    "title varchar(50), "
@@ -166,19 +163,39 @@ void Server::initDatabase()
                    "image_url varchar(100))");
     }
 
-
-    //Check if data base is empty and create user table into it
-    if(!database.contains(QLatin1String("Users")))
-    { QSqlQuery query;
+    // Check if data base is empty and create user table into it
+    if (!database.contains(QLatin1String("Users"))) {
+        QSqlQuery query;
         query.exec("create table Users "
                    "(id integer primary key, "
                    "username varchar(50), "
                    "password varchar(50))");
     }
-
-
 }
 
+void Server::newConnection()
+{
+    QTcpSocket* clientSocket = tcpServer->nextPendingConnection();
+    connect(clientSocket, &QAbstractSocket::disconnected, clientSocket, &QObject::deleteLater);
 
+    connect(clientSocket, &QAbstractSocket::disconnected, this, &Server::disconnect);
+    connections[clientSocket] = std::nullopt;
 
-void Server::newConnection() { qDebug() << "Hello, client!"; }
+    QByteArray block;
+    QDataStream out(&block, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_15);
+    out << "Hello client, this is the server.";
+    clientSocket->write(block);
+
+    qDebug() << "New client connected: " << clientSocket->peerAddress().toString() << ":" << clientSocket->peerPort();
+
+    qDebug() << "connections: " << connections.size();
+}
+
+void Server::disconnect()
+{
+    QTcpSocket* clientSocket = static_cast<QTcpSocket*>(sender());
+    qDebug() << "Client disconnected: " << clientSocket->peerAddress().toString() << ":" << clientSocket->peerPort();
+    connections.erase(clientSocket);
+    qDebug() << "connections: " << connections.size();
+}

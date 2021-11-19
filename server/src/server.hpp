@@ -1,28 +1,37 @@
-#ifndef SERVER_H
-#define SERVER_H
+#ifndef SERVER_HPP
+#define SERVER_HPP
+
+#include "user.hpp"
 
 #include <QObject>
-#include <QtNetwork>
 #include <QSqlDatabase>
 #include <QSqlDriver>
 #include <QSqlError>
 #include <QSqlQuery>
-#include <memory>
+#include <QtNetwork>
+#include <QJsonObject>
+
+#include <unordered_map>
+#include <optional>
 
 class Server : public QObject {
     Q_OBJECT
 
 public:
     explicit Server(QObject* parent = nullptr);
+    virtual ~Server();
 
 private slots:
     void newConnection();
+    void disconnect();
 
 private:
     void initServer();
     void initDatabase();
+
     QTcpServer* tcpServer = nullptr;
     QSqlDatabase database;
+    std::unordered_map<QTcpSocket*, std::optional<User>> connections;
 };
 
-#endif /* SERVER_H */
+#endif /* SERVER_HPP */
