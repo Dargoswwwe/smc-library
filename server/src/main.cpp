@@ -10,5 +10,7 @@ int main(int argc, char* argv[])
     Server server;
     database_management db;
 
+    db.insertBooksIntoDataBase();
+
     return app.exec();
 }

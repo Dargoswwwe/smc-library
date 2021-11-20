@@ -24,6 +24,7 @@ public:
     void addValuesIntoUsersTable(int id, QString username, QString password);
     void changeUserPassword(QString username, QString password);
     void changeUsername(QString username, QString password);
+    void insertBooksIntoDataBase();
 };
 
 #endif // DATABASE_MANAGEMENT_H

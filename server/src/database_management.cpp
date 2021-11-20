@@ -149,4 +149,19 @@ void database_management:: changeUsername(QString username, QString password)
     query.exec();
 }
 
+void database_management:: insertBooksIntoDataBase()
+{
+    QFile inputFile(QString("D:\\Facultate\\anul II\\sem 1\\Modern C++\\smc-library-project\\shared\\books.csv"));
+    inputFile.open(QIODevice::ReadOnly);
+    if (!inputFile.isOpen())
+        qDebug() << "Error";
 
+    QTextStream stream(&inputFile);
+    for (QString line = stream.readLine(); !line.isNull(); line = stream.readLine()) {
+
+        QStringList word=line.split(',');
+        addValuesIntoBookTable(word[0].toInt(), word.at(1), word.at(2), word.at(3),word.at(4).toInt(),
+                word.at(5).toFloat(), word.at(6).toInt(), word.at(7), word.at(8));
+
+    };
+}
