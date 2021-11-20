@@ -28,7 +28,6 @@ private slots:
 
 private:
     void initServer();
-    void initDatabase();
 
     QTcpServer* tcpServer = nullptr;
     QSqlDatabase database;

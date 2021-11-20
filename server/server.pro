@@ -10,10 +10,12 @@ CONFIG += c++latest
 
 # Input
 SOURCES += \
+    src/database_management.cpp \
     src/main.cpp \
     src/server.cpp
 
 HEADERS += \
+    src/database_management.hpp \
     src/server.hpp
 
 # Directories
@@ -26,3 +28,5 @@ unix|win32: LIBS += -L$$PWD/../shared/lib/ -lsmclibrary
 
 INCLUDEPATH += $$PWD/../shared/src
 DEPENDPATH += $$PWD/../shared/src
+
+DISTFILES +=

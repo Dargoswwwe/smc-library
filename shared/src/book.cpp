@@ -81,7 +81,7 @@ void Book::ReadBookFromFile(int index)
     if (!line[1].empty())
     {
         std::string lineOfAuthors = line[1];
-        std::regex dividers(",");
+        std::regex dividers(";");
 
         std::sregex_token_iterator iterator(lineOfAuthors.begin(), lineOfAuthors.end(), dividers, -1);
         std::sregex_token_iterator end;
