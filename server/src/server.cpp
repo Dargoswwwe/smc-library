@@ -5,12 +5,11 @@ Server::Server(QObject* parent)
     this->setParent(parent);
 
     initServer();
-
 }
 
 Server::~Server()
 {
-    for (auto [clientSocket, user] : connections)
+    for(auto  [clientSocket, temp]:connections)
         clientSocket->disconnectFromHost();
 }
 
@@ -22,22 +21,28 @@ void Server::initServer()
         throw tcpServer->serverError();
     } else qDebug() << "Started library server on port" << tcpServer->serverPort();
 
-     connect(tcpServer, &QTcpServer::newConnection, this, &Server::newConnection);
+    connect(tcpServer, &QTcpServer::newConnection, this, &Server::newConnection);
 }
 
 void Server::newConnection()
 {
+
     QTcpSocket* clientSocket = tcpServer->nextPendingConnection();
+    QDataStream *inStream=new QDataStream(clientSocket);
+    inStream->setVersion(QDataStream::Qt_5_15);
+
     connect(clientSocket, &QAbstractSocket::disconnected, clientSocket, &QObject::deleteLater);
 
     connect(clientSocket, &QAbstractSocket::disconnected, this, &Server::disconnect);
-    connections[clientSocket] = std::nullopt;
+    connections[clientSocket]={std::nullopt, inStream};
 
     qDebug() << "New client connected: " << clientSocket->peerAddress().toString() << ":" << clientSocket->peerPort();
     qDebug() << "Connections: " << connections.size();
 
     QJsonObject json { { "header", "testMessage" }, { "messge", "hello, client" } };
     sendData(clientSocket, json);
+
+    QObject::connect(clientSocket, &QIODevice::readyRead, this, &Server::receiveData);
 }
 
 void Server::sendData(QTcpSocket* clientSocket, const QJsonObject& data)
@@ -49,10 +54,27 @@ void Server::sendData(QTcpSocket* clientSocket, const QJsonObject& data)
     clientSocket->write(block);
 }
 
+void Server::receiveData(){
+
+    QTcpSocket* clientSocket = static_cast<QTcpSocket*>(sender());
+
+    QDataStream *inStream=connections[clientSocket].second;
+
+    inStream->startTransaction();
+    QJsonObject data;
+    *inStream >> data;
+
+    qDebug() << data;
+
+    if (!inStream->commitTransaction())
+        return;
+}
+
 void Server::disconnect()
 {
     QTcpSocket* clientSocket = static_cast<QTcpSocket*>(sender());
     qDebug() << "Client disconnected: " << clientSocket->peerAddress().toString() << ":" << clientSocket->peerPort();
+    delete connections[clientSocket].second;
     connections.erase(clientSocket);
     qDebug() << "Connections: " << connections.size();
 }

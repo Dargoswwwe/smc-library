@@ -21,6 +21,7 @@ public slots:
     void switchPage(int pageIndex);
     void connected();
     void receiveData();
+    void sendData(QTcpSocket* serverSocket, const QJsonObject& data);
 
 private:
     void connectToServer(const QHostAddress& address = QHostAddress::LocalHost, qint16 port = 4200);

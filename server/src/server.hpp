@@ -24,6 +24,7 @@ public:
 private slots:
     void newConnection();
     void sendData(QTcpSocket* clientSocket, const QJsonObject& data);
+    void receiveData();
     void disconnect();
 
 private:
@@ -31,7 +32,7 @@ private:
 
     QTcpServer* tcpServer = nullptr;
     QSqlDatabase database;
-    std::unordered_map<QTcpSocket*, std::optional<User>> connections;
+    std::unordered_map<QTcpSocket*, std::pair<std::optional<User>, QDataStream*>> connections;
 };
 
 #endif /* SERVER_HPP */
