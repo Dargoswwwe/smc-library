@@ -44,8 +44,7 @@ database_management::database_management()
     if (!database.contains(QLatin1String("Users"))) {
         QSqlQuery query;
         query.exec("create table Users "
-                   "(id integer primary key, "
-                   "username varchar(50), "
+                   "(username varchar(50), "
                    "password varchar(50))");
     }
 }
@@ -81,7 +80,7 @@ void database_management:: deleteUser(QString username)
 }
 
 void database_management:: addValuesIntoBookTable(int id, QString title, QString authors, QString language, int original_publication_year,
-                            float avarage_rating, int ratings_count, QString isbn, QString image_url)
+                                                  float avarage_rating, int ratings_count, QString isbn, QString image_url)
 {
     QSqlQuery query;
 
@@ -110,22 +109,23 @@ void database_management:: addValuesIntoBookTable(int id, QString title, QString
     if (!query.exec()) qDebug() << "Error adding value.";
 }
 
-void database_management:: addValuesIntoUsersTable(int id, QString username, QString password)
+void database_management:: addValuesIntoUsersTable( QString username, QString password)
 {
     QSqlQuery query;
 
     query.prepare("INSERT into Users ("
-                  "id, "
                   "username, "
                   "password)"
 
-                  "VALUES (?,?,?);");
+                  "VALUES (?,?);");
 
-    query.addBindValue(id);
     query.addBindValue(username);
     query.addBindValue(password);
 
-    if (!query.exec()) qDebug() << "Error adding value.";
+    qDebug() << username;
+    qDebug() << password;
+
+    if (!query.exec()) qDebug() << "Error adding user.";
 }
 
 void database_management:: changeUserPassword(QString username, QString password)

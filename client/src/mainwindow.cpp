@@ -1,5 +1,6 @@
 #include "mainwindow.hpp"
 #include "ui_mainwindow.h"
+#include "user.hpp"
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
@@ -9,6 +10,17 @@ MainWindow::MainWindow(QWidget* parent)
     ui->setupUi(this);
 
     QObject::connect(ui->buttonRegisterInstead, &QPushButton::clicked, this, [this] { switchPage(1); });
+    QObject::connect(ui->buttonRegister, &QPushButton::clicked, this, [this] {
+        User newUser(ui->lineRegisterUsername->text().toStdString(),ui->lineRegisterPassword->text().toStdString());
+        sendData(tcpSocket,
+                 {
+                     {
+                         {"username",newUser.GetUsername().c_str()},
+                         {"password",newUser.GetPassword().c_str()}
+                     }
+                 });
+    });
+
     QObject::connect(ui->buttonLoginInstead, &QPushButton::clicked, this, [this] { switchPage(0); });
     QObject::connect(ui->buttonLogin, &QPushButton::clicked, this, [this] { sendData(tcpSocket,{{"hello","test"}}); });
 

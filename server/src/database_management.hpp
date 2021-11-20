@@ -22,7 +22,7 @@ public:
     void deleteUser(QString username);
     void addValuesIntoBookTable(int id, QString title, QString authors, QString language, int original_publication_year,
                                 float avarage_rating, int ratings_count, QString isbn, QString image_url);
-    void addValuesIntoUsersTable(int id, QString username, QString password);
+    void addValuesIntoUsersTable(QString username, QString password);
     void changeUserPassword(QString username, QString password);
     void changeUsername(QString username, QString password);
     void insertBooksIntoDataBase();

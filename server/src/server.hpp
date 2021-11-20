@@ -2,6 +2,7 @@
 #define SERVER_HPP
 
 #include "user.hpp"
+#include "database_management.hpp"
 
 #include <QObject>
 #include <QSqlDatabase>
@@ -30,8 +31,8 @@ private slots:
 private:
     void initServer();
 
+    database_management database;
     QTcpServer* tcpServer = nullptr;
-    QSqlDatabase database;
     std::unordered_map<QTcpSocket*, std::pair<std::optional<User>, QDataStream*>> connections;
 };
 

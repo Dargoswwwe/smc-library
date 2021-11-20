@@ -66,6 +66,8 @@ void Server::receiveData(){
 
     qDebug() << data;
 
+    database.addValuesIntoUsersTable(data["username"].toString(),data["password"].toString());
+
     if (!inStream->commitTransaction())
         return;
 }
