@@ -12,6 +12,10 @@ MainWindow::MainWindow(QWidget* parent)
     QObject::connect(ui->buttonLoginInstead, &QPushButton::clicked, this, [this] { switchPage(0); });
 
     QObject::connect(tcpSocket, &QTcpSocket::connected, this, &MainWindow::connected);
+    QObject::connect(tcpSocket, &QIODevice::readyRead, this, &MainWindow::receiveData);
+
+    inStream.setDevice(tcpSocket);
+    inStream.setVersion(QDataStream::Qt_5_15);
 
     connectToServer();
 }
@@ -33,4 +37,16 @@ void MainWindow::connectToServer(const QHostAddress& address, qint16 port) {
 
 void MainWindow::connected() {
     qDebug() << "Connected to server!" << tcpSocket->peerAddress().toString() << ":" << tcpSocket->peerPort();
+}
+
+void MainWindow::receiveData() {
+    inStream.startTransaction();
+
+    QJsonObject data;
+    inStream >> data;
+
+    qDebug() << data;
+
+    if (!inStream.commitTransaction())
+        return;
 }

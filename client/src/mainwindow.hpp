@@ -20,10 +20,12 @@ public:
 public slots:
     void switchPage(int pageIndex);
     void connected();
+    void receiveData();
 
 private:
     void connectToServer(const QHostAddress& address = QHostAddress::LocalHost, qint16 port = 4200);
     Ui::MainWindow* ui;
     QTcpSocket* tcpSocket;
+    QDataStream inStream;
 };
 #endif // MAINWINDOW_HPP
