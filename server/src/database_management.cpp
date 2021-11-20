@@ -5,7 +5,7 @@ database_management::database_management()
 {
     database = QSqlDatabase::addDatabase("QSQLITE");
 
-    std::string databaseDir = QDir::homePath().toStdString();
+    databaseDir = QDir::homePath().toStdString();
 #ifdef Q_OS_LINUX
     databaseDir += "/.local/share/smc-library/";
 #elif defined(Q_OS_WINDOWS)
@@ -22,6 +22,7 @@ database_management::database_management()
     if (!database.open()) {
         qWarning() << "Error creating database file. Using in-memory database.\n" << database.lastError();
         database.setDatabaseName(":memory:");
+        databaseDir="";
     }
 
     // Check if data base is empty and create book table into it
@@ -151,7 +152,7 @@ void database_management:: changeUsername(QString username, QString password)
 
 void database_management:: insertBooksIntoDataBase()
 {
-    QFile inputFile(QString("D:\\Facultate\\anul II\\sem 1\\Modern C++\\smc-library-project\\shared\\books.csv"));
+    QFile inputFile((databaseDir+"books.csv").c_str());
     inputFile.open(QIODevice::ReadOnly);
     if (!inputFile.isOpen())
         qDebug() << "Error";

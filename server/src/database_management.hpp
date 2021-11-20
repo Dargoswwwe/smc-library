@@ -13,6 +13,7 @@ class database_management
 {
 private:
     QSqlDatabase database;
+    std::string databaseDir;
 public:
     database_management();
     void deleteUsersTable();
