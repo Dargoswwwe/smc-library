@@ -47,6 +47,16 @@ database_management::database_management()
                    "(username varchar(50), "
                    "password varchar(50))");
     }
+
+    //Create UsersBooks table
+    if (!database.contains(QLatin1String("UsersBooks"))) {
+        QSqlQuery query;
+        query.exec("create table UsersBooks "
+                   "(user_id integer"
+                   "book_id integer"
+                   "FOREIGN KEY(user_id) REFERENCES Users(rowid)"
+                   "FOREIGN KEY(book_id) REFERENCES Books(id) )");
+    }
 }
 
 void database_management:: deleteUsersTable()
@@ -111,6 +121,7 @@ void database_management:: addValuesIntoBookTable(int id, QString title, QString
 
 void database_management:: addValuesIntoUsersTable( QString username, QString password)
 {
+
     QSqlQuery query;
 
     query.prepare("INSERT into Users ("
@@ -121,9 +132,6 @@ void database_management:: addValuesIntoUsersTable( QString username, QString pa
 
     query.addBindValue(username);
     query.addBindValue(password);
-
-    qDebug() << username;
-    qDebug() << password;
 
     if (!query.exec()) qDebug() << "Error adding user.";
 }
