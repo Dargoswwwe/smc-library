@@ -11,18 +11,20 @@ MainWindow::MainWindow(QWidget* parent)
 
     QObject::connect(ui->buttonRegisterInstead, &QPushButton::clicked, this, [this] { switchPage(1); });
     QObject::connect(ui->buttonRegister, &QPushButton::clicked, this, [this] {
-        User newUser(ui->lineRegisterUsername->text().toStdString(),ui->lineRegisterPassword->text().toStdString());
+        User newUser(ui->lineRegisterUsername->text().toStdString(), ui->lineRegisterPassword->text().toStdString());
         sendData(tcpSocket,
-                 {
-                     {
-                         {"username",newUser.GetUsername().c_str()},
-                         {"password",newUser.GetPassword().c_str()}
-                     }
-                 });
+            {
+                {
+                    { "username", newUser.getUsername().c_str() },
+                    { "password", newUser.getPassword().c_str() }
+                }
+            });
     });
 
     QObject::connect(ui->buttonLoginInstead, &QPushButton::clicked, this, [this] { switchPage(0); });
-    QObject::connect(ui->buttonLogin, &QPushButton::clicked, this, [this] { sendData(tcpSocket,{{"hello","test"}}); });
+    QObject::connect(ui->buttonLogin, &QPushButton::clicked, this, [this] {
+        sendData(tcpSocket, { { "hello", "test" } });
+    });
 
     QObject::connect(tcpSocket, &QTcpSocket::connected, this, &MainWindow::connected);
     QObject::connect(tcpSocket, &QIODevice::readyRead, this, &MainWindow::receiveData);
@@ -31,7 +33,6 @@ MainWindow::MainWindow(QWidget* parent)
     inStream.setVersion(QDataStream::Qt_5_15);
 
     connectToServer();
-
 }
 
 MainWindow::~MainWindow()
@@ -40,20 +41,17 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::switchPage(int pageIndex)
+void MainWindow::switchPage(int pageIndex) { ui->stackedWidget->setCurrentIndex(pageIndex); }
+
+void MainWindow::connectToServer(const QHostAddress& address, qint16 port) { tcpSocket->connectToHost(address, port); }
+
+void MainWindow::connected()
 {
-    ui->stackedWidget->setCurrentIndex(pageIndex);
-}
-
-void MainWindow::connectToServer(const QHostAddress& address, qint16 port) {
-    tcpSocket->connectToHost(address, port);
-}
-
-void MainWindow::connected() {
     qDebug() << "Connected to server!" << tcpSocket->peerAddress().toString() << ":" << tcpSocket->peerPort();
 }
 
-void MainWindow::receiveData() {
+void MainWindow::receiveData()
+{
     inStream.startTransaction();
 
     QJsonObject data;
@@ -61,11 +59,11 @@ void MainWindow::receiveData() {
 
     qDebug() << data;
 
-    if (!inStream.commitTransaction())
-        return;
+    if (!inStream.commitTransaction()) return;
 }
 
-void MainWindow::sendData(QTcpSocket* serverSocket, const QJsonObject& data){
+void MainWindow::sendData(QTcpSocket* serverSocket, const QJsonObject& data)
+{
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_15);

@@ -9,7 +9,7 @@ Server::Server(QObject* parent)
 
 Server::~Server()
 {
-    for(auto  [clientSocket, temp]:connections)
+    for (auto [clientSocket, temp] : connections)
         clientSocket->disconnectFromHost();
 }
 
@@ -22,19 +22,21 @@ void Server::initServer()
     } else qDebug() << "Started library server on port" << tcpServer->serverPort();
 
     connect(tcpServer, &QTcpServer::newConnection, this, &Server::newConnection);
+
+    database.insertBooksIntoDataBase();
 }
 
 void Server::newConnection()
 {
 
     QTcpSocket* clientSocket = tcpServer->nextPendingConnection();
-    QDataStream *inStream=new QDataStream(clientSocket);
+    QDataStream* inStream = new QDataStream(clientSocket);
     inStream->setVersion(QDataStream::Qt_5_15);
 
     connect(clientSocket, &QAbstractSocket::disconnected, clientSocket, &QObject::deleteLater);
 
     connect(clientSocket, &QAbstractSocket::disconnected, this, &Server::disconnect);
-    connections[clientSocket]={std::nullopt, inStream};
+    connections[clientSocket] = { std::nullopt, inStream };
 
     qDebug() << "New client connected: " << clientSocket->peerAddress().toString() << ":" << clientSocket->peerPort();
     qDebug() << "Connections: " << connections.size();
@@ -54,11 +56,12 @@ void Server::sendData(QTcpSocket* clientSocket, const QJsonObject& data)
     clientSocket->write(block);
 }
 
-void Server::receiveData(){
+void Server::receiveData()
+{
 
     QTcpSocket* clientSocket = static_cast<QTcpSocket*>(sender());
 
-    QDataStream *inStream=connections[clientSocket].second;
+    QDataStream* inStream = connections[clientSocket].second;
 
     inStream->startTransaction();
     QJsonObject data;
@@ -66,10 +69,9 @@ void Server::receiveData(){
 
     qDebug() << data;
 
-    database.addValuesIntoUsersTable(data["username"].toString(),data["password"].toString());
+    database.addValuesIntoUsersTable(data["username"].toString(), data["password"].toString());
 
-    if (!inStream->commitTransaction())
-        return;
+    if (!inStream->commitTransaction()) return;
 }
 
 void Server::disconnect()

@@ -1,7 +1,9 @@
-#pragma once
-#include "shared_global.hpp"
+#ifndef LIBRARY_HPP
+#define LIBRARY_HPP
 #include "book.hpp"
+#include "shared_global.hpp"
 #include "user.hpp"
+
 #include <fstream>
 
 class SHARED_EXPORT Library {
@@ -13,22 +15,22 @@ private:
 
 public:
     Library();
-    Library(std::vector<Book> _allBooks, std::vector<Book> _availableBooks, std::vector<Book> _borrowedBooks,
-        std::vector<User> _users);
-    Library(std::vector<Book> _allBooks, std::vector<Book> _availableBooks, std::vector<Book> _borrowedBooks);
+    Library(std::vector<Book> allBooks, std::vector<Book> availableBooks, std::vector<Book> borrowedBooks,
+        std::vector<User> users);
+    Library(std::vector<Book> allBooks, std::vector<Book> availableBooks, std::vector<Book> borrowedBooks);
     Library(const Library& other);
 
-    std::vector<Book> GetAllBooks() const;
-    std::vector<Book> GetAvailableBooks() const;
-    std::vector<Book> GetBorrowedBooks() const;
-    std::vector<std::string> GetTitles() const;
-    std::vector<std::vector<std::string>> GetAuthors() const;
-    std::vector<User> GetUsers() const;
+    std::vector<Book> getAllBooks() const;
+    std::vector<Book> getAvailableBooks() const;
+    std::vector<Book> getBorrowedBooks() const;
+    std::vector<std::string> getTitles() const;
+    std::vector<std::vector<std::string>> getAuthors() const;
+    std::vector<User> getUsers() const;
 
-    void SetAllBooks(std::vector<Book> _allBooks);
-    void SetAvailableBooks(std::vector<Book> _availableBooks);
-    void SetBorrowedBooks(std::vector<Book> _borrowedBooks);
-    void SetUsers(std::vector<User> _users);
+    void setAllBooks(std::vector<Book> allBooks);
+    void setAvailableBooks(std::vector<Book> availableBooks);
+    void setBorrowedBooks(std::vector<Book> borrowedBooks);
+    void setUsers(std::vector<User> users);
 
     void addBook(Book book);
     void removeBook(Book book);
@@ -41,3 +43,4 @@ public:
 
     ~Library();
 };
+#endif /* LIBRARY_HPP */

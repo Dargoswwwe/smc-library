@@ -4,19 +4,19 @@
 
 Library::Library() { }
 
-Library::Library(std::vector<Book> _allBooks, std::vector<Book> _availableBooks, std::vector<Book> _borrowedBooks,
-                 std::vector<User> _users)
-    : allBooks(_allBooks)
-    , availableBooks(_availableBooks)
-    , borrowedBooks(_borrowedBooks)
-    , users(_users)
+Library::Library(std::vector<Book> allBooks, std::vector<Book> availableBooks, std::vector<Book> borrowedBooks,
+    std::vector<User> users)
+    : allBooks(allBooks)
+    , availableBooks(availableBooks)
+    , borrowedBooks(borrowedBooks)
+    , users(users)
 {
 }
 
-Library::Library(std::vector<Book> _allBooks, std::vector<Book> _availableBooks, std::vector<Book> _borrowedBooks)
-    : allBooks(_allBooks)
-    , availableBooks(_availableBooks)
-    , borrowedBooks(_borrowedBooks)
+Library::Library(std::vector<Book> allBooks, std::vector<Book> availableBooks, std::vector<Book> borrowedBooks)
+    : allBooks(allBooks)
+    , availableBooks(availableBooks)
+    , borrowedBooks(borrowedBooks)
 {
 }
 
@@ -27,34 +27,34 @@ Library::Library(const Library& other)
     this->borrowedBooks = other.borrowedBooks;
     this->users = other.users;
 }
-std::vector<Book> Library::GetAllBooks() const { return allBooks; }
-std::vector<Book> Library::GetAvailableBooks() const { return availableBooks; }
-std::vector<Book> Library::GetBorrowedBooks() const { return borrowedBooks; }
-std::vector<std::string> Library::GetTitles() const
+std::vector<Book> Library::getAllBooks() const { return allBooks; }
+std::vector<Book> Library::getAvailableBooks() const { return availableBooks; }
+std::vector<Book> Library::getBorrowedBooks() const { return borrowedBooks; }
+std::vector<std::string> Library::getTitles() const
 {
     std::vector<std::string> titles;
     for (auto current : allBooks) {
-        titles.push_back(current.GetTitle());
+        titles.push_back(current.getTitle());
     }
     sort(titles.begin(), titles.end());
     return titles;
 }
-std::vector<std::vector<std::string>> Library::GetAuthors() const
+std::vector<std::vector<std::string>> Library::getAuthors() const
 {
     std::vector<std::vector<std::string>> authors;
     for (auto current : allBooks) {
-        authors.push_back(current.GetAuthors());
+        authors.push_back(current.getAuthors());
     }
     sort(authors.begin(), authors.end());
     return authors;
 }
 
-std::vector<User> Library::GetUsers() const { return users; }
+std::vector<User> Library::getUsers() const { return users; }
 
-void Library::SetAllBooks(std::vector<Book> _allBooks) { allBooks = _allBooks; }
-void Library::SetAvailableBooks(std::vector<Book> _availableBooks) { availableBooks = _availableBooks; }
-void Library::SetBorrowedBooks(std::vector<Book> _borrowedBooks) { borrowedBooks = _borrowedBooks; }
-void Library::SetUsers(std::vector<User> _users) { users = _users; }
+void Library::setAllBooks(std::vector<Book> allBooks) { allBooks = allBooks; }
+void Library::setAvailableBooks(std::vector<Book> availableBooks) { availableBooks = availableBooks; }
+void Library::setBorrowedBooks(std::vector<Book> borrowedBooks) { borrowedBooks = borrowedBooks; }
+void Library::setUsers(std::vector<User> users) { users = users; }
 
 void Library::addBook(Book book)
 {
@@ -66,10 +66,10 @@ void Library::removeBook(Book book) { allBooks.erase(find(allBooks.begin(), allB
 
 void Library::borrowBook(Book book)
 {
-    if (book.GetAvailability()) {
-        book.Availability();
+    if (book.getAvailability()) {
+        book.availability();
         borrowedBooks.push_back(book);
-        book.SetExemplars_available(book.GetExemplars_available() - 1);
+        book.setExemplarsAvailable(book.getExemplarsAvailable() - 1);
         availableBooks.erase(find(availableBooks.begin(), availableBooks.end(), book));
     } else {
         std::cout << "Book not available";
@@ -78,8 +78,8 @@ void Library::borrowBook(Book book)
 
 void Library::returnBook(Book book)
 {
-    if (book.GetAvailability() == false) { book.SetAvailability(true); }
-    book.SetExemplars_available(book.GetExemplars_available() + 1);
+    if (book.getAvailability() == false) { book.setAvailability(true); }
+    book.setExemplarsAvailable(book.getExemplarsAvailable() + 1);
     availableBooks.push_back(book);
     borrowedBooks.erase(find(borrowedBooks.begin(), borrowedBooks.end(), book));
 }
@@ -93,17 +93,16 @@ void Library::readBooksFromFile()
     while (getline(fin, line))
         rows++;
 
-    for(int index=0;index<rows-1;index++)
-    {
+    for (int index = 0; index < rows - 1; index++) {
         Book book;
-        book.ReadBookFromFile(index);
+        book.readBookFromFile(index);
         addBook(book);
     }
 }
 
 void sortAvailableBooks(std::vector<Book>& availableBooks)
 {
-    auto comparator = [](const Book& b1, const Book& b2) { return b1.GetTitle() < b2.GetTitle(); };
+    auto comparator = [](const Book& b1, const Book& b2) { return b1.getTitle() < b2.getTitle(); };
     std::sort(availableBooks.begin(), availableBooks.end(), comparator);
 }
 

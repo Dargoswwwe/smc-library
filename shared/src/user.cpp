@@ -1,10 +1,9 @@
 #include "user.hpp"
 #include <random>
 
-
 User::User()
 {
-    Setsalt();
+    setSalt();
     username = '\0';
     password = '\0';
     read = {};
@@ -15,9 +14,9 @@ User::User()
 
 User::User(const std::string& name, const std::string& pswrd)
 {
-    Setsalt();
+    setSalt();
     username = name;
-    password=pswrd+salt;
+    password = pswrd + salt;
     password = QCryptographicHash::hash(password.c_str(), QCryptographicHash::Sha3_256).toBase64().toStdString();
     read = {};
     borrowed = {};
@@ -28,9 +27,9 @@ User::User(const std::string& name, const std::string& pswrd)
 User::User(const std::string& name, const std::string& pswrd, const std::vector<Book>& booksRead,
     const std::vector<Book>& booksBorrowing, const std::vector<Book>& booksBorrowed, const bool& activ)
 {
-    Setsalt();
+    setSalt();
     username = name;
-    password=pswrd+salt;
+    password = pswrd + salt;
     password = QCryptographicHash::hash(password.c_str(), QCryptographicHash::Sha3_256).toBase64().toStdString();
     read = booksRead;
     borrowed = booksBorrowed;
@@ -38,7 +37,7 @@ User::User(const std::string& name, const std::string& pswrd, const std::vector<
     active = activ;
 }
 
-void User::Borrowed(const Book& book)
+void User::borrowBook(const Book& book)
 {
     if (active) {
         borrowed.push_back(book);
@@ -46,7 +45,7 @@ void User::Borrowed(const Book& book)
     }
 }
 
-void User::Returned(const Book& book)
+void User::returnBook(const Book& book)
 {
     if (active)
         if (std::find(borrowing.begin(), borrowing.end(), book) != borrowing.end()) {
@@ -55,7 +54,7 @@ void User::Returned(const Book& book)
         }
 }
 
-bool User::HasBook(const Book& book)
+bool User::hasBook(const Book& book)
 {
     if (std::find(borrowing.begin(), borrowing.end(), book) != borrowing.end()) return true;
     else return false;
@@ -64,10 +63,9 @@ bool User::HasBook(const Book& book)
 std::string User::gen_random(const int len)
 {
 
-    static const char alphanum[] =
-        "0123456789"
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        "abcdefghijklmnopqrstuvwxyz";
+    static const char alphanum[] = "0123456789"
+                                   "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                                   "abcdefghijklmnopqrstuvwxyz";
     std::string tmp_s;
     tmp_s.reserve(len);
 
@@ -83,48 +81,42 @@ std::string User::gen_random(const int len)
     return tmp_s;
 }
 
-void User::Setsalt()
+void User::setSalt() { salt = gen_random(SALT_LENGTH); }
+
+void User::setActivity(const bool& actv) { active = actv; }
+
+void User::setUsername(const std::string& name) { username = name; }
+
+void User::setPassword(const std::string& pswrd)
 {
-   salt= gen_random(8);//lenght of salt
-}
-
-void User::SetActivity(const bool& actv) { active = actv; }
-
-void User::SetUsername(const std::string& name) { username = name; }
-
-void User::SetPassword(const std::string& pswrd)
-{
-    password=pswrd+salt;
+    password = pswrd + salt;
     password = QCryptographicHash::hash(password.c_str(), QCryptographicHash::Sha3_256).toBase64().toStdString();
 }
 
-void User::SetRead(const std::vector<Book>& booksRead) { read = booksRead; }
+void User::setRead(const std::vector<Book>& booksRead) { read = booksRead; }
 
-void User::SetBorrowing(const std::vector<Book>& booksBorrowing) { borrowing = booksBorrowing; }
+void User::setBorrowing(const std::vector<Book>& booksBorrowing) { borrowing = booksBorrowing; }
 
-void User::SetBorrowed(const std::vector<Book>& booksBorrowed) { borrowed = booksBorrowed; }
+void User::setBorrowed(const std::vector<Book>& booksBorrowed) { borrowed = booksBorrowed; }
 
-std::vector<Book> User::GetRead() const { return read; }
+std::vector<Book> User::getRead() const { return read; }
 
-std::vector<Book> User::GetBorrowing() const { return borrowing; }
+std::vector<Book> User::getBorrowing() const { return borrowing; }
 
-std::vector<Book> User::GetBorrowed() const { return borrowed; }
+std::vector<Book> User::getBorrowed() const { return borrowed; }
 
-std::string User::GetUsername() const { return username; }
+std::string User::getUsername() const { return username; }
 
-std::string User::GetPassword() const { return password; }
+std::string User::getPassword() const { return password; }
 
-std::string User::GetSalt() const { return salt; }
+std::string User::getSalt() const { return salt; }
 
-bool User::CheckPassword(std::string& pswrd)
+bool User::checkPassword(std::string& pswrd)
 {
-    pswrd=pswrd+salt;
-    if(password == QCryptographicHash::hash(pswrd.c_str(), QCryptographicHash::Sha3_256).toBase64().toStdString())
-    {
+    pswrd = pswrd + salt;
+    if (password == QCryptographicHash::hash(pswrd.c_str(), QCryptographicHash::Sha3_256).toBase64().toStdString()) {
         return true;
-    }
-    else
-        return false;
+    } else return false;
 }
 
-bool User::GetActivity() const { return active; }
+bool User::getActivity() const { return active; }

@@ -1,19 +1,19 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
+#include "database_manager.hpp"
 #include "user.hpp"
-#include "database_management.hpp"
 
+#include <QJsonObject>
 #include <QObject>
 #include <QSqlDatabase>
 #include <QSqlDriver>
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QtNetwork>
-#include <QJsonObject>
 
-#include <unordered_map>
 #include <optional>
+#include <unordered_map>
 
 class Server : public QObject {
     Q_OBJECT
@@ -31,7 +31,7 @@ private slots:
 private:
     void initServer();
 
-    database_management database;
+    DatabaseManager database;
     QTcpServer* tcpServer = nullptr;
     std::unordered_map<QTcpSocket*, std::pair<std::optional<User>, QDataStream*>> connections;
 };

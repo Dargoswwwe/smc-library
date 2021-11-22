@@ -1,17 +1,16 @@
 #include "book.hpp"
 
-
-//Auxiliar functions & operators
+// Auxiliary functions & operators
 Book& Book::operator=(const Book& book)
 {
     this->title = book.title;
     this->authors = book.authors;
     this->language = book.language;
-    this->original_publication = book.original_publication;
-    this->avarage_rating = book.avarage_rating;
-    this->ratings_count = book.ratings_count;
+    this->originalPublication = book.originalPublication;
+    this->averageRating = book.averageRating;
+    this->ratingsCount = book.ratingsCount;
     this->isbn = book.isbn;
-    this->exemplars_available = book.exemplars_available;
+    this->exemplarsAvailable = book.exemplarsAvailable;
     this->content = book.content;
     this->available = book.available;
     this->url = book.url;
@@ -21,259 +20,186 @@ Book& Book::operator=(const Book& book)
 
 bool Book::operator==(const Book& book)
 {
-    if (this->authors == book.authors && this->content == book.content && this->isbn == book.isbn &&
-            this->avarage_rating == book.avarage_rating && this->language == book.language &&
-            this->original_publication == book.original_publication && this->ratings_count == book.ratings_count &&
-            this->title == book.title && this->url == book.url)
+    if (this->authors == book.authors && this->content == book.content && this->isbn == book.isbn
+        && this->averageRating == book.averageRating && this->language == book.language
+        && this->originalPublication == book.originalPublication && this->ratingsCount == book.ratingsCount
+        && this->title == book.title && this->url == book.url)
         return true;
     return false;
 }
 
-void Book::Availability()
+void Book::availability()
 {
-    if (GetExemplars_available() == 0)
-    {
-        this->available = false;
-    }
-
+    if (getExemplarsAvailable() == 0) { this->available = false; }
 }
 
-std::ostream& operator<<(std::ostream& fout, const std::vector<std::string>& authors_or_content)
+std::ostream& operator<<(std::ostream& fout, const std::vector<std::string>& authorsOrContent)
 {
-    for (uint32_t index = 0; index < authors_or_content.size(); index++)
-        fout << authors_or_content[index] << " ";
+    for (uint32_t index = 0; index < authorsOrContent.size(); index++)
+        fout << authorsOrContent[index] << " ";
     return fout;
 }
 
 std::ostream& operator<<(std::ostream& fout, const Book& book)
 {
 
-    fout
-            << book.GetTitle() << std::endl
-            << book.GetAuthors() << std::endl
-            << book.GetLanguage() << std::endl
-            << book.GetOriginal_publication() << std::endl
-            << book.GetAvarage_rating() << std::endl
-            << book.GetRatings_count() << std::endl
-            << book.GetIsbn() << std::endl
-            << book.GetExemplars_available() << std::endl
-            << book.GetContent() << std::endl
-            << book.GetAvailability() << std::endl;
+    fout << book.getTitle() << std::endl
+         << book.getAuthors() << std::endl
+         << book.getLanguage() << std::endl
+         << book.getOriginalPublication() << std::endl
+         << book.getaverageRating() << std::endl
+         << book.getRatingsCount() << std::endl
+         << book.getIsbn() << std::endl
+         << book.getExemplarsAvailable() << std::endl
+         << book.getContent() << std::endl
+         << book.getAvailability() << std::endl;
     return fout;
 }
 
-void Book::ReadBookFromFile(int index)
+void Book::readBookFromFile(int index)
 {
-    rapidcsv::Document doc("smc-library-project\\shared\\books.csv",
-                           rapidcsv::LabelParams(0, 0));
+    rapidcsv::Document doc("smc-library-project\\shared\\books.csv", rapidcsv::LabelParams(0, 0));
 
-    //Get row from index "index"
+    // get row from index "index"
     std::vector<std::string> line;
     line = doc.GetRow<std::string>(index);
 
-    //Assign to the specific attribute
+    // Assign to the specific attribute
     //
-    //Title
-    if (!line[0].empty())
-        title = line[0];
+    // Title
+    if (!line[0].empty()) title = line[0];
 
-    //Authors
-    if (!line[1].empty())
-    {
+    // Authors
+    if (!line[1].empty()) {
         std::string lineOfAuthors = line[1];
         std::regex dividers(";");
 
         std::sregex_token_iterator iterator(lineOfAuthors.begin(), lineOfAuthors.end(), dividers, -1);
         std::sregex_token_iterator end;
 
-        for (/*Empty*/; iterator != end; iterator++)
-        {
+        for (/*Empty*/; iterator != end; iterator++) {
             std::string aux = *iterator;
             authors.push_back(aux);
         }
     }
 
-    //Language
-    if (!line[2].empty())
-        language = line[2];
+    // Language
+    if (!line[2].empty()) language = line[2];
 
-    //Original publication
-    if (!line[3].empty())
-        original_publication = std::stof(line[3]);
+    // Original publication
+    if (!line[3].empty()) originalPublication = std::stof(line[3]);
 
-    //Avarage rating
-    if (!line[4].empty())
-        avarage_rating = std::stof(line[4]);
+    // Average rating
+    if (!line[4].empty()) averageRating = std::stof(line[4]);
 
-    //Ratings count
-    if (!line[5].empty())
-        ratings_count = std::stof(line[5]);
+    // Ratings count
+    if (!line[5].empty()) ratingsCount = std::stof(line[5]);
 
-    //Read isbn
-    if (!line[6].empty())
-        isbn = line[6];
+    // Read isbn
+    if (!line[6].empty()) isbn = line[6];
 
-    //Read URL
-    if (!line[7].empty())
-        url = line[7];
-
+    // Read URL
+    if (!line[7].empty()) url = line[7];
 }
 
-//Constructors
+// Constructors
 Book::Book()
 {
     title = "Title";
-    authors = {  };
+    authors = {};
     language = '\0';
-    original_publication = 0;
-    avarage_rating = 0.0;
-    ratings_count = 0;
+    originalPublication = 0;
+    averageRating = 0.0;
+    ratingsCount = 0;
     isbn = '\0';
-    exemplars_available = 3;
-    content = "A stranger has kidnapped your child. To free them you must abduct someone else's child.Your child will be released when your victim's parents kidnap another child.Df any of these things don't happen: your child will be killed. You are now part of the chain..";
+    exemplarsAvailable = 3;
+    content = "A stranger has kidnapped your child. To free them you must abduct someone else's child.Your child will "
+              "be released when your victim's parents kidnap another child.Df any of these things don't happen: your "
+              "child will be killed. You are now part of the chain..";
     available = true;
     url = "...";
 
-    assert(exemplars_available >= 0 && exemplars_available <= 3);
-
+    assert(exemplarsAvailable >= 0 && exemplarsAvailable <= 3);
 }
 
-Book::Book(const std::string& title, const std::vector<std::string>& authors,
-           const std::string& language, const uint32_t& original_publication, const float& avarage_rating,
-           uint32_t& ratings_count, const std::string& isbn, const uint32_t& exemplars_available,
-           const std::string& content, const bool& available, const std::string& url)
-    : title{ title }, authors{ authors }, language{ language }, original_publication{ original_publication },
-      avarage_rating{ avarage_rating }, ratings_count{ ratings_count }, isbn{ isbn },
-      exemplars_available{ exemplars_available }, content{ content }, available{ available }, url{ url }
+Book::Book(const std::string& title, const std::vector<std::string>& authors, const std::string& language,
+    const uint32_t& originalPublication, const float& averageRating, uint32_t& ratingsCount, const std::string& isbn,
+    const uint32_t& exemplarsAvailable, const std::string& content, const bool& available, const std::string& url)
+    : title { title }
+    , authors { authors }
+    , language { language }
+    , originalPublication { originalPublication }
+    , averageRating { averageRating }
+    , ratingsCount { ratingsCount }
+    , isbn { isbn }
+    , exemplarsAvailable { exemplarsAvailable }
+    , content { content }
+    , available { available }
+    , url { url }
 {
-    assert(exemplars_available >= 0 && exemplars_available <= 3);
+    assert(exemplarsAvailable >= 0 && exemplarsAvailable <= 3);
 }
 
 Book::Book(const Book& book)
-    :
-      title{ book.title }, authors{ book.authors }, language{ book.language }, original_publication{ book.original_publication },
-      avarage_rating{ book.avarage_rating }, ratings_count{ book.ratings_count }, isbn{ book.isbn },
-      exemplars_available{ book.exemplars_available }, content{ book.content }, available{ book.available }, url{ book.url }
-{}
-
-
-
-
-
-//Getters and setters
-
-std::string Book::GetTitle()const
+    : title { book.title }
+    , authors { book.authors }
+    , language { book.language }
+    , originalPublication { book.originalPublication }
+    , averageRating { book.averageRating }
+    , ratingsCount { book.ratingsCount }
+    , isbn { book.isbn }
+    , exemplarsAvailable { book.exemplarsAvailable }
+    , content { book.content }
+    , available { book.available }
+    , url { book.url }
 {
-    return title;
 }
 
-std::vector<std::string> Book::GetAuthors() const
+// getters and setters
+
+std::string Book::getTitle() const { return title; }
+
+std::vector<std::string> Book::getAuthors() const { return authors; }
+
+std::string Book::getLanguage() const { return language; }
+
+uint32_t Book::getOriginalPublication() const { return originalPublication; }
+
+float Book::getaverageRating() const { return averageRating; }
+
+uint32_t Book::getRatingsCount() const { return ratingsCount; }
+
+std::string Book::getIsbn() const { return isbn; }
+
+uint32_t Book::getExemplarsAvailable() const { return exemplarsAvailable; }
+
+std::string Book::getContent() const { return content; }
+
+bool Book::getAvailability() const { return available; }
+
+std::string Book::getUrl() const { return url; }
+
+void Book::setTitle(const std::string& title) { this->title = title; }
+
+void Book::setAuthors(const std::vector<std::string>& authors) { this->authors = authors; }
+
+void Book::setLanguage(const std::string& language) { this->language = language; }
+
+void Book::setOriginalPublication(const uint32_t& originalPublication)
 {
-    return authors;
+    this->originalPublication = originalPublication;
 }
 
-std::string Book::GetLanguage() const
-{
-    return language;
-}
+void Book::setAverageRating(const float& averageRating) { this->averageRating = averageRating; }
 
-uint32_t Book::GetOriginal_publication() const
-{
-    return original_publication;
-}
+void Book::setRatingsCount(const uint32_t& ratingsCount) { this->ratingsCount = ratingsCount; }
 
-float Book::GetAvarage_rating() const
-{
-    return avarage_rating;
-}
+void Book::setIsbn(const std::string& isbn) { this->isbn = isbn; }
 
-uint32_t Book::GetRatings_count() const
-{
-    return ratings_count;
-}
+void Book::setExemplarsAvailable(const uint32_t& exemplarsAvailable) { this->exemplarsAvailable = exemplarsAvailable; }
 
-std::string Book::GetIsbn()const
-{
-    return isbn;
-}
+void Book::setContent(std::string& content) { this->content = content; }
 
-uint32_t Book::GetExemplars_available()const
-{
-    return exemplars_available;
-}
+void Book::setAvailability(const bool& available) { this->available = available; }
 
-std::string Book::GetContent()const
-{
-    return content;
-}
-
-bool Book::GetAvailability() const
-{
-    return available;
-
-}
-
-std::string Book::GetURL() const
-{
-    return url;
-}
-
-
-
-
-void Book::SetTitle(const std::string& title)
-{
-    this->title = title;
-}
-
-void Book::SetAuthors(const std::vector<std::string>& authors)
-{
-    this->authors = authors;
-}
-
-void Book::SetLanguage(const std::string& language)
-{
-    this->language = language;
-}
-
-void Book::SetOriginal_publication(const uint32_t& original_publication)
-{
-    this->original_publication = original_publication;
-}
-
-void Book::SetAvarage_rating(const float& avarage_rating)
-{
-    this->avarage_rating = avarage_rating;
-}
-
-void Book::SetRating_count(const uint32_t& rating_count)
-{
-    this->ratings_count = rating_count;
-}
-
-void Book::SetIsbn(const std::string& isbn)
-{
-    this->isbn = isbn;
-}
-
-void Book::SetExemplars_available(const uint32_t& exemplars_available)
-{
-    this->exemplars_available = exemplars_available;
-}
-
-void Book::SetContent(std::string& content)
-{
-    this->content = content;
-}
-
-void Book::SetAvailability(const bool& available)
-{
-    this->available = available;
-}
-
-void Book::SetURL(const std::string& url)
-{
-    this->url = url;
-}
-
-
+void Book::setUrl(const std::string& url) { this->url = url; }

@@ -1,7 +1,6 @@
-#include "database_management.hpp"
+#include "database_manager.hpp"
 
-
-database_management::database_management()
+DatabaseManager::DatabaseManager()
 {
     database = QSqlDatabase::addDatabase("QSQLITE");
 
@@ -22,7 +21,7 @@ database_management::database_management()
     if (!database.open()) {
         qWarning() << "Error creating database file. Using in-memory database.\n" << database.lastError();
         database.setDatabaseName(":memory:");
-        databaseDir="";
+        databaseDir = "";
     }
 
     // Check if data base is empty and create book table into it
@@ -48,7 +47,7 @@ database_management::database_management()
                    "password varchar(50))");
     }
 
-    //Create UsersBooks table
+    // Create UsersBooks table
     if (!database.contains(QLatin1String("UsersBooks"))) {
         QSqlQuery query;
         query.exec("create table UsersBooks "
@@ -59,19 +58,19 @@ database_management::database_management()
     }
 }
 
-void database_management:: deleteUsersTable()
+void DatabaseManager::deleteUsersTable()
 {
     QSqlQuery query;
     query.exec("Drop table Users ");
 }
 
-void database_management:: deleteBookTable()
+void DatabaseManager::deleteBookTable()
 {
     QSqlQuery query;
     query.exec("Drop table Books ");
 }
 
-void database_management:: deleteBook(QString title)
+void DatabaseManager::deleteBook(QString title)
 {
     QSqlQuery query;
     query.prepare("DELETE FROM Books WHERE title =  (:title)");
@@ -80,7 +79,7 @@ void database_management:: deleteBook(QString title)
     if (!query.exec()) qDebug() << "Error deleting a book." << query.lastError().text();
 }
 
-void database_management:: deleteUser(QString username)
+void DatabaseManager::deleteUser(QString username)
 {
     QSqlQuery query;
     query.prepare("DELETE FROM Users WHERE username =  (:username)");
@@ -89,8 +88,8 @@ void database_management:: deleteUser(QString username)
     if (!query.exec()) qDebug() << "Error deleting a user." << query.lastError().text();
 }
 
-void database_management:: addValuesIntoBookTable(int id, QString title, QString authors, QString language, int original_publication_year,
-                                                  float avarage_rating, int ratings_count, QString isbn, QString image_url)
+void DatabaseManager::addValuesIntoBookTable(int id, QString title, QString authors, QString language,
+    int original_publication_year, float avarage_rating, int ratings_count, QString isbn, QString image_url)
 {
     QSqlQuery query;
 
@@ -119,7 +118,7 @@ void database_management:: addValuesIntoBookTable(int id, QString title, QString
     if (!query.exec()) qDebug() << "Error adding value.";
 }
 
-void database_management:: addValuesIntoUsersTable( QString username, QString password)
+void DatabaseManager::addValuesIntoUsersTable(QString username, QString password)
 {
 
     QSqlQuery query;
@@ -136,7 +135,7 @@ void database_management:: addValuesIntoUsersTable( QString username, QString pa
     if (!query.exec()) qDebug() << "Error adding user.";
 }
 
-void database_management:: changeUserPassword(QString username, QString password)
+void DatabaseManager::changeUserPassword(QString username, QString password)
 {
     QSqlQuery query;
 
@@ -147,7 +146,7 @@ void database_management:: changeUserPassword(QString username, QString password
     query.exec();
 }
 
-void database_management:: changeUsername(QString username, QString password)
+void DatabaseManager::changeUsername(QString username, QString password)
 {
     QSqlQuery query;
 
@@ -158,19 +157,17 @@ void database_management:: changeUsername(QString username, QString password)
     query.exec();
 }
 
-void database_management:: insertBooksIntoDataBase()
+void DatabaseManager::insertBooksIntoDataBase()
 {
-    QFile inputFile((databaseDir+"books.csv").c_str());
+    QFile inputFile((databaseDir + "books.csv").c_str());
     inputFile.open(QIODevice::ReadOnly);
-    if (!inputFile.isOpen())
-        qDebug() << "Error";
+    if (!inputFile.isOpen()) qDebug() << "Error";
 
     QTextStream stream(&inputFile);
     for (QString line = stream.readLine(); !line.isNull(); line = stream.readLine()) {
 
-        QStringList word=line.split(',');
-        addValuesIntoBookTable(word[0].toInt(), word.at(1), word.at(2), word.at(3),word.at(4).toInt(),
-                word.at(5).toFloat(), word.at(6).toInt(), word.at(7), word.at(8));
-
+        QStringList word = line.split(',');
+        addValuesIntoBookTable(word[0].toInt(), word.at(1), word.at(2), word.at(3), word.at(4).toInt(),
+            word.at(5).toFloat(), word.at(6).toInt(), word.at(7), word.at(8));
     };
 }

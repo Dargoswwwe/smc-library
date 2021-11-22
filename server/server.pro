@@ -10,12 +10,12 @@ CONFIG += c++latest
 
 # Input
 SOURCES += \
-    src/database_management.cpp \
+    src/database_manager.cpp \
     src/main.cpp \
     src/server.cpp
 
 HEADERS += \
-    src/database_management.hpp \
+    src/database_manager.hpp \
     src/server.hpp
 
 # Directories
