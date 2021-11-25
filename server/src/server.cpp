@@ -70,12 +70,18 @@ void Server::receiveData()
     QString messageString;
     *inStream >> messageString;
 
-    json message = json::parse(messageString.toStdString());
+    try {
+        json message = json::parse(messageString.toStdString());
 
-    qDebug() << message.dump().c_str();
+        qDebug() << message.dump().c_str();
 
-    if (message["type"] == "register") {
-        registerUser(message["data"]["username"], message["data"]["password"], clientSocket);
+        if (message["type"] == "register") {
+            registerUser(message["data"]["username"], message["data"]["password"], clientSocket);
+        }
+    } catch (const nlohmann::detail::parse_error& e) {
+        qWarning() << e.what();
+    } catch (const nlohmann::detail::type_error& e) {
+        qWarning() << e.what();
     }
 
     if (!inStream->commitTransaction()) return;
@@ -97,7 +103,7 @@ void Server::registerUser(const std::string& name, const std::string& password, 
     // std::optional<User> oldUser =database.getUser(name);
     // if(oldUser.has_value()){
     //    sendData(clientSocket,
-    //        R"({"type": "register", "response": "success"})"_json);
+    //        R"({"type": "register", "response": "error"})"_json);
     //     }
     //   else{
 

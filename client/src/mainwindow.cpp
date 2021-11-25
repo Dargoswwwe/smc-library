@@ -13,7 +13,8 @@ MainWindow::MainWindow(QWidget* parent)
     QObject::connect(ui->lineLoginPassword, &QLineEdit::returnPressed, ui->buttonLogin, &QPushButton::click);
     QObject::connect(ui->lineRegisterUsername, &QLineEdit::returnPressed, ui->buttonRegister, &QPushButton::click);
     QObject::connect(ui->lineRegisterPassword, &QLineEdit::returnPressed, ui->buttonRegister, &QPushButton::click);
-    QObject::connect(ui->lineRegisterConfirmPassword, &QLineEdit::returnPressed, ui->buttonRegister, &QPushButton::click);
+    QObject::connect(
+        ui->lineRegisterConfirmPassword, &QLineEdit::returnPressed, ui->buttonRegister, &QPushButton::click);
 
     QObject::connect(ui->buttonRegisterInstead, &QPushButton::clicked, this, [this] { switchPage(1); });
     QObject::connect(ui->buttonRegister, &QPushButton::clicked, this, [this] {
@@ -79,10 +80,16 @@ void MainWindow::receiveData()
 
     qDebug() << message.dump().c_str();
 
-    if (message["type"] == "register") {
-        if (message["data"]["response"] == "error") { ui->lineRegisterUsername->setText("username taken"); }
+    try {
+        if (message["type"] == "register") {
+            if (message["data"]["response"] == "error") { ui->lineRegisterUsername->setText("username taken"); }
 
-        if (message["data"]["response"] == "success") { switchPage(2); }
+            if (message["data"]["response"] == "success") { switchPage(2); }
+        }
+    } catch (const nlohmann::detail::parse_error& e) {
+        qWarning() << e.what();
+    } catch (const nlohmann::detail::type_error& e) {
+        qWarning() << e.what();
     }
     if (!inStream.commitTransaction()) return;
 }
