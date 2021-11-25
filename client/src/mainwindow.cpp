@@ -1,4 +1,5 @@
 #include "mainwindow.hpp"
+#include "bookitemwidget.hpp"
 #include "ui_mainwindow.h"
 #include "user.hpp"
 
@@ -48,6 +49,13 @@ MainWindow::MainWindow(QWidget* parent)
 
     inStream.setDevice(serverSocket);
     inStream.setVersion(QDataStream::Qt_5_15);
+
+    for (int i = 0; i < 10; i++) {
+        BookItemWidget* bookItem = new BookItemWidget(ui->scrollAreaWidgetContents);
+        ui->scrollVerticalLayout->addWidget(bookItem);
+    }
+
+    ui->scrollVerticalLayout->addStretch();
 
     connectToServer();
 }
