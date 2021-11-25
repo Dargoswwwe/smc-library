@@ -12,13 +12,16 @@ CONFIG += c++17
 # Input
 SOURCES += \
     src/main.cpp \
-    src/mainwindow.cpp
+    src/mainwindow.cpp \
+    src/bookitemwidget.cpp
 
 HEADERS += \
-    src/mainwindow.hpp
+    src/mainwindow.hpp \
+    src/bookitemwidget.hpp
 
 FORMS += \
-    src/mainwindow.ui
+    src/mainwindow.ui \
+    src/bookitemwidget.ui
 
 # Directories
 DESTDIR=bin                 #Target file directory
