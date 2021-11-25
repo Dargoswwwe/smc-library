@@ -2,14 +2,6 @@
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>444</width>
-    <height>342</height>
-   </rect>
-  </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
@@ -24,7 +16,7 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="pageLogin">
        <layout class="QGridLayout" name="gridLayout">
@@ -77,6 +69,12 @@
                <property name="text">
                 <string>Login</string>
                </property>
+               <property name="autoDefault">
+                <bool>true</bool>
+               </property>
+               <property name="default">
+                <bool>true</bool>
+               </property>
               </widget>
              </item>
              <item row="0" column="0" colspan="2">
@@ -99,7 +97,7 @@
               </widget>
              </item>
              <item row="5" column="0" colspan="2">
-              <widget class="QPushButton" name="guestLoginButton">
+              <widget class="QPushButton" name="buttonLoginGuest">
                <property name="text">
                 <string>Continue as guest</string>
                </property>
@@ -192,6 +190,12 @@
                <property name="text">
                 <string>Register</string>
                </property>
+               <property name="autoDefault">
+                <bool>true</bool>
+               </property>
+               <property name="default">
+                <bool>true</bool>
+               </property>
               </widget>
              </item>
              <item row="5" column="0" colspan="2">
@@ -202,7 +206,7 @@
               </widget>
              </item>
              <item row="6" column="0" colspan="2">
-              <widget class="QPushButton" name="guestRegisterButton">
+              <widget class="QPushButton" name="buttonRegisterGuest">
                <property name="text">
                 <string>Continue as guest</string>
                </property>
@@ -220,16 +224,7 @@
     </item>
    </layout>
   </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>444</width>
-     <height>25</height>
-    </rect>
-   </property>
-  </widget>
+  <widget class="QMenuBar" name="menubar"/>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>

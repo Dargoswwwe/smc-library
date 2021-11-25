@@ -115,7 +115,7 @@ void DatabaseManager::addValuesIntoBookTable(int id, QString title, QString auth
     query.addBindValue(isbn);
     query.addBindValue(image_url);
 
-    if (!query.exec()) qDebug() << "Error adding value.";
+    if (!query.exec()) qDebug() << "Error adding value: " << query.lastError();
 }
 
 void DatabaseManager::addValuesIntoUsersTable(QString username, QString password)

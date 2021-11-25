@@ -72,6 +72,8 @@ void Server::receiveData()
 
     json message = json::parse(messageString.toStdString());
 
+    qDebug() << message.dump().c_str();
+
     if (message["type"] == "register") {
         registerUser(message["data"]["username"], message["data"]["password"], clientSocket);
     }

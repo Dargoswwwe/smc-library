@@ -9,6 +9,12 @@ MainWindow::MainWindow(QWidget* parent)
 {
     ui->setupUi(this);
 
+    QObject::connect(ui->lineLoginUsername, &QLineEdit::returnPressed, ui->buttonLogin, &QPushButton::click);
+    QObject::connect(ui->lineLoginPassword, &QLineEdit::returnPressed, ui->buttonLogin, &QPushButton::click);
+    QObject::connect(ui->lineRegisterUsername, &QLineEdit::returnPressed, ui->buttonRegister, &QPushButton::click);
+    QObject::connect(ui->lineRegisterPassword, &QLineEdit::returnPressed, ui->buttonRegister, &QPushButton::click);
+    QObject::connect(ui->lineRegisterConfirmPassword, &QLineEdit::returnPressed, ui->buttonRegister, &QPushButton::click);
+
     QObject::connect(ui->buttonRegisterInstead, &QPushButton::clicked, this, [this] { switchPage(1); });
     QObject::connect(ui->buttonRegister, &QPushButton::clicked, this, [this] {
         User newUser(ui->lineRegisterUsername->text().toStdString(), ui->lineRegisterPassword->text().toStdString());
@@ -28,13 +34,13 @@ MainWindow::MainWindow(QWidget* parent)
         sendData(serverSocket, message);
     });
 
-    QObject::connect(ui->guestRegisterButton, &QPushButton::clicked, this, [this] { switchPage(2); });
+    QObject::connect(ui->buttonRegisterGuest, &QPushButton::clicked, this, [this] { switchPage(2); });
 
     QObject::connect(ui->buttonLoginInstead, &QPushButton::clicked, this, [this] { switchPage(0); });
     QObject::connect(
         ui->buttonLogin, &QPushButton::clicked, this, [this] { sendData(serverSocket, R"({"hello": "test"})"_json); });
 
-    QObject::connect(ui->guestLoginButton, &QPushButton::clicked, this, [this] { switchPage(2); });
+    QObject::connect(ui->buttonLoginGuest, &QPushButton::clicked, this, [this] { switchPage(2); });
 
     QObject::connect(serverSocket, &QTcpSocket::connected, this, &MainWindow::connected);
     QObject::connect(serverSocket, &QIODevice::readyRead, this, &MainWindow::receiveData);
@@ -53,7 +59,10 @@ MainWindow::~MainWindow()
 
 void MainWindow::switchPage(int pageIndex) { ui->stackedWidget->setCurrentIndex(pageIndex); }
 
-void MainWindow::connectToServer(const QHostAddress& address, qint16 port) { serverSocket->connectToHost(address, port); }
+void MainWindow::connectToServer(const QHostAddress& address, qint16 port)
+{
+    serverSocket->connectToHost(address, port);
+}
 
 void MainWindow::connected()
 {
