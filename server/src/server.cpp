@@ -74,7 +74,7 @@ void Server::receiveData()
 
     if(data["messageType"]=="register")
     {
-       registerUser(data["data"]["username"],data["data"]["password"]);
+       registerUser(data["data"]["username"],data["data"]["password"],clientSocket);
     }
     if (!inStream->commitTransaction()) return;
 }
@@ -93,9 +93,35 @@ void Server::loginUser()
 
 }
 
-void Server::registerUser(const std::string& name,const std::string& password)
+void Server::registerUser(const std::string& name,const std::string& password,QTcpSocket* clientSocket)
 {
-     //database.addValuesIntoUsersTable(name.c_str(), password.c_str());
+     //std::optional<User> oldUser =database.getUser(name);
+     //if(oldUser.has_value()){
+
+//    sendData(clientSocket,
+//        {
+
+//            {
+//                 {"messageType", "register"},
+//                 {"response", "error"}
+//            }
+
+//        });
+//     }
+//   else{
+
+        sendData(clientSocket,
+            {
+
+                {
+                     {"messageType", "register"},
+                     {"response", "success"}
+                }
+
+            });
+
+     database.addValuesIntoUsersTable(name.c_str(), password.c_str());
+ //   }
 }
 
 

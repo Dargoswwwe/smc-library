@@ -66,11 +66,19 @@ void MainWindow::connected()
 void MainWindow::receiveData()
 {
     inStream.startTransaction();
+    QString message;
+    inStream >> message;
+    json data=json::parse(message);
 
-    QJsonObject data;
-    inStream >> data;
+    if(data["message"]["response"]=="error")
+    {
+        ui->lineRegisterUsername->setText("username taken");
+    }
 
-    qDebug() << data;
+    if(data["message"]["response"]=="success")
+    {
+        switchPage(2);
+    }
 
     if (!inStream.commitTransaction()) return;
 }

@@ -32,7 +32,7 @@ private slots:
 private:
     void initServer();
     void loginUser();
-    void registerUser(const std::string& name,const std::string& password);
+    void registerUser(const std::string& name,const std::string& password,QTcpSocket* clientSocket);
     DatabaseManager database;
     QTcpServer* tcpServer = nullptr;
     std::unordered_map<QTcpSocket*, std::pair<std::optional<User>, QDataStream*>> connections;
