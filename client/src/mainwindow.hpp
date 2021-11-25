@@ -2,11 +2,12 @@
 #define MAINWINDOW_HPP
 #define JSON_STD_FILESYSTEM
 
+#include "json.hpp"
+
 #include <QMainWindow>
 #include <QtNetwork>
-#include <json.hpp>
 
-using namespace nlohmann;
+using nlohmann::json;
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -30,7 +31,7 @@ public slots:
 private:
     void connectToServer(const QHostAddress& address = QHostAddress::LocalHost, qint16 port = 4200);
     Ui::MainWindow* ui;
-    QTcpSocket* tcpSocket;
+    QTcpSocket* serverSocket;
     QDataStream inStream;
 };
 #endif // MAINWINDOW_HPP

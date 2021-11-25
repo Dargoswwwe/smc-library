@@ -3,8 +3,8 @@
 
 #include "database_manager.hpp"
 #include "user.hpp"
+#include "json.hpp"
 
-#include <QJsonObject>
 #include <QObject>
 #include <QSqlDatabase>
 #include <QSqlDriver>
@@ -25,7 +25,7 @@ public:
 
 private slots:
     void newConnection();
-    void sendData(QTcpSocket* clientSocket, const QJsonObject& data);
+    void sendData(QTcpSocket* clientSocket, const nlohmann::json& data);
     void receiveData();
     void disconnect();
 

@@ -2325,6 +2325,66 @@ using is_detected_convertible =
     #define JSON_HAS_CPP_11
 #endif
 
+#if !defined(JSON_HAS_FILESYSTEM) && !defined(JSON_HAS_EXPERIMENTAL_FILESYSTEM)
+    #ifdef JSON_HAS_CPP_17
+        #if defined(__cpp_lib_filesystem)
+            #define JSON_HAS_FILESYSTEM 1
+        #elif defined(__cpp_lib_experimental_filesystem)
+            #define JSON_HAS_EXPERIMENTAL_FILESYSTEM 1
+        #elif !defined(__has_include)
+            #define JSON_HAS_EXPERIMENTAL_FILESYSTEM 1
+        #elif __has_include(<filesystem>)
+            #define JSON_HAS_FILESYSTEM 1
+        #elif __has_include(<experimental/filesystem>)
+            #define JSON_HAS_EXPERIMENTAL_FILESYSTEM 1
+        #endif
+
+        // std::filesystem does not work on MinGW GCC 8: https://sourceforge.net/p/mingw-w64/bugs/737/
+        #if defined(__MINGW32__) && defined(__GNUC__) && __GNUC__ == 8
+            #undef JSON_HAS_FILESYSTEM
+            #undef JSON_HAS_EXPERIMENTAL_FILESYSTEM
+        #endif
+
+        // no filesystem support before GCC 8: https://en.cppreference.com/w/cpp/compiler_support
+        #if defined(__GNUC__) && !defined(__clang__) && __GNUC__ < 8
+            #undef JSON_HAS_FILESYSTEM
+            #undef JSON_HAS_EXPERIMENTAL_FILESYSTEM
+        #endif
+
+        // no filesystem support before Clang 7: https://en.cppreference.com/w/cpp/compiler_support
+        #if defined(__clang_major__) && __clang_major__ < 7
+            #undef JSON_HAS_FILESYSTEM
+            #undef JSON_HAS_EXPERIMENTAL_FILESYSTEM
+        #endif
+
+        // no filesystem support before MSVC 19.14: https://en.cppreference.com/w/cpp/compiler_support
+        #if defined(_MSC_VER) && _MSC_VER < 1940
+            #undef JSON_HAS_FILESYSTEM
+            #undef JSON_HAS_EXPERIMENTAL_FILESYSTEM
+        #endif
+
+        // no filesystem support before iOS 13
+        #if defined(__IPHONE_OS_VERSION_MIN_REQUIRED) && __IPHONE_OS_VERSION_MIN_REQUIRED < 130000
+            #undef JSON_HAS_FILESYSTEM
+            #undef JSON_HAS_EXPERIMENTAL_FILESYSTEM
+        #endif
+
+        // no filesystem support before macOS Catalina
+        #if defined(__MAC_OS_X_VERSION_MIN_REQUIRED) && __MAC_OS_X_VERSION_MIN_REQUIRED < 101500
+            #undef JSON_HAS_FILESYSTEM
+            #undef JSON_HAS_EXPERIMENTAL_FILESYSTEM
+        #endif
+    #endif
+#endif
+
+#ifndef JSON_HAS_EXPERIMENTAL_FILESYSTEM
+    #define JSON_HAS_EXPERIMENTAL_FILESYSTEM 0
+#endif
+
+#ifndef JSON_HAS_FILESYSTEM
+    #define JSON_HAS_FILESYSTEM 0
+#endif
+
 // disable documentation warnings on clang
 #if defined(__clang__)
     #pragma clang diagnostic push
@@ -3298,7 +3358,7 @@ struct static_const
 };
 
 template<typename T>
-constexpr T static_const<T>::value;
+constexpr T static_const<T>::value; // NOLINT(readability-redundant-declaration)
 
 }  // namespace detail
 }  // namespace nlohmann
@@ -3950,8 +4010,18 @@ T conditional_static_cast(U value)
 // #include <nlohmann/detail/value_t.hpp>
 
 
-#ifdef JSON_HAS_CPP_17
-    #include <filesystem>
+#if JSON_HAS_EXPERIMENTAL_FILESYSTEM
+#include <experimental/filesystem>
+namespace nlohmann::detail
+{
+namespace std_fs = std::experimental::filesystem;
+} // namespace nlohmann::detail
+#elif JSON_HAS_FILESYSTEM
+#include <filesystem>
+namespace nlohmann::detail
+{
+namespace std_fs = std::filesystem;
+} // namespace nlohmann::detail
 #endif
 
 namespace nlohmann
@@ -4379,9 +4449,9 @@ void from_json(const BasicJsonType& j, std::unordered_map<Key, Value, Hash, KeyE
     }
 }
 
-#ifdef JSON_HAS_CPP_17
+#if JSON_HAS_FILESYSTEM || JSON_HAS_EXPERIMENTAL_FILESYSTEM
 template<typename BasicJsonType>
-void from_json(const BasicJsonType& j, std::filesystem::path& p)
+void from_json(const BasicJsonType& j, std_fs::path& p)
 {
     if (JSON_HEDLEY_UNLIKELY(!j.is_string()))
     {
@@ -4626,8 +4696,18 @@ class tuple_element<N, ::nlohmann::detail::iteration_proxy_value<IteratorType >>
 // #include <nlohmann/detail/value_t.hpp>
 
 
-#ifdef JSON_HAS_CPP_17
-    #include <filesystem>
+#if JSON_HAS_EXPERIMENTAL_FILESYSTEM
+#include <experimental/filesystem>
+namespace nlohmann::detail
+{
+namespace std_fs = std::experimental::filesystem;
+} // namespace nlohmann::detail
+#elif JSON_HAS_FILESYSTEM
+#include <filesystem>
+namespace nlohmann::detail
+{
+namespace std_fs = std::filesystem;
+} // namespace nlohmann::detail
 #endif
 
 namespace nlohmann
@@ -5002,9 +5082,9 @@ void to_json(BasicJsonType& j, const T& t)
     to_json_tuple_impl(j, t, make_index_sequence<std::tuple_size<T>::value> {});
 }
 
-#ifdef JSON_HAS_CPP_17
+#if JSON_HAS_FILESYSTEM || JSON_HAS_EXPERIMENTAL_FILESYSTEM
 template<typename BasicJsonType>
-void to_json(BasicJsonType& j, const std::filesystem::path& p)
+void to_json(BasicJsonType& j, const std_fs::path& p)
 {
     j = p.string();
 }
@@ -26588,6 +26668,8 @@ inline nlohmann::json::json_pointer operator "" _json_pointer(const char* s, std
 #undef JSON_HAS_CPP_14
 #undef JSON_HAS_CPP_17
 #undef JSON_HAS_CPP_20
+#undef JSON_HAS_FILESYSTEM
+#undef JSON_HAS_EXPERIMENTAL_FILESYSTEM
 #undef NLOHMANN_BASIC_JSON_TPL_DECLARATION
 #undef NLOHMANN_BASIC_JSON_TPL
 #undef JSON_EXPLICIT

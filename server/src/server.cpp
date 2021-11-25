@@ -1,6 +1,7 @@
 #include "server.hpp"
 #include "json.hpp"
-using namespace nlohmann;
+
+using nlohmann::json;
 
 Server::Server(QObject* parent)
 {
@@ -43,39 +44,38 @@ void Server::newConnection()
     qDebug() << "New client connected: " << clientSocket->peerAddress().toString() << ":" << clientSocket->peerPort();
     qDebug() << "Connections: " << connections.size();
 
-    QJsonObject json { { "header", "testMessage" }, { "messge", "hello, client" } };
+    json json = R"({ "type" : "testMessage", "data" : "hello, client" })"_json;
+
     sendData(clientSocket, json);
 
     QObject::connect(clientSocket, &QIODevice::readyRead, this, &Server::receiveData);
 }
 
-void Server::sendData(QTcpSocket* clientSocket, const QJsonObject& data)
+void Server::sendData(QTcpSocket* clientSocket, const json& data)
 {
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_15);
-    out << data;
+    out << QString::fromStdString(data.dump());
     clientSocket->write(block);
 }
 
 void Server::receiveData()
 {
-
     QTcpSocket* clientSocket = static_cast<QTcpSocket*>(sender());
 
     QDataStream* inStream = connections[clientSocket].second;
 
     inStream->startTransaction();
-    json data;
-    QString message;
-    *inStream >> message;
+    QString messageString;
+    *inStream >> messageString;
 
-    data=json::parse(message);
+    json message = json::parse(messageString.toStdString());
 
-    if(data["messageType"]=="register")
-    {
-       registerUser(data["data"]["username"],data["data"]["password"],clientSocket);
+    if (message["type"] == "register") {
+        registerUser(message["data"]["username"], message["data"]["password"], clientSocket);
     }
+
     if (!inStream->commitTransaction()) return;
 }
 
@@ -88,40 +88,19 @@ void Server::disconnect()
     qDebug() << "Connections: " << connections.size();
 }
 
-void Server::loginUser()
+void Server::loginUser() { }
+
+void Server::registerUser(const std::string& name, const std::string& password, QTcpSocket* clientSocket)
 {
+    // std::optional<User> oldUser =database.getUser(name);
+    // if(oldUser.has_value()){
+    //    sendData(clientSocket,
+    //        R"({"type": "register", "response": "success"})"_json);
+    //     }
+    //   else{
 
+    sendData(clientSocket, R"({"type": "register", "response": "success"})"_json);
+
+    database.addValuesIntoUsersTable(name.c_str(), password.c_str());
+    //   }
 }
-
-void Server::registerUser(const std::string& name,const std::string& password,QTcpSocket* clientSocket)
-{
-     //std::optional<User> oldUser =database.getUser(name);
-     //if(oldUser.has_value()){
-
-//    sendData(clientSocket,
-//        {
-
-//            {
-//                 {"messageType", "register"},
-//                 {"response", "error"}
-//            }
-
-//        });
-//     }
-//   else{
-
-        sendData(clientSocket,
-            {
-
-                {
-                     {"messageType", "register"},
-                     {"response", "success"}
-                }
-
-            });
-
-     database.addValuesIntoUsersTable(name.c_str(), password.c_str());
- //   }
-}
-
-
