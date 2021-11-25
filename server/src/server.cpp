@@ -93,4 +93,9 @@ void Server::loginUser()
 
 }
 
+void Server::registerUser(const std::string& name,const std::string& password)
+{
+     //database.addValuesIntoUsersTable(name.c_str(), password.c_str());
+}
+
 

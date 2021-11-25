@@ -29,10 +29,15 @@ MainWindow::MainWindow(QWidget* parent)
             });
     });
 
+    QObject::connect(ui->guestRegisterButton, &QPushButton::clicked, this, [this] { switchPage(2); });
+
     QObject::connect(ui->buttonLoginInstead, &QPushButton::clicked, this, [this] { switchPage(0); });
     QObject::connect(ui->buttonLogin, &QPushButton::clicked, this, [this] {
         sendData(tcpSocket, { { "hello", "test" } });
     });
+
+    QObject::connect(ui->guestLoginButton, &QPushButton::clicked, this, [this] { switchPage(2); });
+
 
     QObject::connect(tcpSocket, &QTcpSocket::connected, this, &MainWindow::connected);
     QObject::connect(tcpSocket, &QIODevice::readyRead, this, &MainWindow::receiveData);
@@ -70,11 +75,11 @@ void MainWindow::receiveData()
     if (!inStream.commitTransaction()) return;
 }
 
-void MainWindow::sendData(QTcpSocket* serverSocket, const QJsonObject& data)
+void MainWindow::sendData(QTcpSocket* serverSocket, const json& data)
 {
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_15);
-    out << data;
+    out << data.dump().c_str();
     serverSocket->write(block);
 }
