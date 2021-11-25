@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>436</width>
+    <width>444</width>
     <height>342</height>
    </rect>
   </property>
@@ -24,7 +24,7 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="pageLogin">
        <layout class="QGridLayout" name="gridLayout">
@@ -211,8 +211,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>436</width>
-     <height>26</height>
+     <width>444</width>
+     <height>25</height>
     </rect>
    </property>
   </widget>

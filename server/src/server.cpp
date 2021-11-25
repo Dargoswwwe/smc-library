@@ -1,4 +1,6 @@
 #include "server.hpp"
+#include "json.hpp"
+using namespace nlohmann;
 
 Server::Server(QObject* parent)
 {
@@ -64,13 +66,16 @@ void Server::receiveData()
     QDataStream* inStream = connections[clientSocket].second;
 
     inStream->startTransaction();
-    QJsonObject data;
-    *inStream >> data;
+    json data;
+    QString message;
+    *inStream >> message;
 
-    qDebug() << data;
+    data=json::parse(message);
 
-    database.addValuesIntoUsersTable(data["username"].toString(), data["password"].toString());
-
+    if(data["messageType"]=="register")
+    {
+       registerUser(data["data"]["username"],data["data"]["password"]);
+    }
     if (!inStream->commitTransaction()) return;
 }
 
@@ -82,3 +87,10 @@ void Server::disconnect()
     connections.erase(clientSocket);
     qDebug() << "Connections: " << connections.size();
 }
+
+void Server::loginUser()
+{
+
+}
+
+

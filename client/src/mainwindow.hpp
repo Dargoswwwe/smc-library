@@ -3,6 +3,9 @@
 
 #include <QMainWindow>
 #include <QtNetwork>
+#include <json.hpp>
+
+using namespace nlohmann;
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -21,7 +24,7 @@ public slots:
     void switchPage(int pageIndex);
     void connected();
     void receiveData();
-    void sendData(QTcpSocket* serverSocket, const QJsonObject& data);
+    void sendData(QTcpSocket* serverSocket, const json& data);
 
 private:
     void connectToServer(const QHostAddress& address = QHostAddress::LocalHost, qint16 port = 4200);

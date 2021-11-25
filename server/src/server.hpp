@@ -14,6 +14,7 @@
 
 #include <optional>
 #include <unordered_map>
+#include <string>
 
 class Server : public QObject {
     Q_OBJECT
@@ -30,7 +31,8 @@ private slots:
 
 private:
     void initServer();
-
+    void loginUser();
+    void registerUser(const std::string& name,const std::string& password);
     DatabaseManager database;
     QTcpServer* tcpServer = nullptr;
     std::unordered_map<QTcpSocket*, std::pair<std::optional<User>, QDataStream*>> connections;

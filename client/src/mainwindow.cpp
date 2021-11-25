@@ -14,10 +14,18 @@ MainWindow::MainWindow(QWidget* parent)
         User newUser(ui->lineRegisterUsername->text().toStdString(), ui->lineRegisterPassword->text().toStdString());
         sendData(tcpSocket,
             {
+
                 {
-                    { "username", newUser.getUsername().c_str() },
-                    { "password", newUser.getPassword().c_str() }
+                     {"messageType", "register"},
+                         {
+                             "data",
+                           {
+                             { "username", newUser.getUsername().c_str() },
+                             { "password", newUser.getPassword().c_str() }
+                           }
+                         }
                 }
+
             });
     });
 
