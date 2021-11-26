@@ -7,6 +7,7 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QtNetwork>
+#include <QDate>
 
 class DatabaseManager {
 private:
@@ -21,8 +22,9 @@ public:
     void deleteBook(QString title);
     void deleteUser(QString username);
     void addValuesIntoBookTable(int id, QString title, QString authors, QString language, int original_publication_year,
-        float avarage_rating, int ratings_count, QString isbn, QString image_url);
+                                float avarage_rating, int ratings_count, QString isbn, QString image_url);
     void addValuesIntoUsersTable(QString username, QString password);
+    void addValuesIntoUsersBooksTable(int id_user, int id_book);
     void changeUserPassword(QString username, QString password);
     void changeUsername(QString username, QString password);
     void insertBooksIntoDataBase();

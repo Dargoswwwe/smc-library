@@ -24,11 +24,14 @@ DatabaseManager::DatabaseManager()
         databaseDir = "";
     }
 
+    QSqlQuery query(database);
+            query.exec("PRAGMA foreign_keys = ON;");
+
     // Check if data base is empty and create book table into it
     if (!database.contains(QLatin1String("Books"))) {
         QSqlQuery query;
         query.exec("create table Books "
-                   "(id integer primary key, "
+                   "(book_id integer primary key, "
                    "title varchar(50), "
                    "authors varchar(100), "
                    "language varchar(20), "
@@ -43,19 +46,23 @@ DatabaseManager::DatabaseManager()
     if (!database.contains(QLatin1String("Users"))) {
         QSqlQuery query;
         query.exec("create table Users "
-                   "(username varchar(50), "
+                   "(user_id integer primary key,"
+                   "username varchar(50), "
                    "password varchar(50))");
     }
 
-    // Create UsersBooks table
+    //Check if data base is empty and create UsersBooks table into it
     if (!database.contains(QLatin1String("UsersBooks"))) {
         QSqlQuery query;
         query.exec("create table UsersBooks "
-                   "(user_id integer"
-                   "book_id integer"
-                   "FOREIGN KEY(user_id) REFERENCES Users(rowid)"
-                   "FOREIGN KEY(book_id) REFERENCES Books(id) )");
+                   "(user_id integer,"
+                   "book_id integer,"
+                   "date_of_borrowing text,"
+                   "FOREIGN KEY(user_id) REFERENCES Users(user_id),"
+                   "FOREIGN KEY(book_id) REFERENCES Books(book_id),"
+                   "UNIQUE (user_id, book_id))");
     }
+
 }
 
 void DatabaseManager::deleteUsersTable()
@@ -89,12 +96,12 @@ void DatabaseManager::deleteUser(QString username)
 }
 
 void DatabaseManager::addValuesIntoBookTable(int id, QString title, QString authors, QString language,
-    int original_publication_year, float avarage_rating, int ratings_count, QString isbn, QString image_url)
+                                             int original_publication_year, float avarage_rating, int ratings_count, QString isbn, QString image_url)
 {
     QSqlQuery query;
 
     query.prepare("INSERT into Books ("
-                  "id, "
+                  "book_id, "
                   "title, "
                   "authors, "
                   "language, "
@@ -135,6 +142,31 @@ void DatabaseManager::addValuesIntoUsersTable(QString username, QString password
     if (!query.exec()) qDebug() << "Error adding user.";
 }
 
+void DatabaseManager::addValuesIntoUsersBooksTable(int user_id, int book_id)
+{
+
+    QSqlQuery query;
+     QDate date_of_borrowing;
+
+    query.prepare("INSERT into UsersBooks ("
+                  "user_id, "
+                  "book_id,"
+                  "date_of_borrowing)"
+
+                  "VALUES (?,?,?);");
+
+    date_of_borrowing=QDate::currentDate();
+
+    query.addBindValue(user_id);
+    query.addBindValue(book_id);
+    query.addBindValue(date_of_borrowing);
+
+
+
+
+    if (!query.exec()) qDebug() << "Error binding book with user.";
+}
+
 void DatabaseManager::changeUserPassword(QString username, QString password)
 {
     QSqlQuery query;
@@ -168,6 +200,6 @@ void DatabaseManager::insertBooksIntoDataBase()
 
         QStringList word = line.split(',');
         addValuesIntoBookTable(word[0].toInt(), word.at(1), word.at(2), word.at(3), word.at(4).toInt(),
-            word.at(5).toFloat(), word.at(6).toInt(), word.at(7), word.at(8));
+                word.at(5).toFloat(), word.at(6).toInt(), word.at(7), word.at(8));
     };
 }
