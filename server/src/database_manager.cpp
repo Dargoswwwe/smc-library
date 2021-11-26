@@ -25,7 +25,7 @@ DatabaseManager::DatabaseManager()
     }
 
     QSqlQuery query(database);
-            query.exec("PRAGMA foreign_keys = ON;");
+    query.exec("PRAGMA foreign_keys = ON;");
 
     // Check if data base is empty and create book table into it
     if (!database.contains(QLatin1String("Books"))) {
@@ -65,10 +65,26 @@ DatabaseManager::DatabaseManager()
 
 }
 
+void DatabaseManager::deleteRowFromUsersBooksTable(int user_id, int book_id)
+{
+    QSqlQuery query;
+    query.prepare("DELETE FROM UsersBooks WHERE user_id =  (:user_id) AND book_id = (:book_id)");
+    query.bindValue(":user_id", user_id);
+    query.bindValue(":book_id", book_id);
+
+    if (!query.exec()) qDebug() << "Error deleting row." << query.lastError().text();
+}
+
 void DatabaseManager::deleteUsersTable()
 {
     QSqlQuery query;
     query.exec("Drop table Users ");
+}
+
+void DatabaseManager::deleteUsersBooksTable()
+{
+    QSqlQuery query;
+    query.exec("Drop table UsersBooks ");
 }
 
 void DatabaseManager::deleteBookTable()
@@ -146,7 +162,7 @@ void DatabaseManager::addValuesIntoUsersBooksTable(int user_id, int book_id)
 {
 
     QSqlQuery query;
-     QDate date_of_borrowing;
+    QDate date_of_borrowing;
 
     query.prepare("INSERT into UsersBooks ("
                   "user_id, "

@@ -19,8 +19,10 @@ public:
 
     void deleteUsersTable();
     void deleteBookTable();
+    void deleteUsersBooksTable();
     void deleteBook(QString title);
     void deleteUser(QString username);
+    void deleteRowFromUsersBooksTable(int id_user, int id_book);
     void addValuesIntoBookTable(int id, QString title, QString authors, QString language, int original_publication_year,
                                 float avarage_rating, int ratings_count, QString isbn, QString image_url);
     void addValuesIntoUsersTable(QString username, QString password);
