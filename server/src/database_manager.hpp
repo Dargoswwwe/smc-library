@@ -38,6 +38,8 @@ public:
     void displayBooksForUser(int user_id);
 
     int countBooks();
+    bool validUsername(QString username);
+    bool validPassword(QString username, QString password);
 };
 
 #endif // DATABASE_MANAGER_H

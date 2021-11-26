@@ -254,6 +254,46 @@ int DatabaseManager::countBooks()
     return count;
 }
 
+bool DatabaseManager::validUsername(QString username)
+{
+    QSqlQuery query;
+    QString name;
+    query.prepare("SELECT * FROM Users u WHERE u.username=(:username)");
+    query.bindValue(":username", username);
+    query.exec();
+    query.next();
+
+    name=query.value(0).toString();
+
+    if(name==nullptr)
+    {
+        return false;
+    }
+
+    return true;
+
+}
+
+
+bool DatabaseManager::validPassword(QString username, QString password)
+{
+    QSqlQuery query;
+    QString pass;
+
+    query.prepare("SELECT password FROM Users u WHERE u.username=(:username)");
+    query.bindValue(":username", username);
+    query.exec();
+    query.next();
+    pass=query.value(0).toString();
+
+    if(pass!=password)
+    {
+        return false;
+    }
+
+    return true;
+
+}
 
 
 
