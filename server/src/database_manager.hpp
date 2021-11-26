@@ -34,6 +34,7 @@ public:
 
     void insertBooksIntoDataBase();
 
+    void displayUsersForBook(int book_id);
     void displayBooksForUser(int user_id);
 };
 

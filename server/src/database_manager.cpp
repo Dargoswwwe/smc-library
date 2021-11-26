@@ -225,14 +225,24 @@ void DatabaseManager::insertBooksIntoDataBase()
     };
 }
 
+void DatabaseManager:: displayUsersForBook(int book_id)
+{
+    QSqlQuery query;
+    query.prepare("SELECT u.username, ub.date_of_borrowing FROM UsersBooks ub INNER JOIN Users u on ub.user_id=u.user_id WHERE ub.book_id =  (:book_id) ");
 
- void DatabaseManager:: displayBooksForUser(int user_id)
- {
-     QSqlQuery query;
-     query.prepare("SELECT b.title, b.authors, b.language,b.original_publication_year, b.avarage_rating,"
-                   " b.ratings_count, b.isbn FROM UsersBooks ub INNER JOIN Books b on ub.book_id=b.book_id "
-                   "WHERE ub.user_id =  (:user_id) ");
-     query.bindValue(":user_id", user_id);
+    query.bindValue(":book_id", book_id);
 
-     if (!query.exec()) qDebug() << "Error displaying books for this user." << query.lastError().text();
- }
+    if (!query.exec()) qDebug() << "Error displaying users for this book." << query.lastError().text();
+}
+
+void DatabaseManager:: displayBooksForUser(int user_id)
+{
+    QSqlQuery query;
+    query.prepare("SELECT b.title, b.authors, b.language,b.original_publication_year, b.avarage_rating,"
+                  " b.ratings_count, b.isbn, ub.date_of_borrowing FROM UsersBooks ub INNER JOIN Books b on ub.book_id=b.book_id "
+                  "WHERE ub.user_id =  (:user_id) ");
+
+    query.bindValue(":user_id", user_id);
+
+    if (!query.exec()) qDebug() << "Error displaying books for this user." << query.lastError().text();
+}

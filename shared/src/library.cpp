@@ -51,10 +51,10 @@ std::vector<std::vector<std::string>> Library::getAuthors() const
 
 std::vector<User> Library::getUsers() const { return users; }
 
-void Library::setAllBooks(std::vector<Book> allBooks) { allBooks = allBooks; }
-void Library::setAvailableBooks(std::vector<Book> availableBooks) { availableBooks = availableBooks; }
-void Library::setBorrowedBooks(std::vector<Book> borrowedBooks) { borrowedBooks = borrowedBooks; }
-void Library::setUsers(std::vector<User> users) { users = users; }
+void Library::setAllBooks(std::vector<Book> allBooks) { this->allBooks = allBooks; }
+void Library::setAvailableBooks(std::vector<Book> availableBooks) { this->availableBooks = availableBooks; }
+void Library::setBorrowedBooks(std::vector<Book> borrowedBooks) { this->borrowedBooks = borrowedBooks; }
+void Library::setUsers(std::vector<User> users) { this->users = users; }
 
 void Library::addBook(Book book)
 {

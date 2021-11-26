@@ -8,5 +8,5 @@ int main(int argc, char* argv[])
     QCoreApplication::setApplicationName("Library server");
     Server server;
 
-   return app.exec();
+    return app.exec();
 }
