@@ -58,8 +58,8 @@ DatabaseManager::DatabaseManager()
                    "(user_id integer,"
                    "book_id integer,"
                    "date_of_borrowing text,"
-                   "FOREIGN KEY(user_id) REFERENCES Users(user_id),"
-                   "FOREIGN KEY(book_id) REFERENCES Books(book_id),"
+                   "FOREIGN KEY(user_id) REFERENCES Users(user_id)ON DELETE CASCADE,"
+                   "FOREIGN KEY(book_id) REFERENCES Books(book_id)ON DELETE CASCADE,"
                    "UNIQUE (user_id, book_id))");
     }
 
@@ -111,8 +111,11 @@ void DatabaseManager::deleteUser(QString username)
     if (!query.exec()) qDebug() << "Error deleting a user." << query.lastError().text();
 }
 
+
+
 void DatabaseManager::addValuesIntoBookTable(int id, QString title, QString authors, QString language,
-                                             int original_publication_year, float avarage_rating, int ratings_count, QString isbn, QString image_url)
+                                             int original_publication_year, float avarage_rating, int ratings_count, QString isbn,
+                                             QString image_url)
 {
     QSqlQuery query;
 
@@ -183,6 +186,7 @@ void DatabaseManager::addValuesIntoUsersBooksTable(int user_id, int book_id)
     if (!query.exec()) qDebug() << "Error binding book with user.";
 }
 
+
 void DatabaseManager::changeUserPassword(QString username, QString password)
 {
     QSqlQuery query;
@@ -205,6 +209,7 @@ void DatabaseManager::changeUsername(QString username, QString password)
     query.exec();
 }
 
+
 void DatabaseManager::insertBooksIntoDataBase()
 {
     QFile inputFile((databaseDir + "books.csv").c_str());
@@ -219,3 +224,15 @@ void DatabaseManager::insertBooksIntoDataBase()
                 word.at(5).toFloat(), word.at(6).toInt(), word.at(7), word.at(8));
     };
 }
+
+
+ void DatabaseManager:: displayBooksForUser(int user_id)
+ {
+     QSqlQuery query;
+     query.prepare("SELECT b.title, b.authors, b.language,b.original_publication_year, b.avarage_rating,"
+                   " b.ratings_count, b.isbn FROM UsersBooks ub INNER JOIN Books b on ub.book_id=b.book_id "
+                   "WHERE ub.user_id =  (:user_id) ");
+     query.bindValue(":user_id", user_id);
+
+     if (!query.exec()) qDebug() << "Error displaying books for this user." << query.lastError().text();
+ }

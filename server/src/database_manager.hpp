@@ -23,13 +23,18 @@ public:
     void deleteBook(QString title);
     void deleteUser(QString username);
     void deleteRowFromUsersBooksTable(int id_user, int id_book);
+
     void addValuesIntoBookTable(int id, QString title, QString authors, QString language, int original_publication_year,
                                 float avarage_rating, int ratings_count, QString isbn, QString image_url);
     void addValuesIntoUsersTable(QString username, QString password);
-    void addValuesIntoUsersBooksTable(int id_user, int id_book);
+    void addValuesIntoUsersBooksTable(int user_id, int book_id);
+
     void changeUserPassword(QString username, QString password);
     void changeUsername(QString username, QString password);
+
     void insertBooksIntoDataBase();
+
+    void displayBooksForUser(int user_id);
 };
 
 #endif // DATABASE_MANAGER_H
