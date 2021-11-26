@@ -26,7 +26,11 @@ void Server::initServer()
 
     connect(tcpServer, &QTcpServer::newConnection, this, &Server::newConnection);
 
-    database.insertBooksIntoDataBase();
+    if(database.countBooks()<10000)
+        database.insertBooksIntoDataBase();
+    else
+        qDebug()<<"The library already has all the books.";
+
 }
 
 void Server::newConnection()

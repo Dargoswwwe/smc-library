@@ -180,9 +180,6 @@ void DatabaseManager::addValuesIntoUsersBooksTable(int user_id, int book_id)
     query.addBindValue(book_id);
     query.addBindValue(date_of_borrowing);
 
-
-
-
     if (!query.exec()) qDebug() << "Error binding book with user.";
 }
 
@@ -246,3 +243,17 @@ void DatabaseManager:: displayBooksForUser(int user_id)
 
     if (!query.exec()) qDebug() << "Error displaying books for this user." << query.lastError().text();
 }
+
+int DatabaseManager::countBooks()
+{
+    QSqlQuery query;
+    int count;
+    query.exec("SELECT COUNT (*) FROM Books");
+    query.next();
+    count=query.value(0).toInt();
+    return count;
+}
+
+
+
+

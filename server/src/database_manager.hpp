@@ -36,6 +36,8 @@ public:
 
     void displayUsersForBook(int book_id);
     void displayBooksForUser(int user_id);
+
+    int countBooks();
 };
 
 #endif // DATABASE_MANAGER_H
