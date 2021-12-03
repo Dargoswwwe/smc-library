@@ -8,6 +8,8 @@
 #include <QSqlQuery>
 #include <QtNetwork>
 #include <QDate>
+#include<vector>
+#include"book.hpp"
 
 class DatabaseManager {
 private:
@@ -41,6 +43,8 @@ public:
     int countBooks();
     bool validUsername(QString username);
     bool validPassword(QString username, QString password);
+
+    std::vector<Book> createBooksArray();
 };
 
 #endif // DATABASE_MANAGER_H

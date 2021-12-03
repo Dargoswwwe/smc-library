@@ -286,7 +286,6 @@ bool DatabaseManager::validUsername(QString username)
 
 }
 
-
 bool DatabaseManager::validPassword(QString username, QString password)
 {
     QSqlQuery query;
@@ -307,5 +306,52 @@ bool DatabaseManager::validPassword(QString username, QString password)
 
 }
 
+std::vector<std::string> separator(std::string str, std::regex delimitator)
+{
+    std::sregex_token_iterator iterator{ str.begin(),str.end(),delimitator,-1 };
+    std::vector<std::string>elemSeparate{ iterator,{} };
+    return elemSeparate;
+}
+
+
+std::vector<Book> DatabaseManager::createBooksArray()
+{
+    std::vector<Book> booksArray;
+
+    QFile inputFile((databaseDir + "books.csv").c_str());
+    inputFile.open(QIODevice::ReadOnly);
+    if (!inputFile.isOpen()) qDebug() << "Error";
+
+    QTextStream stream(&inputFile);
+    for (QString line = stream.readLine(); !line.isNull(); line = stream.readLine())
+    {
+        Book newBook;
+        QStringList word = line.split(',');
+
+        newBook.setTitle(word.at(1).toStdString());
+
+        std::vector<std::string> authors;
+        std::regex divider(";");
+        std::vector<std::string> authorsToken = separator(word.at(2).toStdString(), divider);
+        for (std::string &author : authorsToken)
+        {
+            authors.push_back(author);
+        }
+
+        newBook.setAuthors(authors);
+        newBook.setLanguage(word.at(3).toStdString());
+        newBook.setOriginalPublication(word.at(4).toInt());
+        newBook.setAverageRating(word.at(5).toFloat());
+        newBook.setRatingsCount(word.at(6).toInt());
+        newBook.setIsbn(word.at(7).toStdString());
+        newBook.setUrl(word.at(8).toStdString());
+        newBook.setExemplarsAvailable(word.at(9).toInt());
+        booksArray.push_back(newBook);
+
+    };
+
+    return booksArray;
+
+}
 
 

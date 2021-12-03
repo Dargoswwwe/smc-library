@@ -124,7 +124,8 @@ std::ostream& operator<<(std::ostream& fout, Library& lib)
 std::ostream& operator<<(std::ostream& out, std::vector<Book> booksList_or_usersList)
 {
     sortAvailableBooks(booksList_or_usersList);
-    for (auto current : booksList_or_usersList) {
+    for (auto current : booksList_or_usersList)
+    {
         out << current << "\n";
     }
     return out;
