@@ -39,7 +39,8 @@ DatabaseManager::DatabaseManager()
                    "avarage_rating real, "
                    "ratings_count integer, "
                    "isbn varchar(50), "
-                   "image_url varchar(100))");
+                   "image_url varchar(100),"
+                   "available_books integer)");
     }
 
     // Check if data base is empty and create user table into it
@@ -115,7 +116,7 @@ void DatabaseManager::deleteUser(QString username)
 
 void DatabaseManager::addValuesIntoBookTable(int id, QString title, QString authors, QString language,
                                              int original_publication_year, float avarage_rating, int ratings_count, QString isbn,
-                                             QString image_url)
+                                             QString image_url,int available_books)
 {
     QSqlQuery query;
 
@@ -128,8 +129,9 @@ void DatabaseManager::addValuesIntoBookTable(int id, QString title, QString auth
                   "avarage_rating,"
                   "ratings_count, "
                   "isbn, "
-                  "image_url)"
-                  "VALUES (?,?,?,?,?,?,?,?,?);");
+                  "image_url, "
+                  "available_books)"
+                  "VALUES (?,?,?,?,?,?,?,?,?,?);");
 
     query.addBindValue(id);
     query.addBindValue(title);
@@ -140,6 +142,7 @@ void DatabaseManager::addValuesIntoBookTable(int id, QString title, QString auth
     query.addBindValue(ratings_count);
     query.addBindValue(isbn);
     query.addBindValue(image_url);
+    query.addBindValue(available_books);
 
     if (!query.exec()) qDebug() << "Error adding value: " << query.lastError();
 }
@@ -218,7 +221,7 @@ void DatabaseManager::insertBooksIntoDataBase()
 
         QStringList word = line.split(',');
         addValuesIntoBookTable(word[0].toInt(), word.at(1), word.at(2), word.at(3), word.at(4).toInt(),
-                word.at(5).toFloat(), word.at(6).toInt(), word.at(7), word.at(8));
+                word.at(5).toFloat(), word.at(6).toInt(), word.at(7), word.at(8),word.at(9).toInt());
     };
 }
 
@@ -229,7 +232,7 @@ void DatabaseManager:: displayUsersForBook(int book_id)
 
     query.bindValue(":book_id", book_id);
 
-    if (!query.exec()) qDebug() << "Error displaying users for this book." << query.lastError().text();
+    if (!query.exec()) qDebug() << "Error displaying users for this book!" << query.lastError().text();
 }
 
 void DatabaseManager:: displayBorrowedBooksForUser(int user_id)
@@ -241,7 +244,16 @@ void DatabaseManager:: displayBorrowedBooksForUser(int user_id)
 
     query.bindValue(":user_id", user_id);
 
-    if (!query.exec()) qDebug() << "Error displaying borrowed books for this user." << query.lastError().text();
+    if (!query.exec()) qDebug() << "Error displaying borrowed books for this user1" << query.lastError().text();
+}
+
+void DatabaseManager:: displayAllBooks()
+{
+    QSqlQuery query;
+    query.prepare("SELECT b.title, b.authors, b.language,b.original_publication_year, b.avarage_rating,"
+                  " b.ratings_count, b.isbn, b.available_book FROM Books b ");
+
+    if (!query.exec()) qDebug() << "Error displaying books!" << query.lastError().text();
 }
 
 int DatabaseManager::countBooks()

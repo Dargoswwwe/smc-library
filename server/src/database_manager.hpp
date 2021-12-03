@@ -25,7 +25,7 @@ public:
     void deleteRowFromUsersBooksTable(int id_user, int id_book);
 
     void addValuesIntoBookTable(int id, QString title, QString authors, QString language, int original_publication_year,
-                                float avarage_rating, int ratings_count, QString isbn, QString image_url);
+                                float avarage_rating, int ratings_count, QString isbn, QString image_url,int available_books);
     void addValuesIntoUsersTable(QString username, QString password);
     void addValuesIntoUsersBooksTable(int user_id, int book_id);
 
@@ -36,6 +36,7 @@ public:
 
     void displayUsersForBook(int book_id);
     void displayBorrowedBooksForUser(int user_id);
+    void displayAllBooks();
 
     int countBooks();
     bool validUsername(QString username);
