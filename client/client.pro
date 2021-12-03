@@ -33,3 +33,6 @@ unix|win32: LIBS += -L$$PWD/../shared/lib/ -lsmclibrary
 
 INCLUDEPATH += $$PWD/../shared/src
 DEPENDPATH += $$PWD/../shared/src
+
+RESOURCES += \
+    resources.qrc

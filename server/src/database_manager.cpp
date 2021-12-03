@@ -232,7 +232,7 @@ void DatabaseManager:: displayUsersForBook(int book_id)
     if (!query.exec()) qDebug() << "Error displaying users for this book." << query.lastError().text();
 }
 
-void DatabaseManager:: displayBooksForUser(int user_id)
+void DatabaseManager:: displayBorrowedBooksForUser(int user_id)
 {
     QSqlQuery query;
     query.prepare("SELECT b.title, b.authors, b.language,b.original_publication_year, b.avarage_rating,"
@@ -241,7 +241,7 @@ void DatabaseManager:: displayBooksForUser(int user_id)
 
     query.bindValue(":user_id", user_id);
 
-    if (!query.exec()) qDebug() << "Error displaying books for this user." << query.lastError().text();
+    if (!query.exec()) qDebug() << "Error displaying borrowed books for this user." << query.lastError().text();
 }
 
 int DatabaseManager::countBooks()

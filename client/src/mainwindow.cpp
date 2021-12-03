@@ -8,6 +8,14 @@ MainWindow::MainWindow(QWidget* parent)
     , ui(new Ui::MainWindow)
     , serverSocket(new QTcpSocket)
 {
+
+    //Set background
+    QPixmap bkgnd(":/images_resources/images/library.jpg");
+    bkgnd = bkgnd.scaled(this->size(), Qt::IgnoreAspectRatio);
+    QPalette palette;
+    palette.setBrush(QPalette::Window, bkgnd);
+    this->setPalette(palette);
+
     ui->setupUi(this);
 
     QObject::connect(ui->lineLoginUsername, &QLineEdit::returnPressed, ui->buttonLogin, &QPushButton::click);
@@ -60,6 +68,8 @@ MainWindow::MainWindow(QWidget* parent)
     ui->scrollVerticalLayout->addStretch();
 
     connectToServer();
+
+
 }
 
 MainWindow::~MainWindow()

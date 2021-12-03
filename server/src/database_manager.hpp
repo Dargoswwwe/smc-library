@@ -35,7 +35,7 @@ public:
     void insertBooksIntoDataBase();
 
     void displayUsersForBook(int book_id);
-    void displayBooksForUser(int user_id);
+    void displayBorrowedBooksForUser(int user_id);
 
     int countBooks();
     bool validUsername(QString username);
