@@ -35,6 +35,7 @@ public:
     void changeUsername(QString username, QString password);
 
     void insertBooksIntoDataBase();
+    void updateAvailableBook(QString title, int available_books);
 
     void displayUsersForBook(int book_id);
     void displayBorrowedBooksForUser(int user_id);

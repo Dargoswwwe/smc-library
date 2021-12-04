@@ -354,4 +354,15 @@ std::vector<Book> DatabaseManager::createBooksArray()
 
 }
 
+void DatabaseManager:: updateAvailableBook(QString title, int available_books)
+{
+    QSqlQuery query;
+
+    query.prepare("UPDATE Books SET available_books = (:available_books) WHERE title = (:title)");
+    query.bindValue(":available_books", available_books);
+    query.bindValue(":title", title);
+
+    query.exec();
+}
+
 

@@ -2,5 +2,6 @@
     <qresource prefix="/images_resources">
         <file>images/library.jpg</file>
         <file>images/login.jpg</file>
+        <file>images/register.jpg</file>
     </qresource>
 </RCC>
