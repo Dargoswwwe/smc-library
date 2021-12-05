@@ -104,7 +104,7 @@ void Server::loginUser(const std::string& name, const std::string& password, QTc
 
     if(!database.validUsername(name.c_str())){
        sendData(clientSocket,
-           R"({"type": "login", "response": "error"})"_json);
+           R"({"type": "login", "response": "name error"})"_json);
         }
       else{
         if(database.validPassword(name.c_str(),password.c_str())){
@@ -112,7 +112,7 @@ void Server::loginUser(const std::string& name, const std::string& password, QTc
    sendData(clientSocket, R"({"type": "login", "response": "success"})"_json);}
    else {
        sendData(clientSocket,
-           R"({"type": "login", "response": "error"})"_json);
+           R"({"type": "login", "response": "password error"})"_json);
    }
 
 

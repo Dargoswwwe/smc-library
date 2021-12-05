@@ -35,6 +35,17 @@ MainWindow::MainWindow(QWidget* parent)
 
         sendData(serverSocket, message);
     });
+
+    QObject::connect(ui->buttonLogin, &QPushButton::clicked, this, [this] {
+        User newUser(ui->lineRegisterUsername->text().toStdString(), ui->lineRegisterPassword->text().toStdString());
+        json message;
+        message["type"] = MessageType::LOGIN;
+        message["data"]["username"] = newUser.getUsername();
+        message["data"]["password"] = newUser.getPassword();
+
+        sendData(serverSocket, message);
+    });
+
     QObject::connect(ui->buttonRegisterGuest, &QPushButton::clicked, this, [this] { switchPage(2); });
     QObject::connect(ui->buttonLoginInstead, &QPushButton::clicked, this, [this] { switchPage(0); });
     QObject::connect(
@@ -120,6 +131,11 @@ void MainWindow::handleMessage(MessageType messageType, const json& messageData)
         break;
 
     case MessageType::LOGIN:
+        try {
+            if (messageData["response"] == "name error") { ui->lineLoginUsername->setText("username not registered"); }
+            if (messageData["response"] == "password error") {ui->lineLoginUsername->setText("wrong password"); }
+            if (messageData["response"] == "success") { switchPage(2); }
+        } catch (const nlohmann::detail::type_error& e) { }
         break;
 
     case MessageType::GET_BOOKS:
