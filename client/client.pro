@@ -23,6 +23,9 @@ FORMS += \
     src/mainwindow.ui \
     src/bookitemwidget.ui
 
+RESOURCES += \
+    src/resources.qrc
+
 # Directories
 DESTDIR=bin                 #Target file directory
 OBJECTS_DIR=intermediates   #Intermediate object files directory
@@ -33,6 +36,3 @@ unix|win32: LIBS += -L$$PWD/../shared/lib/ -lsmclibrary
 
 INCLUDEPATH += $$PWD/../shared/src
 DEPENDPATH += $$PWD/../shared/src
-
-RESOURCES += \
-    resources.qrc
