@@ -389,3 +389,24 @@ void DatabaseManager:: decreaseAvailableBook(QString title)
         query2.exec();
     }
 }
+
+
+void DatabaseManager:: increaseAvailableBook(QString title)
+{
+    int available;
+
+    QSqlQuery query;
+    query.prepare("SELECT available_books FROM Books b WHERE b.title=(:title)");
+    query.bindValue(":title", title);
+    query.exec();
+    query.next();
+    available=query.value(0).toInt();
+    available++;
+
+    QSqlQuery query2;
+    query2.prepare("UPDATE Books SET available_books = (:available_books) WHERE title = (:title)");
+    query2.bindValue(":available_books", available);
+    query2.bindValue(":title", title);
+
+    query2.exec();
+}
