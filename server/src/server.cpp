@@ -1,4 +1,5 @@
 #include "server.hpp"
+
 #include "json.hpp"
 
 using nlohmann::json;
@@ -26,14 +27,11 @@ void Server::initServer()
 
     connect(tcpServer, &QTcpServer::newConnection, this, &Server::newConnection);
 
-    if(database.countBooks()<10000)
-        database.insertBooksIntoDataBase();
-    else
-        qDebug()<<"The library already has all the books.";
+    if (database.countBooks() < 10000) database.insertBooksIntoDataBase();
+    else qDebug() << "The library already has all the books.";
 
     Library library;
     library.setAllBooks(database.createBooksArray());
-
 }
 
 void Server::newConnection()
@@ -82,9 +80,7 @@ void Server::receiveData()
 
         qDebug() << message.dump().c_str();
 
-        if (message["type"] == "register") {
-            registerUser(message["data"]["username"], message["data"]["password"], clientSocket);
-        }
+        handleMessage(clientSocket, message["type"], message["data"]);
     } catch (const nlohmann::detail::parse_error& e) {
         qWarning() << e.what();
     } catch (const nlohmann::detail::type_error& e) {
@@ -118,4 +114,23 @@ void Server::registerUser(const std::string& name, const std::string& password, 
 
     database.addValuesIntoUsersTable(name.c_str(), password.c_str());
     //   }
+}
+
+void Server::handleMessage(QTcpSocket* clientSocket, MessageType messageType, const json& messageData)
+{
+    switch (messageType) {
+    case MessageType::REGISTER:
+        try {
+            registerUser(messageData["username"], messageData["password"], clientSocket);
+        } catch (const nlohmann::detail::type_error& e) { }
+        break;
+
+    case MessageType::LOGIN:
+        loginUser();
+        break;
+
+    case MessageType::GET_BOOKS:
+        loginUser();
+        break;
+    }
 }

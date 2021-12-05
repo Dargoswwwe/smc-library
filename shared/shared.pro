@@ -22,8 +22,9 @@ SOURCES += \
 HEADERS += \
     src/book.hpp \
     src/library.hpp \
-    src/rapidcsv.h \
     src/user.hpp \
+    src/message_type.hpp \
+    src/rapidcsv.h \
 
 # Directories
 DESTDIR=lib                 #Target file directory

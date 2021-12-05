@@ -2,9 +2,10 @@
 #define SERVER_HPP
 
 #include "database_manager.hpp"
-#include "user.hpp"
 #include "json.hpp"
 #include "library.hpp"
+#include "message_type.hpp"
+#include "user.hpp"
 
 #include <QObject>
 #include <QSqlDatabase>
@@ -12,12 +13,12 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QtNetwork>
-
 #include <optional>
-#include <unordered_map>
 #include <string>
+#include <unordered_map>
 
-class Server : public QObject {
+class Server : public QObject
+{
     Q_OBJECT
 
 public:
@@ -33,7 +34,10 @@ private slots:
 private:
     void initServer();
     void loginUser();
-    void registerUser(const std::string& name,const std::string& password,QTcpSocket* clientSocket);
+    void registerUser(const std::string& name, const std::string& password, QTcpSocket* clientSocket);
+
+    void handleMessage(QTcpSocket* clientSocket, MessageType messageType, const nlohmann::json& messageData);
+
     DatabaseManager database;
     QTcpServer* tcpServer = nullptr;
     std::unordered_map<QTcpSocket*, std::pair<std::optional<User>, QDataStream*>> connections;

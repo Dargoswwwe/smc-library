@@ -1,4 +1,5 @@
 #include "mainwindow.hpp"
+
 #include "bookitemwidget.hpp"
 #include "ui_mainwindow.h"
 #include "user.hpp"
@@ -8,12 +9,11 @@ MainWindow::MainWindow(QWidget* parent)
     , ui(new Ui::MainWindow)
     , serverSocket(new QTcpSocket)
 {
-
-    //Set background
-    QPixmap bkgnd(":/images_resources/images/library.jpg");
-    bkgnd = bkgnd.scaled(this->size(), Qt::IgnoreAspectRatio);
+    // Set background
+    QPixmap background(":/images_resources/images/library.jpg");
+    background = background.scaled(this->size(), Qt::IgnoreAspectRatio);
     QPalette palette;
-    palette.setBrush(QPalette::Window, bkgnd);
+    palette.setBrush(QPalette::Window, background);
     this->setPalette(palette);
 
     ui->setupUi(this);
@@ -23,36 +23,26 @@ MainWindow::MainWindow(QWidget* parent)
     QObject::connect(ui->lineRegisterUsername, &QLineEdit::returnPressed, ui->buttonRegister, &QPushButton::click);
     QObject::connect(ui->lineRegisterPassword, &QLineEdit::returnPressed, ui->buttonRegister, &QPushButton::click);
     QObject::connect(
-                ui->lineRegisterConfirmPassword, &QLineEdit::returnPressed, ui->buttonRegister, &QPushButton::click);
-
+        ui->lineRegisterConfirmPassword, &QLineEdit::returnPressed, ui->buttonRegister, &QPushButton::click);
     QObject::connect(ui->buttonRegisterInstead, &QPushButton::clicked, this, [this] { switchPage(1); });
+
     QObject::connect(ui->buttonRegister, &QPushButton::clicked, this, [this] {
         User newUser(ui->lineRegisterUsername->text().toStdString(), ui->lineRegisterPassword->text().toStdString());
-        json message =
-                R"({
-                "type": "register",
-                "data":
-                {
-                    "username": "",
-                    "password": "" 
-                }
-            })"_json;
-
+        json message;
+        message["type"] = MessageType::REGISTER;
         message["data"]["username"] = newUser.getUsername();
         message["data"]["password"] = newUser.getPassword();
 
         sendData(serverSocket, message);
     });
-
     QObject::connect(ui->buttonRegisterGuest, &QPushButton::clicked, this, [this] { switchPage(2); });
-
     QObject::connect(ui->buttonLoginInstead, &QPushButton::clicked, this, [this] { switchPage(0); });
     QObject::connect(
-                ui->buttonLogin, &QPushButton::clicked, this, [this] { sendData(serverSocket, R"({"hello": "test"})"_json); });
+        ui->buttonLogin, &QPushButton::clicked, this, [this] { sendData(serverSocket, R"({"hello": "test"})"_json); });
 
     QObject::connect(ui->buttonLoginGuest, &QPushButton::clicked, this, [this] { switchPage(2); });
 
-    QObject::connect(ui->buttonLogin, &QPushButton::clicked, this, [this] {switchPage(3);});
+    QObject::connect(ui->buttonLogin, &QPushButton::clicked, this, [this] { switchPage(3); });
 
     QObject::connect(serverSocket, &QTcpSocket::connected, this, &MainWindow::connected);
     QObject::connect(serverSocket, &QIODevice::readyRead, this, &MainWindow::receiveData);
@@ -68,8 +58,6 @@ MainWindow::MainWindow(QWidget* parent)
     ui->scrollVerticalLayout->addStretch();
 
     connectToServer();
-
-
 }
 
 MainWindow::~MainWindow()
@@ -101,11 +89,8 @@ void MainWindow::receiveData()
     qDebug() << message.dump().c_str();
 
     try {
-        if (message["type"] == "register") {
-            if (message["data"]["response"] == "error") { ui->lineRegisterUsername->setText("username taken"); }
 
-            if (message["data"]["response"] == "success") { switchPage(2); }
-        }
+        handleMessage(message["type"], message["data"]);
     } catch (const nlohmann::detail::parse_error& e) {
         qWarning() << e.what();
     } catch (const nlohmann::detail::type_error& e) {
@@ -121,4 +106,23 @@ void MainWindow::sendData(QTcpSocket* serverSocket, const json& data)
     out.setVersion(QDataStream::Qt_5_15);
     out << QString::fromStdString(data.dump());
     serverSocket->write(block);
+}
+
+void MainWindow::handleMessage(MessageType messageType, const json& messageData)
+{
+    switch (messageType) {
+    case MessageType::REGISTER:
+        try {
+            if (messageData["response"] == "error") { ui->lineRegisterUsername->setText("username taken"); }
+
+            if (messageData["response"] == "success") { switchPage(2); }
+        } catch (const nlohmann::detail::type_error& e) { }
+        break;
+
+    case MessageType::LOGIN:
+        break;
+
+    case MessageType::GET_BOOKS:
+        break;
+    }
 }

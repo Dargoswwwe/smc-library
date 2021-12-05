@@ -2,6 +2,7 @@
 #define MAINWINDOW_HPP
 
 #include "json.hpp"
+#include "message_type.hpp"
 
 #include <QMainWindow>
 #include <QtNetwork>
@@ -29,6 +30,7 @@ public slots:
 
 private:
     void connectToServer(const QHostAddress& address = QHostAddress::LocalHost, qint16 port = 4200);
+    void handleMessage(MessageType messageType, const nlohmann::json& messageData);
     Ui::MainWindow* ui;
     QTcpSocket* serverSocket;
     QDataStream inStream;
