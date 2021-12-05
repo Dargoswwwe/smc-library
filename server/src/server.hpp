@@ -33,7 +33,7 @@ private slots:
 
 private:
     void initServer();
-    void loginUser();
+    void loginUser(const std::string& name, const std::string& password, QTcpSocket* clientSocket);
     void registerUser(const std::string& name, const std::string& password, QTcpSocket* clientSocket);
 
     void handleMessage(QTcpSocket* clientSocket, MessageType messageType, const nlohmann::json& messageData);
