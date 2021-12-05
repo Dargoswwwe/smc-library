@@ -36,6 +36,7 @@ public:
 
     void insertBooksIntoDataBase();
     void updateAvailableBook(QString title, int available_books);
+    void decreaseAvailableBook(QString title);
 
     void displayUsersForBook(int book_id);
     void displayBorrowedBooksForUser(int user_id);

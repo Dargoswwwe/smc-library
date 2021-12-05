@@ -4,6 +4,7 @@
 #include "database_manager.hpp"
 #include "user.hpp"
 #include "json.hpp"
+#include "library.hpp"
 
 #include <QObject>
 #include <QSqlDatabase>

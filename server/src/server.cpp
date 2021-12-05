@@ -31,6 +31,9 @@ void Server::initServer()
     else
         qDebug()<<"The library already has all the books.";
 
+    Library library;
+    library.setAllBooks(database.createBooksArray());
+
 }
 
 void Server::newConnection()
