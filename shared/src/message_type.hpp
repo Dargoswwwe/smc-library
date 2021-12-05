@@ -12,9 +12,9 @@ enum class MessageType
 
 NLOHMANN_JSON_SERIALIZE_ENUM(MessageType,
     {
-        { MessageType::REGISTER, "register" },
-        { MessageType::LOGIN, "login" },
-        { MessageType::GET_BOOKS, "getBooks" },
-    });
+        {MessageType::REGISTER,   "register"},
+        { MessageType::LOGIN,     "login"   },
+        { MessageType::GET_BOOKS, "getBooks"},
+});
 
 #endif // MESSAGE_TYPE_H

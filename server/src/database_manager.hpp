@@ -42,9 +42,9 @@ public:
     void decreaseAvailableBook(QString title);
     void increaseAvailableBook(QString title);
 
-    void displayUsersForBook(int book_id);
-    void displayBorrowedBooksForUser(int user_id);
-    void displayAllBooks();
+    void getUsersForBook(int book_id);
+    std::vector<Book> getBorrowedBooksForUser(int user_id);
+    void getAllBooks();
 
     int countBooks();
     bool validUsername(QString username);

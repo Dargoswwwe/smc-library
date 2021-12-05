@@ -9,3 +9,4 @@ AccessModifierOffset: -4
 AllowShortEnumsOnASingleLine: true
 AllowShortIfStatementsOnASingleLine: AllIfsAndElse
 AlwaysBreakTemplateDeclarations: Yes
+AlignArrayOfStructures: Left

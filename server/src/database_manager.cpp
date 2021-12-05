@@ -1,5 +1,7 @@
 #include "database_manager.hpp"
 
+#include <unordered_map>
+
 DatabaseManager::DatabaseManager()
 {
     database = QSqlDatabase::addDatabase("QSQLITE");
@@ -36,7 +38,7 @@ DatabaseManager::DatabaseManager()
                    "authors varchar(100), "
                    "language varchar(20), "
                    "original_publication_year integer, "
-                   "avarage_rating real, "
+                   "average_rating real, "
                    "ratings_count integer, "
                    "isbn varchar(50), "
                    "image_url varchar(100),"
@@ -112,7 +114,7 @@ void DatabaseManager::deleteUser(QString username)
 }
 
 void DatabaseManager::addValuesIntoBookTable(int id, QString title, QString authors, QString language,
-    int original_publication_year, float avarage_rating, int ratings_count, QString isbn, QString image_url,
+    int original_publication_year, float average_rating, int ratings_count, QString isbn, QString image_url,
     int available_books)
 {
     QSqlQuery query;
@@ -123,7 +125,7 @@ void DatabaseManager::addValuesIntoBookTable(int id, QString title, QString auth
                   "authors, "
                   "language, "
                   "original_publication_year, "
-                  "avarage_rating,"
+                  "average_rating,"
                   "ratings_count, "
                   "isbn, "
                   "image_url, "
@@ -135,7 +137,7 @@ void DatabaseManager::addValuesIntoBookTable(int id, QString title, QString auth
     query.addBindValue(authors);
     query.addBindValue(language);
     query.addBindValue(original_publication_year);
-    query.addBindValue(avarage_rating);
+    query.addBindValue(average_rating);
     query.addBindValue(ratings_count);
     query.addBindValue(isbn);
     query.addBindValue(image_url);
@@ -220,7 +222,7 @@ void DatabaseManager::insertBooksIntoDataBase()
     };
 }
 
-void DatabaseManager::displayUsersForBook(int book_id)
+void DatabaseManager::getUsersForBook(int book_id)
 {
     QSqlQuery query;
     query.prepare("SELECT u.username, ub.date_of_borrowing FROM UsersBooks ub INNER JOIN Users u on "
@@ -231,23 +233,57 @@ void DatabaseManager::displayUsersForBook(int book_id)
     if (!query.exec()) qDebug() << "Error displaying users for this book!" << query.lastError().text();
 }
 
-void DatabaseManager::displayBorrowedBooksForUser(int user_id)
+std::vector<Book> DatabaseManager::getBorrowedBooksForUser(int user_id)
 {
     QSqlQuery query;
     query.prepare(
-        "SELECT b.title, b.authors, b.language,b.original_publication_year, b.avarage_rating,"
+        "SELECT b.title, b.authors, b.language, b.original_publication_year, b.average_rating,"
         " b.ratings_count, b.isbn, ub.date_of_borrowing FROM UsersBooks ub INNER JOIN Books b on ub.book_id=b.book_id "
         "WHERE ub.user_id =  (:user_id) ");
 
     query.bindValue(":user_id", user_id);
 
-    if (!query.exec()) qDebug() << "Error displaying borrowed books for this user1" << query.lastError().text();
+    std::vector<std::string> fieldNames = { "title", "authors", "language", "original_publication_year",
+        "average_rating", "ratings_count", "isbn", "date_of_borrowing" };
+    std::unordered_map<std::string, int> valueIndex;
+
+    for (auto& fieldName : fieldNames)
+        valueIndex[fieldName] = query.record().indexOf(fieldName.c_str());
+
+    std::vector<Book> books;
+
+    while (query.next()) {
+        Book book;
+        book.setTitle(query.value(valueIndex["title"]).toString().toStdString());
+
+        std::stringstream authorsStream(query.value(valueIndex["authors"]).toString().toStdString());
+
+        std::vector<std::string> authors;
+        std::string author;
+
+        while (std::getline(authorsStream, author, ';'))
+            authors.push_back(author);
+        book.setAuthors(authors);
+
+        book.setLanguage(query.value(valueIndex["language"]).toString().toStdString());
+        book.setOriginalPublication(query.value(valueIndex["language"]).toInt());
+        book.setAverageRating(query.value(valueIndex["average_rating"]).toFloat());
+        book.setRatingsCount(query.value(valueIndex["average_rating"]).toInt());
+        book.setIsbn(query.value(valueIndex["isbn"]).toString().toStdString());
+        book.setUrl(query.value(valueIndex["image_url"]).toString().toStdString());
+
+        books.push_back(book);
+    }
+
+    if (!query.exec()) qDebug() << "Error displaying borrowed books for this user!" << query.lastError().text();
+
+    return books;
 }
 
-void DatabaseManager::displayAllBooks()
+void DatabaseManager::getAllBooks()
 {
     QSqlQuery query;
-    query.prepare("SELECT b.title, b.authors, b.language,b.original_publication_year, b.avarage_rating,"
+    query.prepare("SELECT b.title, b.authors, b.language,b.original_publication_year, b.average_rating,"
                   " b.ratings_count, b.isbn, b.available_book FROM Books b ");
 
     if (!query.exec()) qDebug() << "Error displaying books!" << query.lastError().text();
