@@ -44,7 +44,8 @@ public:
 
     void getUsersForBook(int book_id);
     std::vector<Book> getBorrowedBooksForUser(int user_id);
-    void getAllBooks();
+   // void getAllBooks();
+    std::vector<Book> getAllBooks();
 
     int countBooks();
     bool validUsername(QString username);

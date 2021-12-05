@@ -280,13 +280,48 @@ std::vector<Book> DatabaseManager::getBorrowedBooksForUser(int user_id)
     return books;
 }
 
-void DatabaseManager::getAllBooks()
+std::vector<Book> DatabaseManager::getAllBooks()
 {
     QSqlQuery query;
     query.prepare("SELECT b.title, b.authors, b.language,b.original_publication_year, b.average_rating,"
-                  " b.ratings_count, b.isbn, b.available_book FROM Books b ");
+                  " b.ratings_count, b.isbn, FROM Books b ");
 
-    if (!query.exec()) qDebug() << "Error displaying books!" << query.lastError().text();
+
+    std::vector<std::string> fieldNames = { "title", "authors", "language", "original_publication_year",
+        "average_rating", "ratings_count", "isbn", };
+    std::unordered_map<std::string, int> valueIndex;
+
+    for (auto& fieldName : fieldNames)
+        valueIndex[fieldName] = query.record().indexOf(fieldName.c_str());
+
+    std::vector<Book> books;
+
+    while (query.next()) {
+        Book book;
+        book.setTitle(query.value(valueIndex["title"]).toString().toStdString());
+
+        std::stringstream authorsStream(query.value(valueIndex["authors"]).toString().toStdString());
+
+        std::vector<std::string> authors;
+        std::string author;
+
+        while (std::getline(authorsStream, author, ';'))
+            authors.push_back(author);
+        book.setAuthors(authors);
+
+        book.setLanguage(query.value(valueIndex["language"]).toString().toStdString());
+        book.setOriginalPublication(query.value(valueIndex["language"]).toInt());
+        book.setAverageRating(query.value(valueIndex["average_rating"]).toFloat());
+        book.setRatingsCount(query.value(valueIndex["average_rating"]).toInt());
+        book.setIsbn(query.value(valueIndex["isbn"]).toString().toStdString());
+        book.setUrl(query.value(valueIndex["image_url"]).toString().toStdString());
+
+        books.push_back(book);
+    }
+
+    if (!query.exec()) qDebug() << "Error displaying all books" << query.lastError().text();
+
+    return books;
 }
 
 int DatabaseManager::countBooks()
