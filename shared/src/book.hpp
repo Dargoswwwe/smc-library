@@ -1,5 +1,7 @@
 #ifndef BOOK_HPP
 #define BOOK_HPP
+
+#include "json.hpp"
 #include "rapidcsv.h"
 #include "shared_global.hpp"
 
@@ -11,6 +13,8 @@
 
 class SHARED_EXPORT Book
 {
+    using json = nlohmann::json;
+
 private:
     std::string title;
     std::vector<std::string> authors;
@@ -39,7 +43,7 @@ public:
     std::vector<std::string> getAuthors() const;
     std::string getLanguage() const;
     uint32_t getOriginalPublication() const;
-    float getaverageRating() const;
+    float getAverageRating() const;
     uint32_t getRatingsCount() const;
     std::string getIsbn() const;
     uint32_t getExemplarsAvailable() const;
@@ -62,8 +66,12 @@ public:
     // Auxiliary functions & operators
     Book& operator=(const Book& book);
     bool operator==(const Book& book);
+
     friend std::ostream& operator<<(std::ostream& fout, const std::vector<std::string>& authorsOrContent);
     friend std::ostream& operator<<(std::ostream& fout, const Book& book);
+
+    friend void to_json(json& j, const Book& b);
+    friend void from_json(const json& j, Book& b);
 
     void availability();
     void readBookFromFile(int index);

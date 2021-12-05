@@ -1,5 +1,7 @@
 #include "book.hpp"
 
+using nlohmann::json;
+
 // Auxiliary functions & operators
 Book& Book::operator=(const Book& book)
 {
@@ -47,13 +49,41 @@ std::ostream& operator<<(std::ostream& fout, const Book& book)
          << book.getAuthors() << std::endl
          << book.getLanguage() << std::endl
          << book.getOriginalPublication() << std::endl
-         << book.getaverageRating() << std::endl
+         << book.getAverageRating() << std::endl
          << book.getRatingsCount() << std::endl
          << book.getIsbn() << std::endl
          << book.getExemplarsAvailable() << std::endl
          << book.getContent() << std::endl
          << book.getAvailability() << std::endl;
     return fout;
+}
+
+void to_json(json& j, const Book& b)
+{
+    j["title"] = b.title;
+    j["authors"] = b.authors;
+    j["language"] = b.language;
+    j["originalPublication"] = b.originalPublication;
+    j["averageRating"] = b.averageRating;
+    j["ratingsCount"] = b.ratingsCount;
+    j["isbn"] = b.isbn;
+    j["exemplarsAvailable"] = b.exemplarsAvailable;
+    j["content"] = b.content;
+    j["availability"] = b.available;
+}
+
+void from_json(const json& j, Book& b)
+{
+    j.at("title").get_to(b.title);
+    j.at("authors").get_to(b.authors);
+    j.at("language").get_to(b.language);
+    j.at("originalPublication").get_to(b.originalPublication);
+    j.at("averageRating").get_to(b.averageRating);
+    j.at("ratingsCount").get_to(b.ratingsCount);
+    j.at("isbn").get_to(b.isbn);
+    j.at("exemplarsAvailable").get_to(b.exemplarsAvailable);
+    j.at("content").get_to(b.content);
+    j.at("availability").get_to(b.available);
 }
 
 void Book::readBookFromFile(int index)
@@ -164,7 +194,7 @@ std::string Book::getLanguage() const { return language; }
 
 uint32_t Book::getOriginalPublication() const { return originalPublication; }
 
-float Book::getaverageRating() const { return averageRating; }
+float Book::getAverageRating() const { return averageRating; }
 
 uint32_t Book::getRatingsCount() const { return ratingsCount; }
 
