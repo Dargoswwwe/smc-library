@@ -6,7 +6,8 @@
 
 #include <fstream>
 
-class SHARED_EXPORT Library {
+class SHARED_EXPORT Library
+{
 private:
     std::vector<Book> allBooks;
     std::vector<Book> availableBooks;

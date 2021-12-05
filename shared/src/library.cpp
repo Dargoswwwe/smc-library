@@ -1,4 +1,5 @@
 #include "library.hpp"
+
 #include <algorithm>
 #include <iostream>
 
@@ -10,15 +11,13 @@ Library::Library(std::vector<Book> allBooks, std::vector<Book> availableBooks, s
     , availableBooks(availableBooks)
     , borrowedBooks(borrowedBooks)
     , users(users)
-{
-}
+{ }
 
 Library::Library(std::vector<Book> allBooks, std::vector<Book> availableBooks, std::vector<Book> borrowedBooks)
     : allBooks(allBooks)
     , availableBooks(availableBooks)
     , borrowedBooks(borrowedBooks)
-{
-}
+{ }
 
 Library::Library(const Library& other)
 {
@@ -124,8 +123,7 @@ std::ostream& operator<<(std::ostream& fout, Library& lib)
 std::ostream& operator<<(std::ostream& out, std::vector<Book> booksList_or_usersList)
 {
     sortAvailableBooks(booksList_or_usersList);
-    for (auto current : booksList_or_usersList)
-    {
+    for (auto current : booksList_or_usersList) {
         out << current << "\n";
     }
     return out;

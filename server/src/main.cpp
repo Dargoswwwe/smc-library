@@ -1,6 +1,7 @@
-#include <QCoreApplication>
-#include<iostream>
 #include "server.hpp"
+
+#include <QCoreApplication>
+#include <iostream>
 
 int main(int argc, char* argv[])
 {

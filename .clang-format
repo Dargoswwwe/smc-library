@@ -1,4 +1,7 @@
 BasedOnStyle: Webkit
+BreakBeforeBraces: Mozilla
+BinPackArguments: true
+IncludeBlocks: Regroup
 IndentWidth: 4
 TabWidth: 4
 ColumnLimit: 120

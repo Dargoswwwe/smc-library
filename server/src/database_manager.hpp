@@ -1,17 +1,20 @@
 #ifndef DATABASE_MANAGEMENT_H
 #define DATABASE_MANAGEMENT_H
 
+#include "book.hpp"
+
+#include <QDate>
 #include <QJsonObject>
 #include <QSqlDatabase>
 #include <QSqlDriver>
 #include <QSqlError>
 #include <QSqlQuery>
+#include <QSqlRecord>
 #include <QtNetwork>
-#include <QDate>
-#include<vector>
-#include"book.hpp"
+#include <vector>
 
-class DatabaseManager {
+class DatabaseManager
+{
 private:
     QSqlDatabase database;
     std::string databaseDir;
@@ -27,7 +30,7 @@ public:
     void deleteRowFromUsersBooksTable(int id_user, int id_book);
 
     void addValuesIntoBookTable(int id, QString title, QString authors, QString language, int original_publication_year,
-                                float avarage_rating, int ratings_count, QString isbn, QString image_url,int available_books);
+        float avarage_rating, int ratings_count, QString isbn, QString image_url, int available_books);
     void addValuesIntoUsersTable(QString username, QString password);
     void addValuesIntoUsersBooksTable(int user_id, int book_id);
 

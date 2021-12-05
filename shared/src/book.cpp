@@ -152,8 +152,7 @@ Book::Book(const Book& book)
     , content { book.content }
     , available { book.available }
     , url { book.url }
-{
-}
+{ }
 
 // getters and setters
 

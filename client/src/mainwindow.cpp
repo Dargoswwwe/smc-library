@@ -133,7 +133,7 @@ void MainWindow::handleMessage(MessageType messageType, const json& messageData)
     case MessageType::LOGIN:
         try {
             if (messageData["response"] == "name error") { ui->lineLoginUsername->setText("username not registered"); }
-            if (messageData["response"] == "password error") {ui->lineLoginUsername->setText("wrong password"); }
+            if (messageData["response"] == "password error") { ui->lineLoginUsername->setText("wrong password"); }
             if (messageData["response"] == "success") { switchPage(2); }
         } catch (const nlohmann::detail::type_error& e) { }
         break;

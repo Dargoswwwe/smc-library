@@ -12,11 +12,11 @@ class BookItemWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit BookItemWidget(QWidget *parent = nullptr);
+    explicit BookItemWidget(QWidget* parent = nullptr);
     ~BookItemWidget();
 
 private:
-    Ui::BookItemWidget *ui;
+    Ui::BookItemWidget* ui;
 };
 
 #endif // BOOKITEMWIDGET_HPP

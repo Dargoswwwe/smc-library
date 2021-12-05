@@ -1,4 +1,5 @@
 #include "user.hpp"
+
 #include <random>
 
 User::User()

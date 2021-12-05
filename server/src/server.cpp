@@ -102,36 +102,29 @@ void Server::disconnect()
 void Server::loginUser(const std::string& name, const std::string& password, QTcpSocket* clientSocket)
 {
 
-    if(!database.validUsername(name.c_str())){
-       sendData(clientSocket,
-           R"({"type": "login", "response": "name error"})"_json);
+    if (!database.validUsername(name.c_str())) {
+        sendData(clientSocket, R"({"type": "login", "response": "name error"})"_json);
+    } else {
+        if (database.validPassword(name.c_str(), password.c_str())) {
+
+            sendData(clientSocket, R"({"type": "login", "response": "success"})"_json);
+        } else {
+            sendData(clientSocket, R"({"type": "login", "response": "password error"})"_json);
         }
-      else{
-        if(database.validPassword(name.c_str(),password.c_str())){
-
-   sendData(clientSocket, R"({"type": "login", "response": "success"})"_json);}
-   else {
-       sendData(clientSocket,
-           R"({"type": "login", "response": "password error"})"_json);
-   }
-
-
     }
 }
 
 void Server::registerUser(const std::string& name, const std::string& password, QTcpSocket* clientSocket)
 {
 
-     if(database.validUsername(name.c_str())){
-        sendData(clientSocket,
-            R"({"type": "register", "response": "error"})"_json);
-         }
-       else{
+    if (database.validUsername(name.c_str())) {
+        sendData(clientSocket, R"({"type": "register", "response": "error"})"_json);
+    } else {
 
-    sendData(clientSocket, R"({"type": "register", "response": "success"})"_json);
+        sendData(clientSocket, R"({"type": "register", "response": "success"})"_json);
 
-    database.addValuesIntoUsersTable(name.c_str(), password.c_str());
-     }
+        database.addValuesIntoUsersTable(name.c_str(), password.c_str());
+    }
 }
 
 void Server::handleMessage(QTcpSocket* clientSocket, MessageType messageType, const json& messageData)
@@ -148,7 +141,7 @@ void Server::handleMessage(QTcpSocket* clientSocket, MessageType messageType, co
         break;
 
     case MessageType::GET_BOOKS:
-        loginUser();
+        loginUser(messageData["username"], messageData["password"], clientSocket);
         break;
     }
 }

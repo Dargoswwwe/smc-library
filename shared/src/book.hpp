@@ -9,7 +9,8 @@
 #include <string>
 #include <vector>
 
-class SHARED_EXPORT Book {
+class SHARED_EXPORT Book
+{
 private:
     std::string title;
     std::vector<std::string> authors;
