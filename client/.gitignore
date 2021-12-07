@@ -16,3 +16,4 @@ Makefile.Release
 compile_flags.txt
 build_and_run.sh
 readme.html
+qrc_resources.cpp
