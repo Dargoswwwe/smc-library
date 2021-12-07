@@ -23,7 +23,7 @@ MainWindow::MainWindow(QWidget* parent)
     QObject::connect(ui->lineRegisterUsername, &QLineEdit::returnPressed, ui->buttonRegister, &QPushButton::click);
     QObject::connect(ui->lineRegisterPassword, &QLineEdit::returnPressed, ui->buttonRegister, &QPushButton::click);
     QObject::connect(
-        ui->lineRegisterConfirmPassword, &QLineEdit::returnPressed, ui->buttonRegister, &QPushButton::click);
+                ui->lineRegisterConfirmPassword, &QLineEdit::returnPressed, ui->buttonRegister, &QPushButton::click);
     QObject::connect(ui->buttonRegisterInstead, &QPushButton::clicked, this, [this] { switchPage(1); });
 
     QObject::connect(ui->buttonRegister, &QPushButton::clicked, this, [this] {
@@ -49,7 +49,7 @@ MainWindow::MainWindow(QWidget* parent)
     QObject::connect(ui->buttonRegisterGuest, &QPushButton::clicked, this, [this] { switchPage(2); });
     QObject::connect(ui->buttonLoginInstead, &QPushButton::clicked, this, [this] { switchPage(0); });
     QObject::connect(
-        ui->buttonLogin, &QPushButton::clicked, this, [this] { sendData(serverSocket, R"({"hello": "test"})"_json); });
+                ui->buttonLogin, &QPushButton::clicked, this, [this] { sendData(serverSocket, R"({"hello": "test"})"_json); });
 
     QObject::connect(ui->buttonLoginGuest, &QPushButton::clicked, this, [this] { switchPage(2); });
 
@@ -61,10 +61,8 @@ MainWindow::MainWindow(QWidget* parent)
     inStream.setDevice(serverSocket);
     inStream.setVersion(QDataStream::Qt_5_15);
 
-    for (int i = 0; i < 10; i++) {
-        BookItemWidget* bookItem = new BookItemWidget(ui->scrollAreaWidgetContents);
-        ui->scrollVerticalLayout->addWidget(bookItem);
-    }
+//    BookItemWidget* bookItem = new BookItemWidget(book,ui->scrollAreaWidgetContents);
+//    ui->scrollVerticalLayout->addWidget(bookItem);
 
     ui->scrollVerticalLayout->addStretch();
 
@@ -124,18 +122,18 @@ void MainWindow::handleMessage(MessageType messageType, const json& messageData)
     switch (messageType) {
     case MessageType::REGISTER:
         try {
-            if (messageData["response"] == "error") { ui->lineRegisterUsername->setText("username taken"); }
+        if (messageData["response"] == "error") { ui->lineRegisterUsername->setText("username taken"); }
 
-            if (messageData["response"] == "success") { switchPage(2); }
-        } catch (const nlohmann::detail::type_error& e) { }
+        if (messageData["response"] == "success") { switchPage(2); }
+    } catch (const nlohmann::detail::type_error& e) { }
         break;
 
     case MessageType::LOGIN:
         try {
-            if (messageData["response"] == "name error") { ui->lineLoginUsername->setText("username not registered"); }
-            if (messageData["response"] == "password error") { ui->lineLoginUsername->setText("wrong password"); }
-            if (messageData["response"] == "success") { switchPage(2); }
-        } catch (const nlohmann::detail::type_error& e) { }
+        if (messageData["response"] == "name error") { ui->lineLoginUsername->setText("username not registered"); }
+        if (messageData["response"] == "password error") { ui->lineLoginUsername->setText("wrong password"); }
+        if (messageData["response"] == "success") { switchPage(2); }
+    } catch (const nlohmann::detail::type_error& e) { }
         break;
 
     case MessageType::GET_BOOKS:
