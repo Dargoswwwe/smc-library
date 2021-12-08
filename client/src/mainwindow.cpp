@@ -53,7 +53,8 @@ MainWindow::MainWindow(QWidget* parent)
 
     QObject::connect(ui->buttonLoginGuest, &QPushButton::clicked, this, [this] { switchPage(2); });
 
-    QObject::connect(ui->buttonLogin, &QPushButton::clicked, this, [this] { switchPage(3); });
+    QObject::connect(ui->accountSettingsButton, &QPushButton::clicked, this, [this] { switchPage(3); });
+    QObject::connect(ui->backButton, &QPushButton::clicked, this, [this] { switchPage(2); });
 
     QObject::connect(serverSocket, &QTcpSocket::connected, this, &MainWindow::connected);
     QObject::connect(serverSocket, &QIODevice::readyRead, this, &MainWindow::receiveData);
@@ -62,9 +63,16 @@ MainWindow::MainWindow(QWidget* parent)
     inStream.setVersion(QDataStream::Qt_5_15);
 
 //    BookItemWidget* bookItem = new BookItemWidget(book,ui->scrollAreaWidgetContents);
-//    ui->scrollVerticalLayout->addWidget(bookItem);
+//    ui->verticalLayout_4->addWidget(bookItem);
 
-    ui->scrollVerticalLayout->addStretch();
+//    Book book;
+
+//    for (int i = 0; i < 10; i++) {
+//            BookItemWidget* bookItem = new BookItemWidget(book, ui->scrollAreaWidgetContents);
+//            ui->verticalLayout_4->addWidget(bookItem);
+//        }
+
+//    ui->verticalLayout_4->addStretch();
 
     connectToServer();
 }
