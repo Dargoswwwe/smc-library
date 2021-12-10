@@ -437,7 +437,7 @@
          <property name="geometry">
           <rect>
            <x>20</x>
-           <y>320</y>
+           <y>310</y>
            <width>751</width>
            <height>31</height>
           </rect>
@@ -523,6 +523,9 @@
             <property name="styleSheet">
              <string notr="true">background-color: rgb(255, 255, 255);</string>
             </property>
+            <property name="echoMode">
+             <enum>QLineEdit::Password</enum>
+            </property>
            </widget>
           </item>
           <item row="2" column="1">
@@ -530,12 +533,18 @@
             <property name="styleSheet">
              <string notr="true">background-color: rgb(255, 255, 255);</string>
             </property>
+            <property name="echoMode">
+             <enum>QLineEdit::Password</enum>
+            </property>
            </widget>
           </item>
           <item row="1" column="1">
            <widget class="QLineEdit" name="newPasswordLine">
             <property name="styleSheet">
              <string notr="true">background-color: rgb(255, 255, 255);</string>
+            </property>
+            <property name="echoMode">
+             <enum>QLineEdit::Password</enum>
             </property>
            </widget>
           </item>

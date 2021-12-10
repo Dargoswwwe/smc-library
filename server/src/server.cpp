@@ -138,6 +138,10 @@ void Server::changeUsername(const std::string &name,  const std::string& passwor
     }
 }
 
+void Server::logout(QTcpSocket *clientSocket)
+{
+   sendData(clientSocket, R"({"type": "logout", "response": "Success"})"_json);
+}
 
 void Server::handleMessage(QTcpSocket* clientSocket, MessageType messageType, const json& messageData)
 {
@@ -155,8 +159,13 @@ void Server::handleMessage(QTcpSocket* clientSocket, MessageType messageType, co
     case MessageType::GET_BOOKS:
         loginUser(messageData["username"], messageData["password"], clientSocket);
         break;
+
      case MessageType::CHANGE_USERNAME:
         changeUsername(messageData["newusername"], messageData["password"],clientSocket);
+        break;
+
+     case MessageType::LOGOUT:
+        logout(clientSocket);
         break;
     }
 }

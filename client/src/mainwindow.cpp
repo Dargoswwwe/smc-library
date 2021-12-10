@@ -63,6 +63,24 @@ MainWindow::MainWindow(QWidget* parent)
 
     });
 
+    QObject::connect(ui->logoutButton_2, &QPushButton::clicked, this, [this]
+    {
+        json message;
+        message["type"] = MessageType::LOGOUT;
+
+        sendData(serverSocket, message);
+
+    });
+
+    QObject::connect(ui->logoutButton_4, &QPushButton::clicked, this, [this]
+    {
+        json message;
+        message["type"] = MessageType::LOGOUT;
+
+        sendData(serverSocket, message);
+
+    });
+
     QObject::connect(ui->buttonRegisterGuest, &QPushButton::clicked, this, [this] { switchPage(2); });
     QObject::connect(ui->buttonLoginInstead, &QPushButton::clicked, this, [this] { switchPage(0); });
     QObject::connect(
@@ -72,7 +90,8 @@ MainWindow::MainWindow(QWidget* parent)
 
     QObject::connect(ui->accountSettingsButton, &QPushButton::clicked, this, [this] { switchPage(3); });
     QObject::connect(ui->backButton, &QPushButton::clicked, this, [this] { switchPage(2); });
-
+    QObject::connect(ui->logoutButton_2, &QPushButton::clicked, this, [this] {switchPage(0);});
+    QObject::connect(ui->logoutButton_4, &QPushButton::clicked, this, [this] {switchPage(0);});
 
     QObject::connect(serverSocket, &QTcpSocket::connected, this, &MainWindow::connected);
     QObject::connect(serverSocket, &QIODevice::readyRead, this, &MainWindow::receiveData);
@@ -187,10 +206,23 @@ void MainWindow::handleMessage(MessageType messageType, const json& messageData)
         }
         if(messageData["response"]=="Success")
         {
-          user->setUsername(ui->changeUsernameLine->text().toStdString());
+            user->setUsername(ui->changeUsernameLine->text().toStdString());
         }
     }catch (const nlohmann::detail::type_error& e) { }
         break;
+
+    case MessageType::LOGOUT:
+        try{
+        if(messageData["response"]=="Success")
+        {
+           switchPage(0);
+           ui->lineLoginUsername->setText("");
+           ui->lineLoginPassword->setText("");
+           user = std::nullopt;
+        }
+    }catch (const nlohmann::detail::type_error& e) { }
+        break;
+
 
     }
 }
