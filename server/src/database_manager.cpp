@@ -113,13 +113,13 @@ void DatabaseManager::deleteUser(QString username)
     if (!query.exec()) qDebug() << "Error deleting a user." << query.lastError().text();
 }
 
-void DatabaseManager::addValuesIntoBookTable(int id, QString title, QString authors, QString language,
+bool DatabaseManager::addValuesIntoBookTable(int id, QString title, QString authors, QString language,
     int original_publication_year, float average_rating, int ratings_count, QString isbn, QString image_url,
     int available_books)
 {
     QSqlQuery query;
 
-    query.prepare("INSERT into Books ("
+    query.prepare("INSERT OR REPLACE INTO Books ("
                   "book_id, "
                   "title, "
                   "authors, "
@@ -143,12 +143,16 @@ void DatabaseManager::addValuesIntoBookTable(int id, QString title, QString auth
     query.addBindValue(image_url);
     query.addBindValue(available_books);
 
-    if (!query.exec()) qDebug() << "Error adding value: " << query.lastError();
+    if (!query.exec()) {
+        qDebug() << "Error adding value: " << query.lastError();
+        return false;
+    }
+
+    return true;
 }
 
-void DatabaseManager::addValuesIntoUsersTable(QString username, QString password)
+bool DatabaseManager::addValuesIntoUsersTable(QString username, QString password)
 {
-
     QSqlQuery query;
 
     query.prepare("INSERT into Users ("
@@ -160,12 +164,15 @@ void DatabaseManager::addValuesIntoUsersTable(QString username, QString password
     query.addBindValue(username);
     query.addBindValue(password);
 
-    if (!query.exec()) qDebug() << "Error adding user.";
+    if (!query.exec()) {
+        qDebug() << "Error adding user.";
+        return false;
+    }
+    return true;
 }
 
-void DatabaseManager::addValuesIntoUsersBooksTable(int user_id, int book_id)
+bool DatabaseManager::addValuesIntoUsersBooksTable(int user_id, int book_id)
 {
-
     QSqlQuery query;
     QDate date_of_borrowing;
 
@@ -182,7 +189,11 @@ void DatabaseManager::addValuesIntoUsersBooksTable(int user_id, int book_id)
     query.addBindValue(book_id);
     query.addBindValue(date_of_borrowing);
 
-    if (!query.exec()) qDebug() << "Error binding book with user.";
+    if (!query.exec()) {
+        qDebug() << "Error binding book with user.";
+        return false;
+    }
+    return true;
 }
 
 void DatabaseManager::changeUserPassword(QString username, QString password)
@@ -209,6 +220,8 @@ void DatabaseManager::changeUsername(QString username, QString password)
 
 void DatabaseManager::insertBooksIntoDataBase()
 {
+    int valuesAdded = 0;
+    qDebug() << "Importing books from the CSV file into the database...";
     QFile inputFile((databaseDir + "books.csv").c_str());
     inputFile.open(QIODevice::ReadOnly);
     if (!inputFile.isOpen()) qDebug() << "Error";
@@ -217,9 +230,11 @@ void DatabaseManager::insertBooksIntoDataBase()
     for (QString line = stream.readLine(); !line.isNull(); line = stream.readLine()) {
 
         QStringList word = line.split(',');
-        addValuesIntoBookTable(word[0].toInt(), word.at(1), word.at(2), word.at(3), word.at(4).toInt(),
+        valuesAdded += addValuesIntoBookTable(word[0].toInt(), word.at(1), word.at(2), word.at(3), word.at(4).toInt(),
             word.at(5).toFloat(), word.at(6).toInt(), word.at(7), word.at(8), word.at(9).toInt());
     };
+
+    qDebug() << "Done. Imported" << valuesAdded;
 }
 
 void DatabaseManager::getUsersForBook(int book_id)
@@ -230,7 +245,7 @@ void DatabaseManager::getUsersForBook(int book_id)
 
     query.bindValue(":book_id", book_id);
 
-    if (!query.exec()) qDebug() << "Error displaying users for this book!" << query.lastError().text();
+    if (!query.exec()) qDebug() << "Error selecting users for this book!" << query.lastError().text();
 }
 
 std::vector<Book> DatabaseManager::getBorrowedBooksForUser(int user_id)
@@ -239,9 +254,14 @@ std::vector<Book> DatabaseManager::getBorrowedBooksForUser(int user_id)
     query.prepare(
         "SELECT b.title, b.authors, b.language, b.original_publication_year, b.average_rating,"
         " b.ratings_count, b.isbn, ub.date_of_borrowing FROM UsersBooks ub INNER JOIN Books b on ub.book_id=b.book_id "
-        "WHERE ub.user_id =  (:user_id) ");
+        "WHERE ub.user_id = (:user_id)");
 
     query.bindValue(":user_id", user_id);
+
+    if (!query.exec()) {
+        qDebug() << "Error selecting borrowed books for this user!" << query.lastError().text();
+        return std::vector<Book>();
+    }
 
     std::vector<std::string> fieldNames = { "title", "authors", "language", "original_publication_year",
         "average_rating", "ratings_count", "isbn", "date_of_borrowing" };
@@ -275,20 +295,31 @@ std::vector<Book> DatabaseManager::getBorrowedBooksForUser(int user_id)
         books.push_back(book);
     }
 
-    if (!query.exec()) qDebug() << "Error displaying borrowed books for this user!" << query.lastError().text();
-
     return books;
 }
 
 std::vector<Book> DatabaseManager::getAllBooks()
 {
     QSqlQuery query;
-    query.prepare("SELECT b.title, b.authors, b.language,b.original_publication_year, b.average_rating,"
-                  " b.ratings_count, b.isbn, FROM Books b ");
+    query.prepare("SELECT b.title, b.authors, b.language, b.original_publication_year, b.average_rating, "
+                  "b.ratings_count, b.isbn FROM Books b");
 
+    if (!query.exec()) {
+        qDebug() << query.executedQuery();
+        qDebug() << "Error selecting all books" << query.lastError();
+        return std::vector<Book>();
+    }
 
-    std::vector<std::string> fieldNames = { "title", "authors", "language", "original_publication_year",
-        "average_rating", "ratings_count", "isbn", };
+    std::vector<std::string> fieldNames = {
+        "title",
+        "authors",
+        "language",
+        "original_publication_year",
+        "average_rating",
+        "ratings_count",
+        "isbn",
+    };
+
     std::unordered_map<std::string, int> valueIndex;
 
     for (auto& fieldName : fieldNames)
@@ -318,8 +349,6 @@ std::vector<Book> DatabaseManager::getAllBooks()
 
         books.push_back(book);
     }
-
-    if (!query.exec()) qDebug() << "Error displaying all books" << query.lastError().text();
 
     return books;
 }
