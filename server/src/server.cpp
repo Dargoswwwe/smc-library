@@ -140,7 +140,15 @@ void Server::changeUsername(const std::string &name,  const std::string& passwor
 
 void Server::logout(QTcpSocket *clientSocket)
 {
-   sendData(clientSocket, R"({"type": "logout", "response": "Success"})"_json);
+    sendData(clientSocket, R"({"type": "logout", "response": "Success"})"_json);
+}
+
+void Server::deleteAccount(const std::string &name,QTcpSocket *clientSocket)
+{
+
+    database.deleteUser(name.c_str());
+    sendData(clientSocket, R"({"type": "deleteAccount", "response": "Success"})"_json);
+
 }
 
 void Server::handleMessage(QTcpSocket* clientSocket, MessageType messageType, const json& messageData)
@@ -148,8 +156,8 @@ void Server::handleMessage(QTcpSocket* clientSocket, MessageType messageType, co
     switch (messageType) {
     case MessageType::REGISTER:
         try {
-            registerUser(messageData["username"], messageData["password"], clientSocket);
-        } catch (const nlohmann::detail::type_error& e) { }
+        registerUser(messageData["username"], messageData["password"], clientSocket);
+    } catch (const nlohmann::detail::type_error& e) { }
         break;
 
     case MessageType::LOGIN:
@@ -160,12 +168,16 @@ void Server::handleMessage(QTcpSocket* clientSocket, MessageType messageType, co
         loginUser(messageData["username"], messageData["password"], clientSocket);
         break;
 
-     case MessageType::CHANGE_USERNAME:
+    case MessageType::CHANGE_USERNAME:
         changeUsername(messageData["newusername"], messageData["password"],clientSocket);
         break;
 
-     case MessageType::LOGOUT:
+    case MessageType::LOGOUT:
         logout(clientSocket);
+        break;
+
+    case MessageType::DELETE_ACCOUNT:
+        deleteAccount(messageData["username"],clientSocket);
         break;
     }
 }

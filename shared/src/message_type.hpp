@@ -10,16 +10,18 @@ enum class MessageType
     GET_BOOKS,
     CHANGE_USERNAME,
     LOGOUT,
+    DELETE_ACCOUNT,
 };
 
 NLOHMANN_JSON_SERIALIZE_ENUM(MessageType,
-    {
-        {MessageType::REGISTER,   "register"},
-        { MessageType::LOGIN,     "login"   },
-        { MessageType::GET_BOOKS, "getBooks"},
-        { MessageType::CHANGE_USERNAME, "changeUsername"},
-        { MessageType::LOGOUT, "logout"},
-     }
-);
+                             {
+                                 {MessageType::REGISTER,   "register"},
+                                 { MessageType::LOGIN,     "login"   },
+                                 { MessageType::GET_BOOKS, "getBooks"},
+                                 { MessageType::CHANGE_USERNAME, "changeUsername"},
+                                 { MessageType::LOGOUT, "logout"},
+                                 { MessageType::DELETE_ACCOUNT, "deleteAccount"},
+                             }
+                             );
 
 #endif // MESSAGE_TYPE_H
