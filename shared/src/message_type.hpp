@@ -7,7 +7,8 @@ enum class MessageType
 {
     REGISTER,
     LOGIN,
-    GET_BOOKS
+    GET_BOOKS,
+    CHANGE_USERNAME
 };
 
 NLOHMANN_JSON_SERIALIZE_ENUM(MessageType,
@@ -15,6 +16,8 @@ NLOHMANN_JSON_SERIALIZE_ENUM(MessageType,
         {MessageType::REGISTER,   "register"},
         { MessageType::LOGIN,     "login"   },
         { MessageType::GET_BOOKS, "getBooks"},
-});
+        { MessageType::CHANGE_USERNAME, "changeUsername"},
+     }
+);
 
 #endif // MESSAGE_TYPE_H

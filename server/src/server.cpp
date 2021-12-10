@@ -125,6 +125,19 @@ void Server::registerUser(const std::string& name, const std::string& password, 
         sendData(clientSocket, R"({"type": "register", "response": "Success"})"_json);
     }
 }
+void Server::changeUsername(const std::string &name,  const std::string& password, QTcpSocket *clientSocket)
+{
+    if (database.validUsername(name.c_str())) {
+        sendData(clientSocket, R"({"type": "changeUsername", "response": "AlreadyTaken"})"_json);
+    }
+    else
+    {
+        database.changeUsername(name.c_str(),password.c_str());
+
+        sendData(clientSocket, R"({"type": "changeUsername", "response": "Success"})"_json);
+    }
+}
+
 
 void Server::handleMessage(QTcpSocket* clientSocket, MessageType messageType, const json& messageData)
 {
@@ -141,6 +154,9 @@ void Server::handleMessage(QTcpSocket* clientSocket, MessageType messageType, co
 
     case MessageType::GET_BOOKS:
         loginUser(messageData["username"], messageData["password"], clientSocket);
+        break;
+     case MessageType::CHANGE_USERNAME:
+        changeUsername(messageData["newusername"], messageData["password"],clientSocket);
         break;
     }
 }

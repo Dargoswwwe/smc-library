@@ -22,7 +22,7 @@ MainWindow::MainWindow(QWidget* parent)
     QObject::connect(ui->lineRegisterUsername, &QLineEdit::returnPressed, ui->buttonRegister, &QPushButton::click);
     QObject::connect(ui->lineRegisterPassword, &QLineEdit::returnPressed, ui->buttonRegister, &QPushButton::click);
     QObject::connect(
-        ui->lineRegisterConfirmPassword, &QLineEdit::returnPressed, ui->buttonRegister, &QPushButton::click);
+                ui->lineRegisterConfirmPassword, &QLineEdit::returnPressed, ui->buttonRegister, &QPushButton::click);
     QObject::connect(ui->buttonRegisterInstead, &QPushButton::clicked, this, [this] { switchPage(1); });
 
     QObject::connect(ui->buttonRegister, &QPushButton::clicked, this, [this] {
@@ -32,11 +32,12 @@ MainWindow::MainWindow(QWidget* parent)
         message["data"]["username"] = user->getUsername();
         message["data"]["password"] = user->getPassword();
 
+
         sendData(serverSocket, message);
     });
 
     QObject::connect(ui->buttonLogin, &QPushButton::clicked, this, [this] {
-        user = User(ui->lineRegisterUsername->text().toStdString(), ui->lineRegisterPassword->text().toStdString());
+        user = User(ui->lineLoginUsername->text().toStdString(), ui->lineLoginPassword->text().toStdString());
         json message;
         message["type"] = MessageType::LOGIN;
         message["data"]["username"] = user->getUsername();
@@ -45,15 +46,33 @@ MainWindow::MainWindow(QWidget* parent)
         sendData(serverSocket, message);
     });
 
+    QObject::connect(ui->accountSettingsButton, &QPushButton::clicked, this, [this]
+    {
+        ui->changeUsernameLine->setText(user->getUsername().c_str());
+    });
+
+    QObject::connect(ui->changeUsernameButton, &QPushButton::clicked, this, [this]
+    {
+        QString newUsername=ui->changeUsernameLine->text();
+        json message;
+        message["type"] = MessageType::CHANGE_USERNAME;
+        message["data"]["newusername"] = newUsername.toStdString();
+        message["data"]["password"] = user->getPassword();
+
+        sendData(serverSocket, message);
+
+    });
+
     QObject::connect(ui->buttonRegisterGuest, &QPushButton::clicked, this, [this] { switchPage(2); });
     QObject::connect(ui->buttonLoginInstead, &QPushButton::clicked, this, [this] { switchPage(0); });
     QObject::connect(
-        ui->buttonLogin, &QPushButton::clicked, this, [this] { sendData(serverSocket, R"({"hello": "test"})"_json); });
+                ui->buttonLogin, &QPushButton::clicked, this, [this] { sendData(serverSocket, R"({"hello": "test"})"_json); });
 
     QObject::connect(ui->buttonLoginGuest, &QPushButton::clicked, this, [this] { switchPage(2); });
 
     QObject::connect(ui->accountSettingsButton, &QPushButton::clicked, this, [this] { switchPage(3); });
     QObject::connect(ui->backButton, &QPushButton::clicked, this, [this] { switchPage(2); });
+
 
     QObject::connect(serverSocket, &QTcpSocket::connected, this, &MainWindow::connected);
     QObject::connect(serverSocket, &QIODevice::readyRead, this, &MainWindow::receiveData);
@@ -128,36 +147,50 @@ void MainWindow::handleMessage(MessageType messageType, const json& messageData)
     switch (messageType) {
     case MessageType::REGISTER:
         try {
-            if (messageData["response"] == "Error") {
-                ui->lineRegisterUsername->setText("Username taken");
-                user = std::nullopt;
-            }
+        if (messageData["response"] == "Error") {
+            ui->lineRegisterUsername->setText("Username taken");
+            user = std::nullopt;
+        }
 
-            if (messageData["response"] == "Success") {
-                switchPage(2);
-                // requestAllBooks();
-            }
-        } catch (const nlohmann::detail::type_error& e) { }
+        if (messageData["response"] == "Success") {
+            switchPage(2);
+            // requestAllBooks();
+        }
+    } catch (const nlohmann::detail::type_error& e) { }
         break;
 
     case MessageType::LOGIN:
         try {
-            if (messageData["response"] == "NameError") {
-                ui->lineLoginUsername->setText("username not registered");
-                user = std::nullopt;
-            }
-            if (messageData["response"] == "PasswordError") {
-                ui->lineLoginUsername->setText("Wrong password");
-                user = std::nullopt;
-            }
-            if (messageData["response"] == "Success") {
-                switchPage(2);
-                // requestAllBooks();
-            }
-        } catch (const nlohmann::detail::type_error& e) { }
+        if (messageData["response"] == "NameError") {
+            ui->lineLoginUsername->setText("username not registered");
+            user = std::nullopt;
+        }
+        if (messageData["response"] == "PasswordError") {
+            ui->lineLoginUsername->setText("Wrong password");
+            user = std::nullopt;
+        }
+        if (messageData["response"] == "Success") {
+            switchPage(2);
+            // requestAllBooks();
+        }
+    } catch (const nlohmann::detail::type_error& e) { }
         break;
 
     case MessageType::GET_BOOKS:
         break;
+
+    case MessageType::CHANGE_USERNAME:
+        try{
+        if(messageData["response"]=="AlreadyTaken")
+        {
+            ui->changeUsernameLine->setText("username is already taken");
+        }
+        if(messageData["response"]=="Success")
+        {
+          user->setUsername(ui->changeUsernameLine->text().toStdString());
+        }
+    }catch (const nlohmann::detail::type_error& e) { }
+        break;
+
     }
 }
