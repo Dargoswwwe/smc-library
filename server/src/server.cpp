@@ -31,12 +31,11 @@ void Server::initServer()
     else qDebug() << "The library already has all the books.";
 
     Library library;
-    library.setAllBooks(database.createBooksArray());
+    library.setAllBooks(database.getAllBooks());
 }
 
 void Server::newConnection()
 {
-
     QTcpSocket* clientSocket = tcpServer->nextPendingConnection();
     QDataStream* inStream = new QDataStream(clientSocket);
     inStream->setVersion(QDataStream::Qt_5_15);
@@ -101,29 +100,29 @@ void Server::disconnect()
 
 void Server::loginUser(const std::string& name, const std::string& password, QTcpSocket* clientSocket)
 {
-
     if (!database.validUsername(name.c_str())) {
-        sendData(clientSocket, R"({"type": "login", "response": "name error"})"_json);
+        sendData(clientSocket, R"({"type": "login", "response": "NameError"})"_json);
     } else {
         if (database.validPassword(name.c_str(), password.c_str())) {
+            User newUser(name, password);
+            newUser.setPassword(password);
+            connections[clientSocket].first = newUser;
 
-            sendData(clientSocket, R"({"type": "login", "response": "success"})"_json);
+            sendData(clientSocket, R"({"type": "login", "response": "Success"})"_json);
         } else {
-            sendData(clientSocket, R"({"type": "login", "response": "password error"})"_json);
+            sendData(clientSocket, R"({"type": "login", "response": "PasswordError"})"_json);
         }
     }
 }
 
 void Server::registerUser(const std::string& name, const std::string& password, QTcpSocket* clientSocket)
 {
-
     if (database.validUsername(name.c_str())) {
-        sendData(clientSocket, R"({"type": "register", "response": "error"})"_json);
+        sendData(clientSocket, R"({"type": "register", "response": "Error"})"_json);
     } else {
-
-        sendData(clientSocket, R"({"type": "register", "response": "success"})"_json);
-
         database.addValuesIntoUsersTable(name.c_str(), password.c_str());
+
+        sendData(clientSocket, R"({"type": "register", "response": "Success"})"_json);
     }
 }
 

@@ -3,9 +3,11 @@
 
 #include "json.hpp"
 #include "message_type.hpp"
+#include "user.hpp"
 
 #include <QMainWindow>
 #include <QtNetwork>
+#include <optional>
 
 using nlohmann::json;
 
@@ -18,6 +20,9 @@ QT_END_NAMESPACE
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
+
+private:
+    std::optional<User> user;
 
 public:
     MainWindow(QWidget* parent = nullptr);
