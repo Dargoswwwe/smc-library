@@ -36,6 +36,7 @@ private:
     void loginUser(const std::string& name, const std::string& password, QTcpSocket* clientSocket);
     void registerUser(const std::string& name, const std::string& password, QTcpSocket* clientSocket);
     void changeUsername(const std::string& name, const std::string& password, QTcpSocket* clientSocket);
+    void changePassword(const std::string& name, const std::string& password, const std::string &oldpassword,const std::string& newpassword,const std::string& confirmpassword, QTcpSocket* clientSocket);
     void logout(QTcpSocket *clientSocket);
     void deleteAccount(const std::string& name,QTcpSocket* clientSocket);
 

@@ -1,5 +1,5 @@
 #include "database_manager.hpp"
-
+#include "user.hpp"
 #include <unordered_map>
 
 DatabaseManager::DatabaseManager()
@@ -199,10 +199,12 @@ bool DatabaseManager::addValuesIntoUsersBooksTable(int user_id, int book_id)
 void DatabaseManager::changeUserPassword(QString username, QString password)
 {
     QSqlQuery query;
-
+    User user;
+    user.setUsername(username.toStdString());
+    user.setPassword(password.toStdString());
     query.prepare("UPDATE Users SET password = (:password) WHERE username = (:username)");
-    query.bindValue(":password", password);
-    query.bindValue(":username", username);
+    query.bindValue(":password", user.getPassword().c_str());
+    query.bindValue(":username", user.getUsername().c_str());
 
     query.exec();
 }

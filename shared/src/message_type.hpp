@@ -11,6 +11,7 @@ enum class MessageType
     CHANGE_USERNAME,
     LOGOUT,
     DELETE_ACCOUNT,
+    CHANGE_PASSWORD,
 };
 
 NLOHMANN_JSON_SERIALIZE_ENUM(MessageType,
@@ -21,6 +22,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(MessageType,
                                  { MessageType::CHANGE_USERNAME, "changeUsername"},
                                  { MessageType::LOGOUT, "logout"},
                                  { MessageType::DELETE_ACCOUNT, "deleteAccount"},
+                                 { MessageType::CHANGE_PASSWORD, "changePassword"},
                              }
                              );
 

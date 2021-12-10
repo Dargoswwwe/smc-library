@@ -63,6 +63,27 @@ MainWindow::MainWindow(QWidget* parent)
 
     });
 
+    QObject::connect(ui->changePasswordButton, &QPushButton::clicked, this, [this]
+    {
+
+        QString oldPassword = ui->oldPasswordLine->text();
+        QString newPassword=ui->newPasswordLine->text();
+        QString confirmPassword=ui->confirmPasswordLine->text();
+
+        User userForHashing;
+        userForHashing.setPassword(oldPassword.toStdString());
+        json message;
+        message["type"] = MessageType::CHANGE_PASSWORD;
+        message["data"]["username"] = user->getUsername();
+        message["data"]["password"] = user->getPassword();
+        message["data"]["oldpassword"]=userForHashing.getPassword();
+        message["data"]["newpassword"] = newPassword.toStdString();
+        message["data"]["confirmpassword"] = confirmPassword.toStdString();
+
+        sendData(serverSocket, message);
+
+    });
+
     QObject::connect(ui->logoutButton_2, &QPushButton::clicked, this, [this]
     {
         json message;
@@ -223,6 +244,30 @@ void MainWindow::handleMessage(MessageType messageType, const json& messageData)
     }catch (const nlohmann::detail::type_error& e) { }
         break;
 
+    case MessageType::CHANGE_PASSWORD:
+
+        try {
+
+        if(messageData["response"]=="IncorrectOldPassword")
+        {
+            ui->changePasswordErrorLabel->setText("The old password is incorrect!");
+        }
+        if(messageData["response"]=="SameWithOldPassword")
+        {
+            ui->changePasswordErrorLabel->setText("Type a different password from the old one!");
+        }
+        if(messageData["response"]=="NotMatchingPasswords")
+        {
+            ui->changePasswordErrorLabel->setText("Passwords don't match!");
+        }
+        if(messageData["response"]=="Success")
+        {
+            user->setPassword(ui->newPasswordLine->text().toStdString());
+        }
+
+    }catch (const nlohmann::detail::type_error& e) { }
+        break;
+
     case MessageType::LOGOUT:
         try{
         if(messageData["response"]=="Success")
@@ -247,7 +292,6 @@ void MainWindow::handleMessage(MessageType messageType, const json& messageData)
         }
     }catch (const nlohmann::detail::type_error& e) { }
         break;
-
 
     }
 }
