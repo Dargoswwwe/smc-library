@@ -138,17 +138,12 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::switchPage(int pageIndex)
-{ if (pageIndex==2&& allBooks.size()==0)
-    {        json message;
+{
+    if (pageIndex == 2 && allBooks.size() == 0) {
+        json message;
         message["type"] = MessageType::GET_ALL_BOOKS;
-
         sendData(serverSocket, message);
         allBooks.clear();
-        for (auto book : allBooks) {
-            BookItemWidget* bookItem = new BookItemWidget(book, ui->scrollAreaWidgetContents);
-            ui->verticalLayout_4->addWidget(bookItem);
-        }
-        ui->verticalLayout_4->addStretch();
     }
     ui->stackedWidget->setCurrentIndex(pageIndex);
 }
@@ -273,6 +268,18 @@ void MainWindow::handleMessage(MessageType messageType, const json& messageData)
 
             allBooks.push_back(messageData);
             qDebug() << messageData.dump().c_str();
+
+        } catch (const nlohmann::detail::type_error& e) {
+        }
+        break;
+    case MessageType::FINISHED:
+        try {
+
+            for (auto book : allBooks) {
+                BookItemWidget* bookItem = new BookItemWidget(book, ui->scrollAreaWidgetContents);
+                ui->verticalLayout_4->addWidget(bookItem);
+            }
+            ui->verticalLayout_4->addStretch();
 
         } catch (const nlohmann::detail::type_error& e) {
         }

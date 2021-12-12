@@ -164,9 +164,10 @@ void Server::sendAllBooks(QTcpSocket* clientSocket)
     for (auto book : library.getAllBooks()) {
         json j;
         j["type"] = MessageType::GET_ALL_BOOKS;
-        //j["data"] = book;
+        j["data"] = book;
         sendData(clientSocket, j);
     }
+    sendData(clientSocket, R"({"type": "finished", "data": ""})");
 }
 
 void Server::handleMessage(QTcpSocket* clientSocket, MessageType messageType, const json& messageData)
