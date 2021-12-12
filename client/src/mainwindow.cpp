@@ -137,7 +137,21 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::switchPage(int pageIndex) { ui->stackedWidget->setCurrentIndex(pageIndex); }
+void MainWindow::switchPage(int pageIndex)
+{ if (pageIndex==2&& allBooks.size()==0)
+    {        json message;
+        message["type"] = MessageType::GET_ALL_BOOKS;
+
+        sendData(serverSocket, message);
+        allBooks.clear();
+        for (auto book : allBooks) {
+            BookItemWidget* bookItem = new BookItemWidget(book, ui->scrollAreaWidgetContents);
+            ui->verticalLayout_4->addWidget(bookItem);
+        }
+        ui->verticalLayout_4->addStretch();
+    }
+    ui->stackedWidget->setCurrentIndex(pageIndex);
+}
 
 void MainWindow::connectToServer(const QHostAddress& address, qint16 port)
 {
@@ -212,9 +226,6 @@ void MainWindow::handleMessage(MessageType messageType, const json& messageData)
         } catch (const nlohmann::detail::type_error& e) { }
         break;
 
-    case MessageType::GET_BOOKS:
-        break;
-
     case MessageType::CHANGE_USERNAME:
         try {
             if (messageData == "AlreadyTaken") ui->changeUsernameLine->setText("This username is already taken.");
@@ -255,6 +266,16 @@ void MainWindow::handleMessage(MessageType messageType, const json& messageData)
                 user = std::nullopt;
             }
         } catch (const nlohmann::detail::type_error& e) { }
+        break;
+
+    case MessageType::GET_ALL_BOOKS:
+        try {
+
+            allBooks.push_back(messageData);
+            qDebug() << messageData.dump().c_str();
+
+        } catch (const nlohmann::detail::type_error& e) {
+        }
         break;
     }
 }

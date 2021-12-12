@@ -30,7 +30,6 @@ void Server::initServer()
     if (database.countBooks() < 10000) database.insertBooksIntoDataBase();
     else qDebug() << "The library already has all the books.";
 
-    Library library;
     library.setAllBooks(database.getAllBooks());
 }
 
@@ -159,6 +158,17 @@ void Server::deleteAccount(const std::string& name, QTcpSocket* clientSocket)
     sendData(clientSocket, R"({"type": "deleteAccount", "data": "Success"})"_json);
 }
 
+void Server::sendAllBooks(QTcpSocket* clientSocket)
+{
+
+    for (auto book : library.getAllBooks()) {
+        json j;
+        j["type"] = MessageType::GET_ALL_BOOKS;
+        //j["data"] = book;
+        sendData(clientSocket, j);
+    }
+}
+
 void Server::handleMessage(QTcpSocket* clientSocket, MessageType messageType, const json& messageData)
 {
     switch (messageType) {
@@ -169,10 +179,6 @@ void Server::handleMessage(QTcpSocket* clientSocket, MessageType messageType, co
         break;
 
     case MessageType::LOGIN:
-        loginUser(messageData["username"], messageData["password"], clientSocket);
-        break;
-
-    case MessageType::GET_BOOKS:
         loginUser(messageData["username"], messageData["password"], clientSocket);
         break;
 
@@ -191,6 +197,9 @@ void Server::handleMessage(QTcpSocket* clientSocket, MessageType messageType, co
 
     case MessageType::DELETE_ACCOUNT:
         deleteAccount(messageData["username"], clientSocket);
+        break;
+    case MessageType::GET_ALL_BOOKS:
+        sendAllBooks(clientSocket);
         break;
     }
 }

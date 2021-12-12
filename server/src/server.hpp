@@ -21,6 +21,9 @@ class Server : public QObject
 {
     Q_OBJECT
 
+private:
+    Library library;
+
 public:
     explicit Server(QObject* parent = nullptr);
     virtual ~Server();
@@ -39,6 +42,7 @@ private:
     void changePassword(const std::string& name, const std::string& password, const std::string &oldpassword,const std::string& newpassword,const std::string& confirmpassword, QTcpSocket* clientSocket);
     void logout(QTcpSocket *clientSocket);
     void deleteAccount(const std::string& name,QTcpSocket* clientSocket);
+    void sendAllBooks(QTcpSocket* clientSocket);
 
     void handleMessage(QTcpSocket* clientSocket, MessageType messageType, const nlohmann::json& messageData);
 

@@ -60,6 +60,7 @@ std::ostream& operator<<(std::ostream& fout, const Book& book)
 
 void to_json(json& j, const Book& b)
 {
+    j = json();
     j["title"] = b.title;
     j["authors"] = b.authors;
     j["language"] = b.language;

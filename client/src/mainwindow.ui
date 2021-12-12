@@ -36,7 +36,7 @@
        <string notr="true"/>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="pageLogin">
        <property name="styleSheet">
@@ -331,7 +331,7 @@
          </layout>
         </widget>
        </widget>
-       <widget class="QWidget" name="">
+       <widget class="QWidget" name="layoutWidget">
         <property name="geometry">
          <rect>
           <x>10</x>
@@ -862,7 +862,7 @@
      <x>0</x>
      <y>0</y>
      <width>846</width>
-     <height>28</height>
+     <height>25</height>
     </rect>
    </property>
   </widget>

@@ -4,6 +4,7 @@
 #include "json.hpp"
 #include "message_type.hpp"
 #include "user.hpp"
+#include "book.hpp"
 
 #include <QMainWindow>
 #include <QtNetwork>
@@ -23,6 +24,7 @@ class MainWindow : public QMainWindow
 
 private:
     std::optional<User> user;
+    std::vector<Book> allBooks;
 
 public:
     MainWindow(QWidget* parent = nullptr);
