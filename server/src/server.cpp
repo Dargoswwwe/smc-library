@@ -48,10 +48,6 @@ void Server::newConnection()
     qDebug() << "New client connected: " << clientSocket->peerAddress().toString() << ":" << clientSocket->peerPort();
     qDebug() << "Connections: " << connections.size();
 
-    json json = R"({ "type" : "testMessage", "data" : "hello, client" })"_json;
-
-    sendData(clientSocket, json);
-
     QObject::connect(clientSocket, &QIODevice::readyRead, this, &Server::receiveData);
 }
 
@@ -101,16 +97,16 @@ void Server::disconnect()
 void Server::loginUser(const std::string& name, const std::string& password, QTcpSocket* clientSocket)
 {
     if (!database.validUsername(name.c_str())) {
-        sendData(clientSocket, R"({"type": "login", "response": "NameError"})"_json);
+        sendData(clientSocket, R"({"type": "login", "data": "NameError"})"_json);
     } else {
         if (database.validPassword(name.c_str(), password.c_str())) {
             User newUser(name, password);
             newUser.setPassword(password);
             connections[clientSocket].first = newUser;
 
-            sendData(clientSocket, R"({"type": "login", "response": "Success"})"_json);
+            sendData(clientSocket, R"({"type": "login", "data": "Success"})"_json);
         } else {
-            sendData(clientSocket, R"({"type": "login", "response": "PasswordError"})"_json);
+            sendData(clientSocket, R"({"type": "login", "data": "PasswordError"})"_json);
         }
     }
 }
@@ -118,58 +114,49 @@ void Server::loginUser(const std::string& name, const std::string& password, QTc
 void Server::registerUser(const std::string& name, const std::string& password, QTcpSocket* clientSocket)
 {
     if (database.validUsername(name.c_str())) {
-        sendData(clientSocket, R"({"type": "register", "response": "Error"})"_json);
+        sendData(clientSocket, R"({"type": "register", "data": "Error"})"_json);
     } else {
         database.addValuesIntoUsersTable(name.c_str(), password.c_str());
 
-        sendData(clientSocket, R"({"type": "register", "response": "Success"})"_json);
+        sendData(clientSocket, R"({"type": "register", "data": "Success"})"_json);
     }
 }
-void Server::changeUsername(const std::string &name,  const std::string& password, QTcpSocket *clientSocket)
+void Server::changeUsername(const std::string& name, const std::string& password, QTcpSocket* clientSocket)
 {
     if (database.validUsername(name.c_str())) {
-        sendData(clientSocket, R"({"type": "changeUsername", "response": "AlreadyTaken"})"_json);
-    }
-    else
-    {
-        database.changeUsername(name.c_str(),password.c_str());
+        sendData(clientSocket, R"({"type": "changeUsername", "data": "AlreadyTaken"})"_json);
+    } else {
+        database.changeUsername(name.c_str(), password.c_str());
 
-        sendData(clientSocket, R"({"type": "changeUsername", "response": "Success"})"_json);
+        sendData(clientSocket, R"({"type": "changeUsername", "data": "Success"})"_json);
     }
 }
 
-void Server::changePassword(const std::string &name, const std::string &password,  const std::string &oldpassword,const std::string &newpassword,const std::string &confirmpassword,QTcpSocket *clientSocket)
+void Server::changePassword(const std::string& name, const std::string& password, const std::string& oldpassword,
+    const std::string& newpassword, const std::string& confirmpassword, QTcpSocket* clientSocket)
 {
-    if (oldpassword!=password)
-    {
-        sendData(clientSocket, R"({"type": "changePassword", "response": "IncorrectOldPassword"})"_json);
-    }
-    else if(password==newpassword)
-    {
-        sendData(clientSocket, R"({"type": "changePassword", "response": "SameWithOldPassword"})"_json);
-    }
-    else if(newpassword!=confirmpassword)
-    {
-        sendData(clientSocket, R"({"type": "changePassword", "response": "NotMatchingPasswords"})"_json);
-    }
-    else
-    {
-        database.changeUserPassword(name.c_str(),newpassword.c_str());
-        sendData(clientSocket, R"({"type": "changePassword", "response": "Success"})"_json);
+    if (oldpassword != password) {
+        sendData(clientSocket, R"({"type": "changePassword", "data": "IncorrectOldPassword"})"_json);
+    } else if (password == newpassword) {
+        sendData(clientSocket, R"({"type": "changePassword", "data": "SameWithOldPassword"})"_json);
+    } else if (newpassword != confirmpassword) {
+        sendData(clientSocket, R"({"type": "changePassword", "data": "NotMatchingPasswords"})"_json);
+    } else {
+        database.changeUserPassword(name.c_str(), newpassword.c_str());
+        sendData(clientSocket, R"({"type": "changePassword", "data": "Success"})"_json);
     }
 }
 
-void Server::logout(QTcpSocket *clientSocket)
+void Server::logout(QTcpSocket* clientSocket)
 {
-    sendData(clientSocket, R"({"type": "logout", "response": "Success"})"_json);
+    sendData(clientSocket, R"({"type": "logout", "data": "Success"})"_json);
 }
 
-void Server::deleteAccount(const std::string &name,QTcpSocket *clientSocket)
+void Server::deleteAccount(const std::string& name, QTcpSocket* clientSocket)
 {
 
     database.deleteUser(name.c_str());
-    sendData(clientSocket, R"({"type": "deleteAccount", "response": "Success"})"_json);
-
+    sendData(clientSocket, R"({"type": "deleteAccount", "data": "Success"})"_json);
 }
 
 void Server::handleMessage(QTcpSocket* clientSocket, MessageType messageType, const json& messageData)
@@ -177,8 +164,8 @@ void Server::handleMessage(QTcpSocket* clientSocket, MessageType messageType, co
     switch (messageType) {
     case MessageType::REGISTER:
         try {
-        registerUser(messageData["username"], messageData["password"], clientSocket);
-    } catch (const nlohmann::detail::type_error& e) { }
+            registerUser(messageData["username"], messageData["password"], clientSocket);
+        } catch (const nlohmann::detail::type_error& e) { }
         break;
 
     case MessageType::LOGIN:
@@ -190,11 +177,12 @@ void Server::handleMessage(QTcpSocket* clientSocket, MessageType messageType, co
         break;
 
     case MessageType::CHANGE_USERNAME:
-        changeUsername(messageData["newusername"], messageData["password"],clientSocket);
+        changeUsername(messageData["newusername"], messageData["password"], clientSocket);
         break;
 
     case MessageType::CHANGE_PASSWORD:
-        changePassword(messageData["username"],messageData["password"],messageData["oldpassword"], messageData["newpassword"],messageData["confirmpassword"], clientSocket);
+        changePassword(messageData["username"], messageData["password"], messageData["oldpassword"],
+            messageData["newpassword"], messageData["confirmpassword"], clientSocket);
         break;
 
     case MessageType::LOGOUT:
@@ -202,8 +190,7 @@ void Server::handleMessage(QTcpSocket* clientSocket, MessageType messageType, co
         break;
 
     case MessageType::DELETE_ACCOUNT:
-        deleteAccount(messageData["username"],clientSocket);
+        deleteAccount(messageData["username"], clientSocket);
         break;
-
     }
 }
