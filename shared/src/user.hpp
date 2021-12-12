@@ -15,7 +15,8 @@ private:
     std::vector<Book> read, borrowing, borrowed;
     bool active;
 
-    void setSalt();
+    void genSalt();
+    std::string hash(const std::string& pswrd);
 
 public:
     User();
@@ -27,9 +28,11 @@ public:
     void returnBook(const Book& book); // recommended
     bool hasBook(const Book& book);
 
+    void setSalt(const std::string& slt);
     void setActivity(const bool& actv);
     void setUsername(const std::string& name);
     void setPassword(const std::string& pswrd);
+    void setHashedPassword(const std::string& hashedPswrd);
     void setRead(const std::vector<Book>& booksRead);
     void setBorrowing(const std::vector<Book>& booksBorrowing);
     void setBorrowed(const std::vector<Book>& booksBorrowed);

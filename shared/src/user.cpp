@@ -2,9 +2,16 @@
 
 #include <random>
 
+std::string User::hash(const std::string& pswrd)
+{
+    std::string pswrdhash;
+    pswrdhash=QCryptographicHash::hash(pswrd.c_str(), QCryptographicHash::Sha3_256).toBase64().toStdString();
+    return pswrdhash;
+}
+
 User::User()
 {
-    setSalt();
+    genSalt();
     username = '\0';
     password = '\0';
     read = {};
@@ -15,10 +22,10 @@ User::User()
 
 User::User(const std::string& name, const std::string& pswrd)
 {
-    setSalt();
+    genSalt();
     username = name;
     password = pswrd + salt;
-    password = QCryptographicHash::hash(password.c_str(), QCryptographicHash::Sha3_256).toBase64().toStdString();
+    password = hash(password);
     read = {};
     borrowed = {};
     borrowing = {};
@@ -28,10 +35,10 @@ User::User(const std::string& name, const std::string& pswrd)
 User::User(const std::string& name, const std::string& pswrd, const std::vector<Book>& booksRead,
     const std::vector<Book>& booksBorrowing, const std::vector<Book>& booksBorrowed, const bool& activ)
 {
-    setSalt();
+    genSalt();
     username = name;
     password = pswrd + salt;
-    password = QCryptographicHash::hash(password.c_str(), QCryptographicHash::Sha3_256).toBase64().toStdString();
+    password = hash(password);
     read = booksRead;
     borrowed = booksBorrowed;
     borrowing = booksBorrowing;
@@ -82,7 +89,9 @@ std::string User::gen_random(const int len)
     return tmp_s;
 }
 
-void User::setSalt() { salt = gen_random(SALT_LENGTH); }
+void User::genSalt() { salt = gen_random(SALT_LENGTH); }
+
+void User::setSalt(const std::string& slt) { salt = slt; }
 
 void User::setActivity(const bool& actv) { active = actv; }
 
@@ -91,7 +100,12 @@ void User::setUsername(const std::string& name) { username = name; }
 void User::setPassword(const std::string& pswrd)
 {
     password = pswrd + salt;
-    password = QCryptographicHash::hash(password.c_str(), QCryptographicHash::Sha3_256).toBase64().toStdString();
+    password = hash(password);
+}
+
+void User::setHashedPassword(const std::string& hashedPswrd)
+{
+    password=hashedPswrd;
 }
 
 void User::setRead(const std::vector<Book>& booksRead) { read = booksRead; }
@@ -115,7 +129,7 @@ std::string User::getSalt() const { return salt; }
 bool User::checkPassword(std::string& pswrd)
 {
     pswrd = pswrd + salt;
-    if (password == QCryptographicHash::hash(pswrd.c_str(), QCryptographicHash::Sha3_256).toBase64().toStdString()) {
+    if (password == hash(password)) {
         return true;
     } else return false;
 }
