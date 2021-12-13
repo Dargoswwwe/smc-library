@@ -381,6 +381,22 @@ bool DatabaseManager::validUsername(QString username)
     return true;
 }
 
+bool DatabaseManager::uniquePassword(QString password)
+{
+    QSqlQuery query;
+    QString pass;
+    query.prepare("SELECT * FROM Users u WHERE u.password=(:password)");
+    query.bindValue(":password", password);
+    query.exec();
+    query.next();
+
+    pass = query.value(0).toString();
+
+    if (pass == nullptr) { return false; }
+
+    return true;
+}
+
 bool DatabaseManager::validPassword(QString username, QString password)
 {
     QSqlQuery query;

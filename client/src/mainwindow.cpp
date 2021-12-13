@@ -22,15 +22,21 @@ MainWindow::MainWindow(QWidget* parent)
     QObject::connect(ui->lineRegisterUsername, &QLineEdit::returnPressed, ui->buttonRegister, &QPushButton::click);
     QObject::connect(ui->lineRegisterPassword, &QLineEdit::returnPressed, ui->buttonRegister, &QPushButton::click);
     QObject::connect(
-        ui->lineRegisterConfirmPassword, &QLineEdit::returnPressed, ui->buttonRegister, &QPushButton::click);
+                ui->lineRegisterConfirmPassword, &QLineEdit::returnPressed, ui->buttonRegister, &QPushButton::click);
     QObject::connect(ui->buttonRegisterInstead, &QPushButton::clicked, this, [this] { switchPage(1); });
 
     QObject::connect(ui->buttonRegister, &QPushButton::clicked, this, [this] {
         user = User(ui->lineRegisterUsername->text().toStdString(), ui->lineRegisterPassword->text().toStdString());
         json message;
+        QString confirmPassword = ui->lineRegisterConfirmPassword->text();
+
         message["type"] = MessageType::REGISTER;
         message["data"]["username"] = user->getUsername();
         message["data"]["password"] = user->getPassword();
+
+        User userForHashing;
+        userForHashing.setPassword(confirmPassword.toStdString());
+        message["data"]["confirmpassword"]=userForHashing.getPassword();
 
         sendData(serverSocket, message);
     });
@@ -46,7 +52,7 @@ MainWindow::MainWindow(QWidget* parent)
     });
 
     QObject::connect(ui->accountSettingsButton, &QPushButton::clicked, this,
-        [this] { ui->changeUsernameLine->setText(user->getUsername().c_str()); });
+                     [this] { ui->changeUsernameLine->setText(user->getUsername().c_str()); });
 
     QObject::connect(ui->changeUsernameButton, &QPushButton::clicked, this, [this] {
         QString newUsername = ui->changeUsernameLine->text();
@@ -139,12 +145,12 @@ MainWindow::~MainWindow()
 
 void MainWindow::switchPage(int pageIndex)
 {
-    if (pageIndex == 2 && allBooks.size() == 0) {
-        json message;
-        message["type"] = MessageType::GET_ALL_BOOKS;
-        sendData(serverSocket, message);
-        allBooks.clear();
-    }
+    //    if (pageIndex == 2 && allBooks.size() == 0) {
+    //        json message;
+    //        message["type"] = MessageType::GET_ALL_BOOKS;
+    //        sendData(serverSocket, message);
+    //        allBooks.clear();
+    //    }
     ui->stackedWidget->setCurrentIndex(pageIndex);
 }
 
@@ -192,97 +198,118 @@ void MainWindow::handleMessage(MessageType messageType, const json& messageData)
     switch (messageType) {
     case MessageType::REGISTER:
         try {
-            if (messageData == "Error") {
-                ui->labelRegisterStatus->setText("Username taken");
-                user = std::nullopt;
-            }
-
-            if (messageData == "Success") {
-                switchPage(2);
-                // requestAllBooks();
-            }
-        } catch (const nlohmann::detail::type_error& e) { }
+        if (messageData == "UsernameAlreadyTaken") {
+            ui->labelRegisterStatus->setText("Username taken");
+            user = std::nullopt;
+        }
+        if(messageData=="NotMatchingPasswords")
+        {
+            ui->labelRegisterStatus->setText("Passwords don't match!");
+            user = std::nullopt;
+        }
+        if(messageData=="PasswordAlreadyTaken")
+        {
+            ui->labelRegisterStatus->setText("Password already taken. Type another password!");
+            user = std::nullopt;
+        }
+        if (messageData == "Success") {
+            switchPage(2);
+            // requestAllBooks();
+        }
+    } catch (const nlohmann::detail::type_error& e) { }
         break;
 
     case MessageType::LOGIN:
         try {
-            if (messageData == "NameError") {
-                ui->labelLoginStatus->setText("This username is not registered.");
-                user = std::nullopt;
-            }
-            if (messageData == "PasswordError") {
-                ui->labelLoginStatus->setText("Wrong password.");
-                user = std::nullopt;
-            }
-            if (messageData == "Success") {
-                switchPage(2);
-                // requestAllBooks();
-            }
-        } catch (const nlohmann::detail::type_error& e) { }
+        if (messageData == "NameError") {
+            ui->labelLoginStatus->setText("This username is not registered.");
+            user = std::nullopt;
+        }
+        if (messageData == "PasswordError") {
+            ui->labelLoginStatus->setText("Wrong password.");
+            user = std::nullopt;
+        }
+        if (messageData == "Success") {
+            switchPage(2);
+            // requestAllBooks();
+        }
+    } catch (const nlohmann::detail::type_error& e) { }
         break;
 
     case MessageType::CHANGE_USERNAME:
         try {
-            if (messageData == "AlreadyTaken") ui->changeUsernameLine->setText("This username is already taken.");
-            if (messageData == "Success") user->setUsername(ui->changeUsernameLine->text().toStdString());
-        } catch (const nlohmann::detail::type_error& e) { }
+        if (messageData == "AlreadyTaken")
+            ui->changeUsernamePasswordLabel->setText("This username is already taken.");
+        if (messageData == "Success")
+        {
+            user->setUsername(ui->changeUsernameLine->text().toStdString());
+            ui->changeUsernamePasswordLabel->setText("Username updated!");
+        }
+    } catch (const nlohmann::detail::type_error& e) { }
         break;
 
     case MessageType::CHANGE_PASSWORD:
 
         try {
-            if (messageData == "IncorrectOldPassword")
-                ui->changePasswordErrorLabel->setText("The old password is incorrect!");
-            if (messageData == "SameWithOldPassword")
-                ui->changePasswordErrorLabel->setText("Type a different password from the old one!");
-            if (messageData == "NotMatchingPasswords") ui->changePasswordErrorLabel->setText("Passwords don't match!");
-            if (messageData == "Success") user->setPassword(ui->newPasswordLine->text().toStdString());
+        if (messageData == "IncorrectOldPassword")
+            ui->changeUsernamePasswordLabel->setText("The old password is incorrect!");
+        if (messageData == "SameWithOldPassword")
+            ui->changeUsernamePasswordLabel->setText("Type a different password from the old one!");
+        if (messageData == "NotMatchingPasswords")
+            ui->changeUsernamePasswordLabel->setText("Passwords don't match!");
+        if (messageData == "Success")
+        {
+            user->setPassword(ui->newPasswordLine->text().toStdString());
+            ui->changeUsernamePasswordLabel->setText("Password updated!");
+        }
 
-        } catch (const nlohmann::detail::type_error& e) { }
+    } catch (const nlohmann::detail::type_error& e) { }
         break;
 
     case MessageType::LOGOUT:
         try {
-            if (messageData == "Success") {
-                switchPage(0);
-                ui->lineLoginUsername->setText("");
-                ui->lineLoginPassword->setText("");
-                user = std::nullopt;
-            }
-        } catch (const nlohmann::detail::type_error& e) { }
+        if (messageData == "Success") {
+            switchPage(0);
+            ui->lineLoginUsername->setText("");
+            ui->lineLoginPassword->setText("");
+            user = std::nullopt;
+        }
+    } catch (const nlohmann::detail::type_error& e) { }
         break;
 
     case MessageType::DELETE_ACCOUNT:
         try {
-            if (messageData == "Success") {
-                switchPage(0);
-                ui->lineLoginUsername->setText("");
-                ui->lineLoginPassword->setText("");
-                user = std::nullopt;
-            }
-        } catch (const nlohmann::detail::type_error& e) { }
-        break;
-
-    case MessageType::GET_ALL_BOOKS:
-        try {
-
-            allBooks.push_back(messageData);
-            qDebug() << messageData.dump().c_str();
-
-        } catch (const nlohmann::detail::type_error& e) {
+        if (messageData == "Success") {
+            switchPage(0);
+            ui->lineLoginUsername->setText("");
+            ui->lineLoginPassword->setText("");
+            user = std::nullopt;
         }
+    } catch (const nlohmann::detail::type_error& e) { }
         break;
-    case MessageType::FINISHED:
-        try {
 
-            for (auto book : allBooks) {
-                BookItemWidget* bookItem = new BookItemWidget(book, ui->scrollAreaWidgetContents);
-                ui->verticalLayout_4->addWidget(bookItem);
-            }
-            ui->verticalLayout_4->addStretch();
+        //    case MessageType::GET_ALL_BOOKS:
+        //        try {
 
-        } catch (const nlohmann::detail::type_error& e) {
-        }
-        break;
+        //            allBooks.push_back(messageData);
+        //            qDebug() << messageData.dump().c_str();
+
+        //        } catch (const nlohmann::detail::type_error& e) {
+        //        }
+        //        break;
+
+        //    case MessageType::FINISHED:
+        //        try {
+
+        //            for (auto book : allBooks) {
+        //                BookItemWidget* bookItem = new BookItemWidget(book, ui->scrollAreaWidgetContents);
+        //                ui->verticalLayout_4->addWidget(bookItem);
+        //            }
+        //            ui->verticalLayout_4->addStretch();
+
+        //        } catch (const nlohmann::detail::type_error& e) {
+        //        }
+        //        break;
+        //    }
     }
 }

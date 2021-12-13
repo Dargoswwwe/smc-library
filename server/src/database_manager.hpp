@@ -50,6 +50,7 @@ public:
     int countBooks();
     bool validUsername(QString username);
     bool validPassword(QString username, QString password);
+    bool uniquePassword(QString password);
 
     std::vector<Book> createBooksArray();
 };
