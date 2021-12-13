@@ -171,10 +171,10 @@ void Server::deleteAccount(const std::string& name, QTcpSocket* clientSocket)
 //{
 
 //    for (auto book : library.getAllBooks()) {
-//        json j;
-//        j["type"] = MessageType::GET_ALL_BOOKS;
-//        j["data"] = book;
-//        sendData(clientSocket, j);
+//        json message;
+//        message["type"] = MessageType::GET_ALL_BOOKS;
+//        message["data"] = book;
+//        sendData(clientSocket, message);
 //    }
 //    sendData(clientSocket, R"({"type": "finished", "data": ""})");
 //}

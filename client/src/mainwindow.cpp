@@ -71,13 +71,17 @@ MainWindow::MainWindow(QWidget* parent)
 
         User userForHashing;
         userForHashing.setPassword(oldPassword.toStdString());
+        User userNewForHashing;
+        userNewForHashing.setPassword(newPassword.toStdString());
+        User userConfirmForHashing;
+        userConfirmForHashing.setPassword(confirmPassword.toStdString());
         json message;
         message["type"] = MessageType::CHANGE_PASSWORD;
         message["data"]["username"] = user->getUsername();
         message["data"]["password"] = user->getPassword();
         message["data"]["oldpassword"] = userForHashing.getPassword();
-        message["data"]["newpassword"] = newPassword.toStdString();
-        message["data"]["confirmpassword"] = confirmPassword.toStdString();
+        message["data"]["newpassword"] = userNewForHashing.getPassword();
+        message["data"]["confirmpassword"] = userConfirmForHashing.getPassword();
 
         sendData(serverSocket, message);
     });
@@ -209,7 +213,7 @@ void MainWindow::handleMessage(MessageType messageType, const json& messageData)
         }
         if(messageData=="PasswordAlreadyTaken")
         {
-            ui->labelRegisterStatus->setText("Password already taken. Type another password!");
+           ui->labelRegisterStatus->setText("Password already taken. Type another password!");
             user = std::nullopt;
         }
         if (messageData == "Success") {
@@ -288,15 +292,15 @@ void MainWindow::handleMessage(MessageType messageType, const json& messageData)
     } catch (const nlohmann::detail::type_error& e) { }
         break;
 
-        //    case MessageType::GET_ALL_BOOKS:
-        //        try {
+//            case MessageType::GET_ALL_BOOKS:
+//                try {
 
-        //            allBooks.push_back(messageData);
-        //            qDebug() << messageData.dump().c_str();
+//                    allBooks.push_back(messageData);
+//                    qDebug() << messageData.dump().c_str();
 
-        //        } catch (const nlohmann::detail::type_error& e) {
-        //        }
-        //        break;
+//                } catch (const nlohmann::detail::type_error& e) {
+//                }
+//                break;
 
         //    case MessageType::FINISHED:
         //        try {
