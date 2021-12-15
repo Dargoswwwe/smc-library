@@ -42,7 +42,7 @@ private:
     void changePassword(const std::string& name, const std::string& password, const std::string &oldpassword,const std::string& newpassword,const std::string& confirmpassword, QTcpSocket* clientSocket);
     void logout(QTcpSocket *clientSocket);
     void deleteAccount(const std::string& name,QTcpSocket* clientSocket);
-    //void sendAllBooks(QTcpSocket* clientSocket);
+    void sendAllBooks(QTcpSocket* clientSocket);
 
     void handleMessage(QTcpSocket* clientSocket, MessageType messageType, const nlohmann::json& messageData);
 
@@ -51,4 +51,4 @@ private:
     std::unordered_map<QTcpSocket*, std::pair<std::optional<User>, QDataStream*>> connections;
 };
 
-#endif /* SERVER_HPP */
+#endif // SERVER_HPP

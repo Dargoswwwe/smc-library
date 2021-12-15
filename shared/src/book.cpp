@@ -58,35 +58,6 @@ std::ostream& operator<<(std::ostream& fout, const Book& book)
     return fout;
 }
 
-void to_json(json& j, const Book& b)
-{
-    j = json();
-    j["title"] = b.title;
-    j["authors"] = b.authors;
-    j["language"] = b.language;
-    j["originalPublication"] = b.originalPublication;
-    j["averageRating"] = b.averageRating;
-    j["ratingsCount"] = b.ratingsCount;
-    j["isbn"] = b.isbn;
-    j["exemplarsAvailable"] = b.exemplarsAvailable;
-    j["content"] = b.content;
-    j["availability"] = b.available;
-}
-
-void from_json(const json& j, Book& b)
-{
-    j.at("title").get_to(b.title);
-    j.at("authors").get_to(b.authors);
-    j.at("language").get_to(b.language);
-    j.at("originalPublication").get_to(b.originalPublication);
-    j.at("averageRating").get_to(b.averageRating);
-    j.at("ratingsCount").get_to(b.ratingsCount);
-    j.at("isbn").get_to(b.isbn);
-    j.at("exemplarsAvailable").get_to(b.exemplarsAvailable);
-    j.at("content").get_to(b.content);
-    j.at("availability").get_to(b.available);
-}
-
 void Book::readBookFromFile(int index)
 {
     rapidcsv::Document doc("smc-library-project\\shared\\books.csv", rapidcsv::LabelParams(0, 0));

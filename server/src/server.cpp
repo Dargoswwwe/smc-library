@@ -110,20 +110,16 @@ void Server::loginUser(const std::string& name, const std::string& password, QTc
     }
 }
 
-void Server::registerUser(const std::string& name, const std::string& password,const::std::string &confirmpassword, QTcpSocket* clientSocket)
+void Server::registerUser(const std::string& name, const std::string& password, const ::std::string& confirmpassword,
+    QTcpSocket* clientSocket)
 {
     if (database.validUsername(name.c_str())) {
         sendData(clientSocket, R"({"type": "register", "data": "UsernameAlreadyTaken"})"_json);
-    } else if(password!=confirmpassword)
-    {
+    } else if (password != confirmpassword) {
         sendData(clientSocket, R"({"type": "register", "data": "NotMatchingPasswords"})"_json);
-    }
-    else if(database.uniquePassword(password.c_str()))
-    {
+    } else if (database.uniquePassword(password.c_str())) {
         sendData(clientSocket, R"({"type": "register", "data": "PasswordAlreadyTaken"})"_json);
-    }
-    else
-    {
+    } else {
         database.addValuesIntoUsersTable(name.c_str(), password.c_str());
         sendData(clientSocket, R"({"type": "register", "data": "Success"})"_json);
     }
@@ -141,7 +137,7 @@ void Server::changeUsername(const std::string& name, const std::string& password
 }
 
 void Server::changePassword(const std::string& name, const std::string& password, const std::string& oldpassword,
-                            const std::string& newpassword, const std::string& confirmpassword, QTcpSocket* clientSocket)
+    const std::string& newpassword, const std::string& confirmpassword, QTcpSocket* clientSocket)
 {
     if (oldpassword != password) {
         sendData(clientSocket, R"({"type": "changePassword", "data": "IncorrectOldPassword"})"_json);
@@ -167,25 +163,26 @@ void Server::deleteAccount(const std::string& name, QTcpSocket* clientSocket)
     sendData(clientSocket, R"({"type": "deleteAccount", "data": "Success"})"_json);
 }
 
-//void Server::sendAllBooks(QTcpSocket* clientSocket)
-//{
+void Server::sendAllBooks(QTcpSocket* clientSocket)
+{
 
-//    for (auto book : library.getAllBooks()) {
-//        json message;
-//        message["type"] = MessageType::GET_ALL_BOOKS;
-//        message["data"] = book;
-//        sendData(clientSocket, message);
-//    }
-//    sendData(clientSocket, R"({"type": "finished", "data": ""})");
-//}
+    for (auto book : library.getAllBooks()) {
+        json message;
+        message["type"] = MessageType::GET_ALL_BOOKS;
+        message["data"] = book;
+        sendData(clientSocket, message);
+    }
+    sendData(clientSocket, R"({"type": "finished", "data": ""})");
+}
 
 void Server::handleMessage(QTcpSocket* clientSocket, MessageType messageType, const json& messageData)
 {
     switch (messageType) {
     case MessageType::REGISTER:
         try {
-        registerUser(messageData["username"], messageData["password"],messageData["confirmpassword"], clientSocket);
-    } catch (const nlohmann::detail::type_error& e) { }
+            registerUser(
+                messageData["username"], messageData["password"], messageData["confirmpassword"], clientSocket);
+        } catch (const nlohmann::detail::type_error& e) { }
         break;
 
     case MessageType::LOGIN:
@@ -198,7 +195,7 @@ void Server::handleMessage(QTcpSocket* clientSocket, MessageType messageType, co
 
     case MessageType::CHANGE_PASSWORD:
         changePassword(messageData["username"], messageData["password"], messageData["oldpassword"],
-                messageData["newpassword"], messageData["confirmpassword"], clientSocket);
+            messageData["newpassword"], messageData["confirmpassword"], clientSocket);
         break;
 
     case MessageType::LOGOUT:
@@ -209,8 +206,8 @@ void Server::handleMessage(QTcpSocket* clientSocket, MessageType messageType, co
         deleteAccount(messageData["username"], clientSocket);
         break;
 
-        //    case MessageType::GET_ALL_BOOKS:
-        //        sendAllBooks(clientSocket);
-        //        break;
+    case MessageType::GET_ALL_BOOKS:
+        sendAllBooks(clientSocket);
+        break;
     }
 }
