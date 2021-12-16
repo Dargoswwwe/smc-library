@@ -12,8 +12,8 @@ std::string User::hash(const std::string& pswrd)
 User::User()
 {
     genSalt();
-    username = '\0';
-    password = '\0';
+    username = "\0";
+    password = "\0";
     read = {};
     borrowed = {};
     borrowing = {};

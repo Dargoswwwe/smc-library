@@ -32,9 +32,6 @@
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
-      <property name="styleSheet">
-       <string notr="true">background-color: rgb(255, 231, 189); color: #000;</string>
-      </property>
       <property name="currentIndex">
        <number>2</number>
       </property>
@@ -356,6 +353,9 @@
        </layout>
       </widget>
       <widget class="QWidget" name="pageMain">
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(255, 231, 189); color: #000;</string>
+       </property>
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout">

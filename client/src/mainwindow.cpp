@@ -51,8 +51,10 @@ MainWindow::MainWindow(QWidget* parent)
         sendData(serverSocket, message);
     });
 
-    QObject::connect(ui->accountSettingsButton, &QPushButton::clicked, this,
-        [this] { ui->changeUsernameLine->setText(user->getUsername().c_str()); });
+    QObject::connect(ui->accountSettingsButton, &QPushButton::clicked, this, [this] {
+        if (!user.has_value()) return;
+        ui->changeUsernameLine->setText(user->getUsername().c_str());
+    });
 
     QObject::connect(ui->changeUsernameButton, &QPushButton::clicked, this, [this] {
         QString newUsername = ui->changeUsernameLine->text();
@@ -143,6 +145,7 @@ void MainWindow::switchPage(int pageIndex)
         sendData(serverSocket, message);
         allBooks.clear();
     }
+    if (pageIndex == 3 && !user.has_value()) return;
     ui->stackedWidget->setCurrentIndex(pageIndex);
 }
 
