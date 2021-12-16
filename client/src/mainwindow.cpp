@@ -172,9 +172,9 @@ void MainWindow::receiveData()
     try {
         handleMessage(message["type"], message["data"]);
     } catch (const nlohmann::detail::parse_error& e) {
-        qWarning() << e.what();
+        qWarning() << "receiveData(): " << e.what();
     } catch (const nlohmann::detail::type_error& e) {
-        qWarning() << e.what();
+        qWarning() << "receiveData(): " << e.what();
     }
     if (!inStream.commitTransaction()) return;
 }
@@ -265,7 +265,9 @@ void MainWindow::handleMessage(MessageType messageType, const json& messageData)
                 ui->lineLoginPassword->setText("");
                 user = std::nullopt;
             }
-        } catch (const nlohmann::detail::type_error& e) { }
+        } catch (const nlohmann::detail::type_error& e) {
+            qWarning() << "LOGOUT: " << e.what();
+        }
         break;
 
     case MessageType::DELETE_ACCOUNT:
@@ -276,21 +278,29 @@ void MainWindow::handleMessage(MessageType messageType, const json& messageData)
                 ui->lineLoginPassword->setText("");
                 user = std::nullopt;
             }
-        } catch (const nlohmann::detail::type_error& e) { }
+        } catch (const nlohmann::detail::type_error& e) {
+            qWarning() << "DELETE_ACCOUNT: " << e.what();
+        }
         break;
 
     case MessageType::GET_ALL_BOOKS:
         try {
-            allBooks.push_back(messageData);
-            BookItemWidget* bookItem = new BookItemWidget(allBooks.back(), ui->scrollAreaWidgetContents);
-            ui->verticalLayout_4->addWidget(bookItem);
-        } catch (const nlohmann::detail::type_error& e) { }
+            for (Book b : messageData) {
+                BookItemWidget* bookItem = new BookItemWidget(b, ui->scrollAreaWidgetContents);
+                allBooks.push_back(b);
+                ui->verticalLayout_4->addWidget(bookItem);
+            }
+        } catch (const nlohmann::detail::type_error& e) {
+            qWarning() << "GET_ALL_BOOKS: " << e.what();
+        }
         break;
 
     case MessageType::FINISHED:
         try {
             ui->verticalLayout_4->addStretch();
-        } catch (const nlohmann::detail::type_error& e) { }
+        } catch (const nlohmann::detail::type_error& e) {
+            qWarning() << "FINISHED: " << e.what();
+        }
         break;
     }
 }

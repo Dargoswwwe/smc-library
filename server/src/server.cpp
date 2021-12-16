@@ -165,11 +165,26 @@ void Server::deleteAccount(const std::string& name, QTcpSocket* clientSocket)
 
 void Server::sendAllBooks(QTcpSocket* clientSocket)
 {
+    auto books = library.getAllBooks();
+    size_t messageSize = 50;
 
-    for (auto book : library.getAllBooks()) {
+    for (size_t i = 0; i < books.size() / messageSize; ++i) {
         json message;
         message["type"] = MessageType::GET_ALL_BOOKS;
-        message["data"] = book;
+        message["data"] = json::array({});
+        for (size_t j = 0; j < messageSize; j++)
+            message["data"][j] = books[i + j];
+
+        sendData(clientSocket, message);
+    }
+
+    for (size_t i = books.size() - books.size() % messageSize; i < books.size(); ++i) {
+        json message;
+        message["type"] = MessageType::GET_ALL_BOOKS;
+        message["data"] = json::array({});
+        for (size_t j = 0; j < messageSize; j++)
+            message["data"][j] = books[i + j];
+
         sendData(clientSocket, message);
     }
     sendData(clientSocket, R"({"type": "finished", "data": ""})"_json);
