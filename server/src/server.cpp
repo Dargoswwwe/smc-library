@@ -172,7 +172,7 @@ void Server::sendAllBooks(QTcpSocket* clientSocket)
         message["data"] = book;
         sendData(clientSocket, message);
     }
-    sendData(clientSocket, R"({"type": "finished", "data": ""})");
+    sendData(clientSocket, R"({"type": "finished", "data": ""})"_json);
 }
 
 void Server::handleMessage(QTcpSocket* clientSocket, MessageType messageType, const json& messageData)

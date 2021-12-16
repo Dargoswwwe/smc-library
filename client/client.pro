@@ -24,13 +24,14 @@ FORMS += \
     src/bookitemwidget.ui
 
 RESOURCES += \
-    src/resources.qrc
+    images/resources.qrc \
 
 # Directories
 DESTDIR=bin                 #Target file directory
-OBJECTS_DIR=intermediates   #Intermediate object files directory
+OBJECTS_DIR=intermediates   #Intermediate obj files directory
 MOC_DIR=intermediates       #Intermediate moc files directory
 UI_DIR=intermediates        #Intermediate uic files directory
+RCC_DIR=intermediates       #Intermediate rcc files directory
 
 unix|win32: LIBS += -L$$PWD/../shared/lib/ -lsmclibrary
 

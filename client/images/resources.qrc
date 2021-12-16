@@ -1,0 +1,12 @@
+<RCC>
+  <qresource prefix="/images_resources">
+    <file>settingsCogs.jpg</file>
+    <file>back.svg</file>
+    <file>library.jpg</file>
+    <file>login.jpg</file>
+    <file>register.jpg</file>
+    <file>logout.svg</file>
+    <file>search.svg</file>
+    <file>settings.svg</file>
+  </qresource>
+</RCC>

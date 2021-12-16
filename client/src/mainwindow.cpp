@@ -9,7 +9,7 @@ MainWindow::MainWindow(QWidget* parent)
     , serverSocket(new QTcpSocket)
 {
     // Set background
-    QPixmap background(":/images_resources/images/library.jpg");
+    QPixmap background(":/images_resources/library.jpg");
     background = background.scaled(this->size(), Qt::IgnoreAspectRatio);
     QPalette palette;
     palette.setBrush(QPalette::Window, background);
@@ -93,7 +93,7 @@ MainWindow::MainWindow(QWidget* parent)
         sendData(serverSocket, message);
     });
 
-    QObject::connect(ui->logoutButton_4, &QPushButton::clicked, this, [this] {
+    QObject::connect(ui->logoutButton, &QPushButton::clicked, this, [this] {
         json message;
         message["type"] = MessageType::LOGOUT;
 
@@ -117,7 +117,7 @@ MainWindow::MainWindow(QWidget* parent)
     QObject::connect(ui->backButton, &QPushButton::clicked, this, [this] { switchPage(2); });
 
     QObject::connect(ui->logoutButton_2, &QPushButton::clicked, this, [this] { switchPage(0); });
-    QObject::connect(ui->logoutButton_4, &QPushButton::clicked, this, [this] { switchPage(0); });
+    QObject::connect(ui->logoutButton, &QPushButton::clicked, this, [this] { switchPage(0); });
     QObject::connect(ui->deleteAccountButton, &QPushButton::clicked, this, [this] { switchPage(0); });
 
     QObject::connect(serverSocket, &QTcpSocket::connected, this, &MainWindow::connected);
