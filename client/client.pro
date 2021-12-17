@@ -11,15 +11,18 @@ CONFIG += c++17
 
 # Input
 SOURCES += \
+    src/bookdetailswindow.cpp \
     src/main.cpp \
     src/mainwindow.cpp \
     src/bookitemwidget.cpp
 
 HEADERS += \
+    src/bookdetailswindow.h \
     src/mainwindow.hpp \
     src/bookitemwidget.hpp
 
 FORMS += \
+    src/bookdetailswindow.ui \
     src/mainwindow.ui \
     src/bookitemwidget.ui
 

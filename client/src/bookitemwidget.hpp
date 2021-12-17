@@ -15,6 +15,9 @@ public:
     explicit BookItemWidget(Book &book,QWidget* parent = nullptr);
     ~BookItemWidget();
 
+private slots:
+    void on_detailsButton_clicked();
+
 private:
     Ui::BookItemWidget* ui;
 };
