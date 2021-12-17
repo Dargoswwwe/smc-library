@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>654</width>
-    <height>469</height>
+    <width>665</width>
+    <height>478</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -917,22 +917,6 @@ color: white</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="0" column="1">
-                  <spacer name="verticalSpacer_2">
-                   <property name="orientation">
-                    <enum>Qt::Vertical</enum>
-                   </property>
-                   <property name="sizeType">
-                    <enum>QSizePolicy::Maximum</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>0</width>
-                     <height>30</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
                 </layout>
                </item>
               </layout>
@@ -1014,8 +998,8 @@ color: white</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>654</width>
-     <height>28</height>
+     <width>665</width>
+     <height>25</height>
     </rect>
    </property>
   </widget>

@@ -36,6 +36,14 @@ public slots:
     void receiveData();
     void sendData(QTcpSocket* serverSocket, const json& data);
 
+    void registerUser();
+    void loginUser();
+    void logoutUser();
+    void gotoSettings();
+    void changeUsername();
+    void changePassword();
+    void deleteAccount();
+
 private:
     void connectToServer(const QHostAddress& address = QHostAddress::LocalHost, qint16 port = 4200);
     void handleMessage(MessageType messageType, const nlohmann::json& messageData);
