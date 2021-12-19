@@ -5,7 +5,7 @@
 std::string User::hash(const std::string& pswrd)
 {
     std::string pswrdhash;
-    pswrdhash=QCryptographicHash::hash(pswrd.c_str(), QCryptographicHash::Sha3_256).toBase64().toStdString();
+    pswrdhash = QCryptographicHash::hash(pswrd.c_str(), QCryptographicHash::Sha3_256).toBase64().toStdString();
     return pswrdhash;
 }
 
@@ -103,10 +103,7 @@ void User::setPassword(const std::string& pswrd)
     password = hash(password);
 }
 
-void User::setHashedPassword(const std::string& hashedPswrd)
-{
-    password=hashedPswrd;
-}
+void User::setHashedPassword(const std::string& hashedPswrd) { password = hashedPswrd; }
 
 void User::setRead(const std::vector<Book>& booksRead) { read = booksRead; }
 

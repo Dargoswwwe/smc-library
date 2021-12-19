@@ -27,23 +27,23 @@ public:
     void deleteUsersBooksTable();
     void deleteBook(QString title);
     void deleteUser(QString username);
-    void deleteRowFromUsersBooksTable(int id_user, int id_book);
+    void deleteRowFromUsersBooksTable(int userId, int bookId);
 
-    bool addValuesIntoBookTable(int id, QString title, QString authors, QString language, int original_publication_year,
-                                float avarage_rating, int ratings_count, QString isbn, QString image_url, int available_books);
+    bool addValuesIntoBookTable(int id, QString title, QString authors, QString language, int originalPublicationYear,
+        float averageRating, int ratingsCount, QString isbn, QString imageUrl, int availableBooks);
     bool addValuesIntoUsersTable(QString username, QString password);
-    bool addValuesIntoUsersBooksTable(int user_id, int book_id);
+    bool addValuesIntoUsersBooksTable(int userId, int bookId);
 
     void changeUserPassword(QString username, QString password);
     void changeUsername(QString username, QString password);
 
     void insertBooksIntoDataBase();
-    void updateAvailableBook(QString title, int available_books);
+    void updateAvailableBook(QString title, int availableBooks);
     void decreaseAvailableBook(QString title);
     void increaseAvailableBook(QString title);
 
-    void getUsersForBook(int book_id);
-    std::vector<Book> getBorrowedBooksForUser(int user_id);
+    void getUsersForBook(int bookId);
+    std::vector<Book> getBorrowedBooksForUser(int userId);
     // void getAllBooks();
     std::vector<Book> getAllBooks();
 

@@ -1,5 +1,7 @@
 #include "database_manager.hpp"
+
 #include "user.hpp"
+
 #include <unordered_map>
 
 DatabaseManager::DatabaseManager()
@@ -67,12 +69,12 @@ DatabaseManager::DatabaseManager()
     }
 }
 
-void DatabaseManager::deleteRowFromUsersBooksTable(int user_id, int book_id)
+void DatabaseManager::deleteRowFromUsersBooksTable(int userId, int bookId)
 {
     QSqlQuery query;
     query.prepare("DELETE FROM UsersBooks WHERE user_id =  (:user_id) AND book_id = (:book_id)");
-    query.bindValue(":user_id", user_id);
-    query.bindValue(":book_id", book_id);
+    query.bindValue(":user_id", userId);
+    query.bindValue(":book_id", bookId);
 
     if (!query.exec()) qDebug() << "Error deleting row." << query.lastError().text();
 }
@@ -114,8 +116,8 @@ void DatabaseManager::deleteUser(QString username)
 }
 
 bool DatabaseManager::addValuesIntoBookTable(int id, QString title, QString authors, QString language,
-                                             int original_publication_year, float average_rating, int ratings_count, QString isbn, QString image_url,
-                                             int available_books)
+    int original_publication_year, float average_rating, int ratings_count, QString isbn, QString image_url,
+    int available_books)
 {
     QSqlQuery query;
 
@@ -171,10 +173,10 @@ bool DatabaseManager::addValuesIntoUsersTable(QString username, QString password
     return true;
 }
 
-bool DatabaseManager::addValuesIntoUsersBooksTable(int user_id, int book_id)
+bool DatabaseManager::addValuesIntoUsersBooksTable(int userId, int bookId)
 {
     QSqlQuery query;
-    QDate date_of_borrowing;
+    QDate borrowingDate;
 
     query.prepare("INSERT into UsersBooks ("
                   "user_id, "
@@ -183,11 +185,11 @@ bool DatabaseManager::addValuesIntoUsersBooksTable(int user_id, int book_id)
 
                   "VALUES (?,?,?);");
 
-    date_of_borrowing = QDate::currentDate();
+    borrowingDate = QDate::currentDate();
 
-    query.addBindValue(user_id);
-    query.addBindValue(book_id);
-    query.addBindValue(date_of_borrowing);
+    query.addBindValue(userId);
+    query.addBindValue(bookId);
+    query.addBindValue(borrowingDate);
 
     if (!query.exec()) {
         qDebug() << "Error binding book with user.";
@@ -233,7 +235,7 @@ void DatabaseManager::insertBooksIntoDataBase()
 
         QStringList word = line.split(',');
         valuesAdded += addValuesIntoBookTable(word[0].toInt(), word.at(1), word.at(2), word.at(3), word.at(4).toInt(),
-                word.at(5).toFloat(), word.at(6).toInt(), word.at(7), word.at(8), word.at(9).toInt());
+            word.at(5).toFloat(), word.at(6).toInt(), word.at(7), word.at(8), word.at(9).toInt());
     };
 
     qDebug() << "Done. Imported" << valuesAdded;
@@ -250,15 +252,15 @@ void DatabaseManager::getUsersForBook(int book_id)
     if (!query.exec()) qDebug() << "Error selecting users for this book!" << query.lastError().text();
 }
 
-std::vector<Book> DatabaseManager::getBorrowedBooksForUser(int user_id)
+std::vector<Book> DatabaseManager::getBorrowedBooksForUser(int userId)
 {
     QSqlQuery query;
     query.prepare(
-                "SELECT b.title, b.authors, b.language, b.original_publication_year, b.average_rating,"
-                " b.ratings_count, b.isbn, ub.date_of_borrowing FROM UsersBooks ub INNER JOIN Books b on ub.book_id=b.book_id "
-                "WHERE ub.user_id = (:user_id)");
+        "SELECT b.title, b.authors, b.language, b.original_publication_year, b.average_rating,"
+        " b.ratings_count, b.isbn, ub.date_of_borrowing FROM UsersBooks ub INNER JOIN Books b on ub.book_id=b.book_id "
+        "WHERE ub.user_id = (:user_id)");
 
-    query.bindValue(":user_id", user_id);
+    query.bindValue(":user_id", userId);
 
     if (!query.exec()) {
         qDebug() << "Error selecting borrowed books for this user!" << query.lastError().text();
@@ -266,7 +268,7 @@ std::vector<Book> DatabaseManager::getBorrowedBooksForUser(int user_id)
     }
 
     std::vector<std::string> fieldNames = { "title", "authors", "language", "original_publication_year",
-                                            "average_rating", "ratings_count", "isbn", "date_of_borrowing" };
+        "average_rating", "ratings_count", "isbn", "date_of_borrowing" };
     std::unordered_map<std::string, int> valueIndex;
 
     for (auto& fieldName : fieldNames)

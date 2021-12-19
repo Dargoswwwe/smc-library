@@ -39,7 +39,7 @@ public slots:
     void registerUser();
     void loginUser();
     void logoutUser();
-    void gotoSettings();
+    void showUsernameSettings();
     void changeUsername();
     void changePassword();
     void deleteAccount();
