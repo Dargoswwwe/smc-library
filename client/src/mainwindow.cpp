@@ -67,12 +67,15 @@ MainWindow::~MainWindow()
 
 void MainWindow::switchPage(int pageIndex)
 {
+    verifyConnection();
+
     if (pageIndex == 2 && allBooks.size() == 0) {
         json message;
         message["type"] = MessageType::GET_ALL_BOOKS;
         sendData(serverSocket, message);
         allBooks.clear();
     }
+
     if (pageIndex == 3 && !user.has_value()) return;
     ui->stackedWidget->setCurrentIndex(pageIndex);
 }
@@ -80,6 +83,13 @@ void MainWindow::switchPage(int pageIndex)
 void MainWindow::connectToServer(const QHostAddress& address, qint16 port)
 {
     serverSocket->connectToHost(address, port);
+}
+
+void MainWindow::verifyConnection()
+{
+    if (serverSocket->state() == QTcpSocket::UnconnectedState) {
+        connectToServer();
+    }
 }
 
 void MainWindow::connected()
