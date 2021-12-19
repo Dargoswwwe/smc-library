@@ -67,7 +67,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::switchPage(int pageIndex)
 {
-    verifyConnection();
+    if (pageIndex != 5)
+        verifyConnection();
 
     if (pageIndex == 2 && allBooks.size() == 0) {
         json message;
@@ -76,7 +77,8 @@ void MainWindow::switchPage(int pageIndex)
         allBooks.clear();
     }
 
-    if (pageIndex == 3 && !user.has_value()) return;
+    if (pageIndex == 3 && !user.has_value())
+        return;
     ui->stackedWidget->setCurrentIndex(pageIndex);
 }
 
@@ -90,6 +92,13 @@ void MainWindow::verifyConnection()
     if (serverSocket->state() == QTcpSocket::UnconnectedState) {
         connectToServer();
     }
+    //int tries = 1;
+    // while (serverSocket->state() == QTcpSocket::UnconnectedState) {
+    //    ui->attemptNumber->setText(std::to_string(tries).c_str());
+    //   switchPage(5);
+    //   QTimer::singleShot(5000, this, SLOT(connectToServer()));
+    //   tries++;
+    //}
 }
 
 void MainWindow::connected()
