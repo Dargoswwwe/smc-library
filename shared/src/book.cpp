@@ -162,6 +162,16 @@ std::string Book::getTitle() const { return title; }
 
 std::vector<std::string> Book::getAuthors() const { return authors; }
 
+std::string Book::getAuthorsString() const
+{
+    std::string authorsString;
+    for (size_t index = 0; index < authors.size(); index++) {
+        authorsString += authors[index];
+        if (index != authors.size() - 1) authorsString += ", ";
+    }
+    return authorsString;
+}
+
 std::string Book::getLanguage() const { return language; }
 
 uint32_t Book::getOriginalPublication() const { return originalPublication; }

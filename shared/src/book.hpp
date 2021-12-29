@@ -41,6 +41,7 @@ public:
     // Getters & Setters
     std::string getTitle() const;
     std::vector<std::string> getAuthors() const;
+    std::string getAuthorsString() const;
     std::string getLanguage() const;
     uint32_t getOriginalPublication() const;
     float getAverageRating() const;

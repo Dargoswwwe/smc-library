@@ -9,12 +9,7 @@ BookItemWidget::BookItemWidget(Book& book, QWidget* parent)
 {
     ui->setupUi(this);
     ui->titleLabel->setText(book.getTitle().c_str());
-    QString authors;
-    for (unsigned long long index = 0; index < book.getAuthors().size(); index++) {
-        authors.push_back(book.getAuthors()[index].c_str());
-        if (index != book.getAuthors().size() - 1) authors.push_back(", ");
-    }
-    ui->authorLabel->setText(authors);
+    ui->authorLabel->setText(book.getAuthorsString().c_str());
 
     QString rating = QString::number(book.getAverageRating());
     ui->ratingLabel->setText(rating);
