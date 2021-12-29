@@ -1,10 +1,11 @@
 #include "bookitemwidget.hpp"
 
-#include "bookdetailswindow.h"
+#include "bookdetailswindow.hpp"
 #include "ui_bookitemwidget.h"
 
-BookItemWidget::BookItemWidget(Book& book, QWidget* parent)
-    : QWidget(parent)
+BookItemWidget::BookItemWidget(Book book, QWidget* parent)
+    : book(book)
+    , QWidget(parent)
     , ui(new Ui::BookItemWidget)
 {
     ui->setupUi(this);
@@ -19,7 +20,7 @@ BookItemWidget::~BookItemWidget() { delete ui; }
 
 void BookItemWidget::on_detailsButton_clicked()
 {
-    detailsbookwindow detailsBookWindow;
-    detailsBookWindow.setModal(true);
-    detailsBookWindow.exec();
+    BookDetailsWindow bookDetailsWindow(book);
+    bookDetailsWindow.setModal(true);
+    bookDetailsWindow.exec();
 }

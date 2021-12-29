@@ -1,8 +1,10 @@
 #ifndef BOOKITEMWIDGET_HPP
 #define BOOKITEMWIDGET_HPP
 
-#include <QWidget>
 #include "book.hpp"
+
+#include <QWidget>
+
 namespace Ui {
 class BookItemWidget;
 }
@@ -11,8 +13,11 @@ class BookItemWidget : public QWidget
 {
     Q_OBJECT
 
+private:
+    Book book;
+
 public:
-    explicit BookItemWidget(Book &book,QWidget* parent = nullptr);
+    explicit BookItemWidget(Book book, QWidget* parent = nullptr);
     ~BookItemWidget();
 
 private slots:

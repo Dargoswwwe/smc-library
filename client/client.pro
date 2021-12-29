@@ -17,7 +17,7 @@ SOURCES += \
     src/bookitemwidget.cpp
 
 HEADERS += \
-    src/bookdetailswindow.h \
+    src/bookdetailswindow.hpp \
     src/mainwindow.hpp \
     src/bookitemwidget.hpp
 
