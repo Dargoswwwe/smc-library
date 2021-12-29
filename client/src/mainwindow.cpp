@@ -22,7 +22,7 @@ MainWindow::MainWindow(QWidget* parent)
     QObject::connect(ui->lineRegisterUsername, &QLineEdit::returnPressed, ui->buttonRegister, &QPushButton::click);
     QObject::connect(ui->lineRegisterPassword, &QLineEdit::returnPressed, ui->buttonRegister, &QPushButton::click);
     QObject::connect(
-        ui->lineRegisterConfirmPassword, &QLineEdit::returnPressed, ui->buttonRegister, &QPushButton::click);
+                ui->lineRegisterConfirmPassword, &QLineEdit::returnPressed, ui->buttonRegister, &QPushButton::click);
 
     QObject::connect(ui->buttonRegister, &QPushButton::clicked, this, &MainWindow::registerUser);
     QObject::connect(ui->buttonLogin, &QPushButton::clicked, this, &MainWindow::loginUser);
@@ -225,112 +225,112 @@ void MainWindow::handleMessage(MessageType messageType, const json& messageData)
     switch (messageType) {
     case MessageType::REGISTER:
         try {
-            if (messageData == "UsernameAlreadyTaken") {
-                ui->labelRegisterStatus->setText("Username taken");
-                user = std::nullopt;
-            }
-            if (messageData == "NotMatchingPasswords") {
-                ui->labelRegisterStatus->setText("Passwords don't match!");
-                user = std::nullopt;
-            }
-            if (messageData == "PasswordAlreadyTaken") {
-                ui->labelRegisterStatus->setText("Password already taken. Type another password!");
-                user = std::nullopt;
-            }
-            if (messageData == "Success") {
-                switchPage(2);
-                // requestAllBooks();
-            }
-        } catch (const nlohmann::detail::type_error& e) { }
+        if (messageData == "UsernameAlreadyTaken") {
+            ui->labelRegisterStatus->setText("Username taken");
+            user = std::nullopt;
+        }
+        if (messageData == "NotMatchingPasswords") {
+            ui->labelRegisterStatus->setText("Passwords don't match!");
+            user = std::nullopt;
+        }
+        if (messageData == "PasswordAlreadyTaken") {
+            ui->labelRegisterStatus->setText("Password already taken. Type another password!");
+            user = std::nullopt;
+        }
+        if (messageData == "Success") {
+            switchPage(2);
+            // requestAllBooks();
+        }
+    } catch (const nlohmann::detail::type_error& e) { }
         break;
 
     case MessageType::LOGIN:
         try {
-            if (messageData == "NameError") {
-                ui->labelLoginStatus->setText("This username is not registered.");
-                user = std::nullopt;
-            }
-            if (messageData == "PasswordError") {
-                ui->labelLoginStatus->setText("Wrong password.");
-                user = std::nullopt;
-            }
-            if (messageData == "Success") {
-                switchPage(2);
-                // requestAllBooks();
-            }
-        } catch (const nlohmann::detail::type_error& e) { }
+        if (messageData == "NameError") {
+            ui->labelLoginStatus->setText("This username is not registered.");
+            user = std::nullopt;
+        }
+        if (messageData == "PasswordError") {
+            ui->labelLoginStatus->setText("Wrong password.");
+            user = std::nullopt;
+        }
+        if (messageData == "Success") {
+            switchPage(2);
+            // requestAllBooks();
+        }
+    } catch (const nlohmann::detail::type_error& e) { }
         break;
 
     case MessageType::CHANGE_USERNAME:
         try {
-            if (messageData == "AlreadyTaken")
-                ui->changeUsernamePasswordLabel->setText("This username is already taken.");
-            if (messageData == "Success") {
-                user->setUsername(ui->changeUsernameLine->text().toStdString());
-                ui->changeUsernamePasswordLabel->setText("Username updated!");
-            }
-        } catch (const nlohmann::detail::type_error& e) { }
+        if (messageData == "AlreadyTaken")
+            ui->changeUsernamePasswordLabel->setText("This username is already taken.");
+        if (messageData == "Success") {
+            user->setUsername(ui->changeUsernameLine->text().toStdString());
+            ui->changeUsernamePasswordLabel->setText("Username updated!");
+        }
+    } catch (const nlohmann::detail::type_error& e) { }
         break;
 
     case MessageType::CHANGE_PASSWORD:
 
         try {
-            if (messageData == "IncorrectOldPassword")
-                ui->changeUsernamePasswordLabel->setText("The old password is incorrect!");
-            if (messageData == "SameWithOldPassword")
-                ui->changeUsernamePasswordLabel->setText("Type a different password from the old one!");
-            if (messageData == "NotMatchingPasswords")
-                ui->changeUsernamePasswordLabel->setText("Passwords don't match!");
-            if (messageData == "Success") {
-                user->setPassword(ui->newPasswordLine->text().toStdString());
-                ui->changeUsernamePasswordLabel->setText("Password updated!");
-            }
+        if (messageData == "IncorrectOldPassword")
+            ui->changeUsernamePasswordLabel->setText("The old password is incorrect!");
+        if (messageData == "SameWithOldPassword")
+            ui->changeUsernamePasswordLabel->setText("Type a different password from the old one!");
+        if (messageData == "NotMatchingPasswords")
+            ui->changeUsernamePasswordLabel->setText("Passwords don't match!");
+        if (messageData == "Success") {
+            user->setPassword(ui->newPasswordLine->text().toStdString());
+            ui->changeUsernamePasswordLabel->setText("Password updated!");
+        }
 
-        } catch (const nlohmann::detail::type_error& e) { }
+    } catch (const nlohmann::detail::type_error& e) { }
         break;
 
     case MessageType::LOGOUT:
         try {
-            if (messageData == "Success") {
-                switchPage(0);
-                ui->lineLoginUsername->setText("");
-                ui->lineLoginPassword->setText("");
-                user = std::nullopt;
-            }
-        } catch (const nlohmann::detail::type_error& e) {
+        if (messageData == "Success") {
+            switchPage(0);
+            ui->lineLoginUsername->setText("");
+            ui->lineLoginPassword->setText("");
+            user = std::nullopt;
+        }
+    } catch (const nlohmann::detail::type_error& e) {
             qWarning() << "LOGOUT: " << e.what();
         }
         break;
 
     case MessageType::DELETE_ACCOUNT:
         try {
-            if (messageData == "Success") {
-                switchPage(0);
-                ui->lineLoginUsername->setText("");
-                ui->lineLoginPassword->setText("");
-                user = std::nullopt;
-            }
-        } catch (const nlohmann::detail::type_error& e) {
+        if (messageData == "Success") {
+            switchPage(0);
+            ui->lineLoginUsername->setText("");
+            ui->lineLoginPassword->setText("");
+            user = std::nullopt;
+        }
+    } catch (const nlohmann::detail::type_error& e) {
             qWarning() << "DELETE_ACCOUNT: " << e.what();
         }
         break;
 
     case MessageType::GET_ALL_BOOKS:
         try {
-            for (Book b : messageData) {
-                BookItemWidget* bookItem = new BookItemWidget(b, ui->scrollAreaWidgetContents);
-                allBooks.push_back(b);
-                ui->verticalLayout_4->addWidget(bookItem);
-            }
-        } catch (const nlohmann::detail::type_error& e) {
+        for (Book b : messageData) {
+            BookItemWidget* bookItem = new BookItemWidget(b, ui->scrollAreaWidgetContents);
+            allBooks.push_back(b);
+            ui->verticalLayout_4->addWidget(bookItem);
+        }
+    } catch (const nlohmann::detail::type_error& e) {
             qWarning() << "GET_ALL_BOOKS: " << e.what();
         }
         break;
 
     case MessageType::FINISHED:
         try {
-            ui->verticalLayout_4->addStretch();
-        } catch (const nlohmann::detail::type_error& e) {
+        ui->verticalLayout_4->addStretch();
+    } catch (const nlohmann::detail::type_error& e) {
             qWarning() << "FINISHED: " << e.what();
         }
         break;

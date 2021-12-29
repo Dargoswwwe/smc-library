@@ -30,7 +30,7 @@ public:
     void deleteRowFromUsersBooksTable(int userId, int bookId);
 
     bool addValuesIntoBookTable(int id, QString title, QString authors, QString language, int originalPublicationYear,
-        float averageRating, int ratingsCount, QString isbn, QString imageUrl, int availableBooks);
+                                float averageRating, int ratingsCount, QString isbn, QString imageUrl, int availableBooks);
     bool addValuesIntoUsersTable(QString username, QString password);
     bool addValuesIntoUsersBooksTable(int userId, int bookId);
 

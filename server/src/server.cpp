@@ -111,7 +111,7 @@ void Server::loginUser(const std::string& name, const std::string& password, QTc
 }
 
 void Server::registerUser(const std::string& name, const std::string& password, const ::std::string& confirmpassword,
-    QTcpSocket* clientSocket)
+                          QTcpSocket* clientSocket)
 {
     if (database.validUsername(name.c_str())) {
         sendData(clientSocket, R"({"type": "register", "data": "UsernameAlreadyTaken"})"_json);
@@ -137,7 +137,7 @@ void Server::changeUsername(const std::string& name, const std::string& password
 }
 
 void Server::changePassword(const std::string& name, const std::string& password, const std::string& oldpassword,
-    const std::string& newpassword, const std::string& confirmpassword, QTcpSocket* clientSocket)
+                            const std::string& newpassword, const std::string& confirmpassword, QTcpSocket* clientSocket)
 {
     if (oldpassword != password) {
         sendData(clientSocket, R"({"type": "changePassword", "data": "IncorrectOldPassword"})"_json);
@@ -195,9 +195,9 @@ void Server::handleMessage(QTcpSocket* clientSocket, MessageType messageType, co
     switch (messageType) {
     case MessageType::REGISTER:
         try {
-            registerUser(
-                messageData["username"], messageData["password"], messageData["confirmpassword"], clientSocket);
-        } catch (const nlohmann::detail::type_error& e) { }
+        registerUser(
+                    messageData["username"], messageData["password"], messageData["confirmpassword"], clientSocket);
+    } catch (const nlohmann::detail::type_error& e) { }
         break;
 
     case MessageType::LOGIN:
@@ -210,7 +210,7 @@ void Server::handleMessage(QTcpSocket* clientSocket, MessageType messageType, co
 
     case MessageType::CHANGE_PASSWORD:
         changePassword(messageData["username"], messageData["password"], messageData["oldpassword"],
-            messageData["newpassword"], messageData["confirmpassword"], clientSocket);
+                messageData["newpassword"], messageData["confirmpassword"], clientSocket);
         break;
 
     case MessageType::LOGOUT:

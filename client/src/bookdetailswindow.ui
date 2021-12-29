@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>704</width>
-    <height>554</height>
+    <width>617</width>
+    <height>511</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -578,7 +578,6 @@ background-color: rgb(117, 75, 28);</string>
   </layout>
  </widget>
  <resources>
-  <include location="../images/resources.qrc"/>
   <include location="../images/resources.qrc"/>
  </resources>
  <connections/>

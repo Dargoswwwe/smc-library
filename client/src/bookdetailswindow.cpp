@@ -3,8 +3,8 @@
 #include "ui_bookdetailswindow.h"
 
 BookDetailsWindow::BookDetailsWindow(Book book, QWidget* parent)
-    : book(book)
-    , QDialog(parent)
+    : QDialog(parent)
+    , book(book)
     , ui(new Ui::BookDetailsWindow)
 {
     ui->setupUi(this);
