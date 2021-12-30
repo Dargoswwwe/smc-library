@@ -116,7 +116,7 @@ Book::Book()
     isbn = '\0';
     exemplarsAvailable = 3;
     content = "A stranger has kidnapped your child. To free them you must abduct someone else's child.Your child will "
-              "be released when your victim's parents kidnap another child.Df any of these things don't happen: your "
+              "be released when your victim's parents kidnap another child. If any of these things don't happen, your "
               "child will be killed. You are now part of the chain..";
     available = true;
     url = "...";

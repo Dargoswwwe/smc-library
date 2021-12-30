@@ -113,16 +113,32 @@ void Server::loginUser(const std::string& name, const std::string& password, QTc
 void Server::registerUser(const std::string& name, const std::string& password, const ::std::string& confirmpassword,
                           QTcpSocket* clientSocket)
 {
-    if (database.validUsername(name.c_str())) {
-        sendData(clientSocket, R"({"type": "register", "data": "UsernameAlreadyTaken"})"_json);
-    } else if (password != confirmpassword) {
-        sendData(clientSocket, R"({"type": "register", "data": "NotMatchingPasswords"})"_json);
-    } else if (database.uniquePassword(password.c_str())) {
-        sendData(clientSocket, R"({"type": "register", "data": "PasswordAlreadyTaken"})"_json);
-    } else {
-        database.addValuesIntoUsersTable(name.c_str(), password.c_str());
-        sendData(clientSocket, R"({"type": "register", "data": "Success"})"_json);
+    if(name=="" && password=="YvJ2aYwAckEF+e/xayGqJ0tqHm12fyFg9srQ9O4iMmE=")
+    {
+        sendData(clientSocket, R"({"type": "register", "data": "EmptyFields"})"_json);
     }
+    else if(name=="" && password!="YvJ2aYwAckEF+e/xayGqJ0tqHm12fyFg9srQ9O4iMmE=")
+    {
+        sendData(clientSocket, R"({"type": "register", "data": "EmptyNameField"})"_json);
+    }
+    else if(name!="" && password=="YvJ2aYwAckEF+e/xayGqJ0tqHm12fyFg9srQ9O4iMmE=")
+    {
+        sendData(clientSocket, R"({"type": "register", "data": "EmptyPasswordField"})"_json);
+    }
+    else if(name!="" && password!="YvJ2aYwAckEF+e/xayGqJ0tqHm12fyFg9srQ9O4iMmE=")
+    {
+        if (database.validUsername(name.c_str())) {
+            sendData(clientSocket, R"({"type": "register", "data": "UsernameAlreadyTaken"})"_json);
+        } else if (password != confirmpassword) {
+            sendData(clientSocket, R"({"type": "register", "data": "NotMatchingPasswords"})"_json);
+        } else if (database.uniquePassword(password.c_str())) {
+            sendData(clientSocket, R"({"type": "register", "data": "PasswordAlreadyTaken"})"_json);
+        } else {
+            database.addValuesIntoUsersTable(name.c_str(), password.c_str());
+            sendData(clientSocket, R"({"type": "register", "data": "Success"})"_json);
+        }
+    }
+
 }
 
 void Server::changeUsername(const std::string& name, const std::string& password, QTcpSocket* clientSocket)

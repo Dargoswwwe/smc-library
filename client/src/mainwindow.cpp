@@ -237,9 +237,25 @@ void MainWindow::handleMessage(MessageType messageType, const json& messageData)
             ui->labelRegisterStatus->setText("Password already taken. Type another password!");
             user = std::nullopt;
         }
-        if (messageData == "Success") {
+        if (messageData == "Success")
+        {
             switchPage(2);
             // requestAllBooks();
+        }
+        if(messageData=="EmptyNameField")
+        {
+            ui->labelRegisterStatus->setText("The username filed is empty!");
+            user = std::nullopt;
+        }
+        if(messageData=="EmptyPasswordField")
+        {
+            ui->labelRegisterStatus->setText("The password filed is empty!");
+            user = std::nullopt;
+        }
+        if(messageData=="EmptyFields")
+        {
+            ui->labelRegisterStatus->setText("The fileds are empty!");
+            user = std::nullopt;
         }
     } catch (const nlohmann::detail::type_error& e) { }
         break;
