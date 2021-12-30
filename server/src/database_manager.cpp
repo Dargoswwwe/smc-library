@@ -252,6 +252,21 @@ void DatabaseManager::getUsersForBook(int book_id)
     if (!query.exec()) qDebug() << "Error selecting users for this book!" << query.lastError().text();
 }
 
+int DatabaseManager::getUserId(QString username)
+{
+    QSqlQuery query;
+    int id;
+    query.prepare("SELECT * FROM Users u WHERE u.username =  (:username) ");
+
+    query.bindValue(":username", username);
+
+    if (!query.exec()) qDebug() << "Error getting id for this user!" << query.lastError().text();
+    query.next();
+
+    id = query.value(0).toInt();
+
+    return id;
+}
 std::vector<Book> DatabaseManager::getBorrowedBooksForUser(int userId)
 {
     QSqlQuery query;

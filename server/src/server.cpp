@@ -206,6 +206,35 @@ void Server::sendAllBooks(QTcpSocket* clientSocket)
     sendData(clientSocket, R"({"type": "finished", "data": ""})"_json);
 }
 
+//void Server::sendUserBooks(QTcpSocket* clientSocket)
+//{
+//    std::vector<std::pair<Book, std::string>>userBooks;
+//    size_t messageSize = 50;
+
+
+
+//    for (size_t i = 0; i < userBooks.size() / messageSize; ++i) {
+//        json message;
+//        message["type"] = MessageType::GET_USER_BOOKS;
+//        message["data"] = json::array({});
+//        for (size_t j = 0; j < messageSize; j++)
+//            message["data"][j] = userBooks[i + j];
+
+//        sendData(clientSocket, message);
+//    }
+
+//    for (size_t i = books.size() - books.size() % messageSize; i < books.size(); ++i) {
+//        json message;
+//        message["type"] = MessageType::GET_ALL_BOOKS;
+//        message["data"] = json::array({});
+//        for (size_t j = 0; j < messageSize; j++)
+//            message["data"][j] = books[i + j];
+
+//        sendData(clientSocket, message);
+//    }
+//    sendData(clientSocket, R"({"type": "finished", "data": ""})"_json);
+//}
+
 void Server::handleMessage(QTcpSocket* clientSocket, MessageType messageType, const json& messageData)
 {
     switch (messageType) {
