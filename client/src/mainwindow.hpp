@@ -25,6 +25,7 @@ class MainWindow : public QMainWindow
 private:
     std::optional<User> user;
     std::vector<Book> allBooks;
+    std::vector<Book>userBooks;
 
 public:
     MainWindow(QWidget* parent = nullptr);
@@ -43,6 +44,7 @@ public slots:
     void changeUsername();
     void changePassword();
     void deleteAccount();
+    void getBorrowedBooks();
     void getAllBooks();
 
 private:

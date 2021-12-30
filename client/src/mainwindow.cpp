@@ -50,6 +50,7 @@ MainWindow::MainWindow(QWidget* parent)
     QObject::connect(ui->logoutButton, &QPushButton::clicked, this, [this] { switchPage(0); });
     QObject::connect(ui->deleteAccountButton, &QPushButton::clicked, this, [this] { switchPage(0); });
 
+    QObject::connect(ui->viewMyBooksButton, &QPushButton::clicked, this, &MainWindow::getBorrowedBooks);
     QObject::connect(ui->viewAllBooksButton, &QPushButton::clicked, this, &MainWindow::getAllBooks);
 
     QObject::connect(serverSocket, &QTcpSocket::connected, this, &MainWindow::connected);
@@ -213,6 +214,16 @@ void MainWindow::deleteAccount()
     message["data"]["username"] = user->getUsername();
 
     sendData(serverSocket, message);
+}
+void MainWindow::getBorrowedBooks()
+{
+    if (userBooks.size() == 0) {
+        json message;
+        message["type"] = MessageType::GET_USER_BOOKS;
+        message["data"]["username"] = user->getUsername();
+        sendData(serverSocket, message);
+        userBooks.clear();
+    }
 }
 
 void MainWindow::getAllBooks()
