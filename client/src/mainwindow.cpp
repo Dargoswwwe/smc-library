@@ -50,6 +50,8 @@ MainWindow::MainWindow(QWidget* parent)
     QObject::connect(ui->logoutButton, &QPushButton::clicked, this, [this] { switchPage(0); });
     QObject::connect(ui->deleteAccountButton, &QPushButton::clicked, this, [this] { switchPage(0); });
 
+    QObject::connect(ui->viewAllBooksButton, &QPushButton::clicked, this, &MainWindow::getAllBooks);
+
     QObject::connect(serverSocket, &QTcpSocket::connected, this, &MainWindow::connected);
     QObject::connect(serverSocket, &QIODevice::readyRead, this, &MainWindow::receiveData);
 
@@ -69,13 +71,6 @@ void MainWindow::switchPage(int pageIndex)
 {
     if (pageIndex != 5)
         verifyConnection();
-
-    if (pageIndex == 2 && allBooks.size() == 0) {
-        json message;
-        message["type"] = MessageType::GET_ALL_BOOKS;
-        sendData(serverSocket, message);
-        allBooks.clear();
-    }
 
     if (pageIndex == 3 && !user.has_value())
         return;
@@ -218,6 +213,16 @@ void MainWindow::deleteAccount()
     message["data"]["username"] = user->getUsername();
 
     sendData(serverSocket, message);
+}
+
+void MainWindow::getAllBooks()
+{
+    if (allBooks.size() == 0) {
+        json message;
+        message["type"] = MessageType::GET_ALL_BOOKS;
+        sendData(serverSocket, message);
+        allBooks.clear();
+    }
 }
 
 void MainWindow::handleMessage(MessageType messageType, const json& messageData)

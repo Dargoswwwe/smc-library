@@ -43,6 +43,7 @@ public slots:
     void changeUsername();
     void changePassword();
     void deleteAccount();
+    void getAllBooks();
 
 private:
     void connectToServer(const QHostAddress& address = QHostAddress::LocalHost, qint16 port = 4200);

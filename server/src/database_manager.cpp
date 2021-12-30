@@ -317,6 +317,58 @@ std::vector<Book> DatabaseManager::getBorrowedBooksForUser(int userId)
     return books;
 }
 
+//std::vector<std::pair<Book, std::string>> DatabaseManager::getBorrowedBooksForUser(int userId)
+//{
+//    QSqlQuery query;
+//    query.prepare(
+//                "SELECT b.title, b.authors, b.language, b.original_publication_year, b.average_rating,"
+//                " b.ratings_count, b.isbn, ub.date_of_borrowing FROM UsersBooks ub INNER JOIN Books b on ub.book_id=b.book_id "
+//                "WHERE ub.user_id = (:user_id)");
+
+//    query.bindValue(":user_id", userId);
+
+//    if (!query.exec()) {
+//        qDebug() << "Error selecting borrowed books for this user!" << query.lastError().text();
+//        return std::vector<std::pair<Book, std::string>>();
+//    }
+
+//    std::vector<std::string> fieldNames = { "title", "authors", "language", "original_publication_year",
+//                                            "average_rating", "ratings_count", "isbn", "date_of_borrowing" };
+//    std::unordered_map<std::string, int> valueIndex;
+
+//    for (auto& fieldName : fieldNames)
+//        valueIndex[fieldName] = query.record().indexOf(fieldName.c_str());
+
+//    std::vector<std::pair<Book, std::string>> books;
+
+//    while (query.next()) {
+//        Book book;
+//        std::string date;
+
+//        book.setTitle(query.value(valueIndex["title"]).toString().toStdString());
+
+//        std::stringstream authorsStream(query.value(valueIndex["authors"]).toString().toStdString());
+
+//        std::vector<std::string> authors;
+//        std::string author;
+
+//        while (std::getline(authorsStream, author, ';'))
+//            authors.push_back(author);
+//        book.setAuthors(authors);
+
+//        book.setLanguage(query.value(valueIndex["language"]).toString().toStdString());
+//        book.setOriginalPublication(query.value(valueIndex["language"]).toInt());
+//        book.setAverageRating(query.value(valueIndex["average_rating"]).toFloat());
+//        book.setRatingsCount(query.value(valueIndex["average_rating"]).toInt());
+//        book.setIsbn(query.value(valueIndex["isbn"]).toString().toStdString());
+//        book.setUrl(query.value(valueIndex["image_url"]).toString().toStdString());
+
+//        date=query.value(valueIndex["date_of_borrowing"]).toString().toStdString();
+//        books.push_back(std::make_pair(book, date));
+//    }
+
+//    return books;
+//}
 std::vector<Book> DatabaseManager::getAllBooks()
 {
     QSqlQuery query;

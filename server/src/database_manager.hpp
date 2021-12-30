@@ -43,6 +43,7 @@ public:
     void increaseAvailableBook(QString title);
 
     void getUsersForBook(int bookId);
+    //std::vector<std::pair<Book, std::string>> getBorrowedBooksForUser(int userId);
     std::vector<Book> getBorrowedBooksForUser(int userId);
     // void getAllBooks();
     std::vector<Book> getAllBooks();
