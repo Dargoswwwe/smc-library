@@ -206,6 +206,21 @@ void Server::sendAllBooks(QTcpSocket* clientSocket)
     sendData(clientSocket, R"({"type": "finished", "data": ""})"_json);
 }
 
+void Server::sendUserBooks(const std::string& name, QTcpSocket* clientSocket)
+{
+    int user_id=database.getUserId(name.c_str());
+    auto userBooks=database.getBorrowedBooksForUser(user_id);
+
+    json message;
+    message["type"] = MessageType::GET_USER_BOOKS;
+    message["data"] = json::array({});
+    message["data"] = userBooks;
+
+    sendData(clientSocket, message);
+
+    sendData(clientSocket, R"({"type": "finished", "data": ""})"_json);
+}
+
 void Server::handleMessage(QTcpSocket* clientSocket, MessageType messageType, const json& messageData)
 {
     switch (messageType) {
@@ -238,6 +253,9 @@ void Server::handleMessage(QTcpSocket* clientSocket, MessageType messageType, co
         break;
     case MessageType::GET_ALL_BOOKS:
         sendAllBooks(clientSocket);
+        break;
+    case MessageType::GET_USER_BOOKS:
+        sendUserBooks(messageData["username"],clientSocket);
         break;
     }
 }

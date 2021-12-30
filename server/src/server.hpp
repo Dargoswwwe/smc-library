@@ -45,6 +45,7 @@ private:
     void logout(QTcpSocket* clientSocket);
     void deleteAccount(const std::string& name, QTcpSocket* clientSocket);
     void sendAllBooks(QTcpSocket* clientSocket);
+    void sendUserBooks(const std::string& name, QTcpSocket* clientSocket);
 
     void handleMessage(QTcpSocket* clientSocket, MessageType messageType, const nlohmann::json& messageData);
 

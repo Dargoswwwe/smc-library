@@ -359,6 +359,18 @@ void MainWindow::handleMessage(MessageType messageType, const json& messageData)
         }
         break;
 
+    case MessageType::GET_USER_BOOKS:
+        try {
+        for (Book b : messageData) {
+            BookItemWidget* bookItem = new BookItemWidget(b, ui->scrollAreaWidgetContents);
+            userBooks.push_back(b);
+            ui->verticalLayout_4->addWidget(bookItem);
+        }
+    } catch (const nlohmann::detail::type_error& e) {
+            qWarning() << "GET_USER_BOOKS: " << e.what();
+        }
+        break;
+
     case MessageType::FINISHED:
         try {
         ui->verticalLayout_4->addStretch();
