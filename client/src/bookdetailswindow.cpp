@@ -18,8 +18,7 @@ BookDetailsWindow::BookDetailsWindow(Book book, QWidget* parent)
     ui->contentLabel->setText(book.getContent().c_str());
 
     QNetworkAccessManager* manager = new QNetworkAccessManager(this);
-    connect(manager, &QNetworkAccessManager::finished,
-        this, &BookDetailsWindow::imageDownloaded);
+    connect(manager, &QNetworkAccessManager::finished, this, &BookDetailsWindow::imageDownloaded);
 
     manager->get(QNetworkRequest(QUrl(book.getUrl().c_str())));
 }

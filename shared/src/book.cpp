@@ -115,7 +115,8 @@ Book::Book()
     ratingsCount = 0;
     isbn = '\0';
     exemplarsAvailable = 3;
-    content = "A stranger has kidnapped your child. To free them you must abduct someone else's child. You are now part of the chain..";
+    content = "A stranger has kidnapped your child. To free them you must abduct someone else's child. You are now "
+              "part of the chain..";
     available = true;
     url = "...";
 

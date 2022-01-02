@@ -14,7 +14,7 @@ class BookItemWidget : public QWidget
     Q_OBJECT
 
 private:
-        Book book;
+    Book book;
 
 public:
     explicit BookItemWidget(Book book, QWidget* parent = nullptr);
@@ -25,7 +25,6 @@ private slots:
 
 private:
     Ui::BookItemWidget* ui;
-
 };
 
 #endif // BOOKITEMWIDGET_HPP

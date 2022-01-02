@@ -2,6 +2,7 @@
 #define BOOKDETAILSWINDOW_H
 
 #include "book.hpp"
+
 #include <QDialog>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
@@ -21,11 +22,11 @@ public slots:
     void imageDownloaded(QNetworkReply* response);
 
 public:
-    explicit BookDetailsWindow(Book book, QWidget *parent = nullptr);
+    explicit BookDetailsWindow(Book book, QWidget* parent = nullptr);
     ~BookDetailsWindow();
 
 private:
-    Ui::BookDetailsWindow *ui;
+    Ui::BookDetailsWindow* ui;
 };
 
 #endif // BOOKDETAILSWINDOW_H

@@ -4,7 +4,7 @@
 #include "ui_bookitemwidget.h"
 
 BookItemWidget::BookItemWidget(Book book, QWidget* parent)
-    :QWidget(parent)
+    : QWidget(parent)
     , book(book)
     , ui(new Ui::BookItemWidget)
 {

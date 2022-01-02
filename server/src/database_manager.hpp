@@ -30,7 +30,7 @@ public:
     void deleteRowFromUsersBooksTable(int userId, int bookId);
 
     bool addValuesIntoBookTable(int id, QString title, QString authors, QString language, int originalPublicationYear,
-                                float averageRating, int ratingsCount, QString isbn, QString imageUrl, int availableBooks);
+        float averageRating, int ratingsCount, QString isbn, QString imageUrl, int availableBooks);
     bool addValuesIntoUsersTable(QString username, QString password);
     bool addValuesIntoUsersBooksTable(int userId, int bookId);
 
@@ -43,7 +43,7 @@ public:
     void increaseAvailableBook(QString title);
 
     void getUsersForBook(int bookId);
-    //std::vector<std::pair<Book, std::string>> getBorrowedBooksForUser(int userId);
+    // std::vector<std::pair<Book, std::string>> getBorrowedBooksForUser(int userId);
     std::vector<Book> getBorrowedBooksForUser(int userId);
     // void getAllBooks();
     std::vector<Book> getAllBooks();

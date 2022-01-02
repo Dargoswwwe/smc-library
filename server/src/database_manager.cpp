@@ -116,8 +116,8 @@ void DatabaseManager::deleteUser(QString username)
 }
 
 bool DatabaseManager::addValuesIntoBookTable(int id, QString title, QString authors, QString language,
-                                             int original_publication_year, float average_rating, int ratings_count, QString isbn, QString image_url,
-                                             int available_books)
+    int original_publication_year, float average_rating, int ratings_count, QString isbn, QString image_url,
+    int available_books)
 {
     QSqlQuery query;
 
@@ -235,7 +235,7 @@ void DatabaseManager::insertBooksIntoDataBase()
 
         QStringList word = line.split(',');
         valuesAdded += addValuesIntoBookTable(word[0].toInt(), word.at(1), word.at(2), word.at(3), word.at(4).toInt(),
-                word.at(5).toFloat(), word.at(6).toInt(), word.at(7), word.at(8), word.at(9).toInt());
+            word.at(5).toFloat(), word.at(6).toInt(), word.at(7), word.at(8), word.at(9).toInt());
     };
 
     qDebug() << "Done. Imported" << valuesAdded;
@@ -271,9 +271,9 @@ std::vector<Book> DatabaseManager::getBorrowedBooksForUser(int userId)
 {
     QSqlQuery query;
     query.prepare(
-                "SELECT b.title, b.authors, b.language, b.original_publication_year, b.average_rating,"
-                " b.ratings_count, b.isbn, ub.date_of_borrowing FROM UsersBooks ub INNER JOIN Books b on ub.book_id=b.book_id "
-                "WHERE ub.user_id = (:user_id)");
+        "SELECT b.title, b.authors, b.language, b.original_publication_year, b.average_rating,"
+        " b.ratings_count, b.isbn, ub.date_of_borrowing FROM UsersBooks ub INNER JOIN Books b on ub.book_id=b.book_id "
+        "WHERE ub.user_id = (:user_id)");
 
     query.bindValue(":user_id", userId);
 
@@ -283,7 +283,7 @@ std::vector<Book> DatabaseManager::getBorrowedBooksForUser(int userId)
     }
 
     std::vector<std::string> fieldNames = { "title", "authors", "language", "original_publication_year",
-                                            "average_rating", "ratings_count", "isbn", "date_of_borrowing" };
+        "average_rating", "ratings_count", "isbn", "date_of_borrowing" };
     std::unordered_map<std::string, int> valueIndex;
 
     for (auto& fieldName : fieldNames)
@@ -317,13 +317,13 @@ std::vector<Book> DatabaseManager::getBorrowedBooksForUser(int userId)
     return books;
 }
 
-//std::vector<std::pair<Book, std::string>> DatabaseManager::getBorrowedBooksForUser(int userId)
+// std::vector<std::pair<Book, std::string>> DatabaseManager::getBorrowedBooksForUser(int userId)
 //{
-//    QSqlQuery query;
-//    query.prepare(
-//                "SELECT b.title, b.authors, b.language, b.original_publication_year, b.average_rating,"
-//                " b.ratings_count, b.isbn, ub.date_of_borrowing FROM UsersBooks ub INNER JOIN Books b on ub.book_id=b.book_id "
-//                "WHERE ub.user_id = (:user_id)");
+//     QSqlQuery query;
+//     query.prepare(
+//                 "SELECT b.title, b.authors, b.language, b.original_publication_year, b.average_rating,"
+//                 " b.ratings_count, b.isbn, ub.date_of_borrowing FROM UsersBooks ub INNER JOIN Books b on
+//                 ub.book_id=b.book_id " "WHERE ub.user_id = (:user_id)");
 
 //    query.bindValue(":user_id", userId);
 
