@@ -16,6 +16,12 @@ BookDetailsWindow::BookDetailsWindow(Book book, QWidget* parent)
     ui->ratingLabel->setText(ui->ratingLabel->text() + QString::number(book.getAverageRating()));
     ui->ratingsCountLabel->setText(ui->ratingsCountLabel->text() + QString::number(book.getRatingsCount()));
     ui->contentLabel->setText(book.getContent().c_str());
+
+    QNetworkAccessManager* manager = new QNetworkAccessManager(this);
+    connect(manager, &QNetworkAccessManager::finished,
+        this, &BookDetailsWindow::imageDownloaded);
+
+    manager->get(QNetworkRequest(QUrl(book.getUrl().c_str())));
 }
 
 void BookDetailsWindow::imageDownloaded(QNetworkReply* resp)

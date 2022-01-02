@@ -3,7 +3,7 @@
 
 #include "book.hpp"
 #include <QDialog>
-
+#include <QNetworkAccessManager>
 #include <QNetworkReply>
 
 namespace Ui {
