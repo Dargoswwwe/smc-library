@@ -88,13 +88,13 @@ void MainWindow::verifyConnection()
     if (serverSocket->state() == QTcpSocket::UnconnectedState) {
         connectToServer();
     }
-    //int tries = 1;
-    // while (serverSocket->state() == QTcpSocket::UnconnectedState) {
-    //    ui->attemptNumber->setText(std::to_string(tries).c_str());
-    //   switchPage(5);
-    //   QTimer::singleShot(5000, this, SLOT(connectToServer()));
-    //   tries++;
-    //}
+    int tries = 1;
+    while (serverSocket->state() == QTcpSocket::UnconnectedState) {
+        ui->attemptNumber->setText(std::to_string(tries).c_str());
+        switchPage(5);
+        QTimer::singleShot(5000, this, [this] { connectToServer(); });
+        tries++;
+    }
 }
 
 void MainWindow::connected()

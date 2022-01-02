@@ -18,4 +18,12 @@ BookDetailsWindow::BookDetailsWindow(Book book, QWidget* parent)
     ui->contentLabel->setText(book.getContent().c_str());
 }
 
+void BookDetailsWindow::imageDownloaded(QNetworkReply* resp)
+{
+    QByteArray downloadedImage = resp->readAll();
+    resp->deleteLater();
+    bookCover.loadFromData(downloadedImage);
+    ui->coverBookLabel->setPixmap(bookCover);
+}
+
 BookDetailsWindow::~BookDetailsWindow() { delete ui; }

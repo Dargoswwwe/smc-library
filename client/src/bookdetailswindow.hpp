@@ -2,8 +2,9 @@
 #define BOOKDETAILSWINDOW_H
 
 #include "book.hpp"
-
 #include <QDialog>
+
+#include <QNetworkReply>
 
 namespace Ui {
 class BookDetailsWindow;
@@ -15,6 +16,9 @@ class BookDetailsWindow : public QDialog
 
 private:
     Book book;
+    QPixmap bookCover;
+public slots:
+    void imageDownloaded(QNetworkReply* response);
 
 public:
     explicit BookDetailsWindow(Book book, QWidget *parent = nullptr);
