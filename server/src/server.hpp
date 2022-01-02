@@ -44,6 +44,9 @@ private:
                         const std::string& newpassword, const std::string& confirmpassword, QTcpSocket* clientSocket);
     void logout(QTcpSocket* clientSocket);
     void deleteAccount(const std::string& name, QTcpSocket* clientSocket);
+
+    void sendBooksArray(std::vector<Book> books, QTcpSocket* clientSocket);
+
     void sendAllBooks(QTcpSocket* clientSocket);
     void sendUserBooks(const std::string& name, QTcpSocket* clientSocket);
 

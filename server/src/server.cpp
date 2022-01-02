@@ -179,9 +179,8 @@ void Server::deleteAccount(const std::string& name, QTcpSocket* clientSocket)
     sendData(clientSocket, R"({"type": "deleteAccount", "data": "Success"})"_json);
 }
 
-void Server::sendAllBooks(QTcpSocket* clientSocket)
+void Server::sendBooksArray(std::vector<Book> books, QTcpSocket* clientSocket)
 {
-    auto books = library.getAllBooks();
     size_t messageSize = 50;
 
     for (size_t i = 0; i < books.size() / messageSize; ++i) {
@@ -206,19 +205,23 @@ void Server::sendAllBooks(QTcpSocket* clientSocket)
     sendData(clientSocket, R"({"type": "finished", "data": ""})"_json);
 }
 
+void Server::sendAllBooks(QTcpSocket* clientSocket)
+{
+    auto books = library.getAllBooks();
+    sendBooksArray(books, clientSocket);
+}
+
 void Server::sendUserBooks(const std::string& name, QTcpSocket* clientSocket)
 {
-    int user_id=database.getUserId(name.c_str());
-    auto userBooks=database.getBorrowedBooksForUser(user_id);
+    if (!connections[clientSocket].first.has_value() || connections[clientSocket].first->getUsername() != name) {
+        sendData(clientSocket, R"({"type": "getUserBooks", "data": "UserError"})"_json);
+        return;
+    }
 
-    json message;
-    message["type"] = MessageType::GET_USER_BOOKS;
-    message["data"] = json::array({});
-    message["data"] = userBooks;
+    int userId = database.getUserId(name.c_str());
+    auto userBooks = database.getBorrowedBooksForUser(userId);
 
-    sendData(clientSocket, message);
-
-    sendData(clientSocket, R"({"type": "finished", "data": ""})"_json);
+    sendBooksArray(userBooks, clientSocket);
 }
 
 void Server::handleMessage(QTcpSocket* clientSocket, MessageType messageType, const json& messageData)

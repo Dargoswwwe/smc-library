@@ -217,7 +217,7 @@ void MainWindow::deleteAccount()
 }
 void MainWindow::getBorrowedBooks()
 {
-    if (userBooks.size() == 0) {
+    if (user.has_value() && userBooks.size() == 0) {
         json message;
         message["type"] = MessageType::GET_USER_BOOKS;
         message["data"]["username"] = user->getUsername();
