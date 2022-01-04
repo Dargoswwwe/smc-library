@@ -1,5 +1,6 @@
 #include "database_manager.hpp"
 
+#include <sqlite3.h>
 #include <unordered_map>
 
 DatabaseManager::DatabaseManager()
@@ -539,6 +540,53 @@ std::vector<Book> DatabaseManager::getBorrowedBooksForUser(int userId)
 
 //    return books;
 //}
+
+bool DatabaseManager::loadSpellfix()
+{
+    QVariant v = database.driver()->handle();
+    if (!v.isValid() || v.typeName() != QString("sqlite3*")) return false;
+
+    sqlite3_initialize();
+    sqlite3* db_handle = *static_cast<sqlite3**>(v.data());
+
+    if (db_handle == 0) return false;
+
+    sqlite3_enable_load_extension(db_handle, true);
+
+    QSqlQuery query;
+
+    query.exec("SELECT load_extension('spellfix')");
+
+    sqlite3_enable_load_extension(db_handle, false);
+
+    if (query.lastError().isValid()) {
+        qDebug() << "Error: cannot load the Spellfix extension (" << query.lastError().text() << ")";
+        return false;
+    }
+
+    return true;
+}
+
+std::vector<Book> DatabaseManager::searchBook(std::string const& title)
+{
+    QSqlQuery query;
+
+    if (!loadSpellfix()) return std::vector<Book>();
+
+    query.prepare("SELECT * FROM Books WHERE editdist3(title, 'hnger gams')");
+
+    if (!query.exec()) {
+        qDebug() << query.executedQuery();
+        qDebug() << "Error searching books" << query.lastError();
+        return std::vector<Book>();
+    }
+
+    query.next();
+    qDebug() << query.value("Title");
+
+    return std::vector<Book>();
+}
+
 std::vector<Book> DatabaseManager::getAllBooks()
 {
     QSqlQuery query;

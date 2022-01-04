@@ -75,6 +75,8 @@ void Server::initServer()
         qDebug() << "The library already has all the books.";
 
     library.setAllBooks(database.getAllBooks());
+
+    database.searchBook("");
 }
 
 void Server::newConnection()
