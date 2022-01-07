@@ -439,9 +439,9 @@ std::vector<Book> DatabaseManager::getAllBooks()
         book.setAuthors(authors);
 
         book.setLanguage(query.value(valueIndex["language"]).toString().toStdString());
-        book.setOriginalPublication(query.value(valueIndex["language"]).toInt());
+        book.setOriginalPublication(query.value(valueIndex["original_publication_year"]).toUInt());
         book.setAverageRating(query.value(valueIndex["average_rating"]).toFloat());
-        book.setRatingsCount(query.value(valueIndex["average_rating"]).toInt());
+        book.setRatingsCount(query.value(valueIndex["ratings_count"]).toUInt());
         book.setIsbn(query.value(valueIndex["isbn"]).toString().toStdString());
         book.setUrl(query.value(valueIndex["image_url"]).toString().toStdString());
 

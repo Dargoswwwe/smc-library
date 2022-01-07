@@ -149,6 +149,10 @@ void MainWindow::registerUser()
     message["data"]["confirmpassword"] = userForHashing.getPassword();
 
     sendData(message);
+
+    ui->lineRegisterUsername->setText("");
+    ui->lineRegisterPassword->setText("");
+    ui->lineRegisterConfirmPassword->setText("");
 }
 
 void MainWindow::loginUser()
