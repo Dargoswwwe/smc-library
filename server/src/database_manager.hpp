@@ -13,8 +13,7 @@
 #include <QtNetwork>
 #include <vector>
 
-class DatabaseManager
-{
+class DatabaseManager {
 private:
     QSqlDatabase database;
     std::string databaseDir;
@@ -45,9 +44,9 @@ public:
     void getUsersForBook(int bookId);
     // std::vector<std::pair<Book, std::string>> getBorrowedBooksForUser(int userId);
     std::vector<Book> getBorrowedBooksForUser(int userId);
-    // void getAllBooks();
     std::vector<Book> getAllBooks();
     int getUserId(QString username);
+    int getBookId(QString title);
 
     int countBooks();
     bool validUsername(QString username);

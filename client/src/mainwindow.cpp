@@ -70,9 +70,11 @@ MainWindow::~MainWindow()
 
 void MainWindow::switchPage(int pageIndex)
 {
-    if (pageIndex != 5) verifyConnection();
+    if (pageIndex != 5)
+        verifyConnection();
 
-    if (pageIndex == 3 && !user.has_value()) return;
+    if (pageIndex == 3 && !user.has_value())
+        return;
     ui->stackedWidget->setCurrentIndex(pageIndex);
 }
 
@@ -83,7 +85,9 @@ void MainWindow::connectToServer(const QHostAddress& address, qint16 port)
 
 void MainWindow::verifyConnection()
 {
-    if (serverSocket->state() == QTcpSocket::UnconnectedState) { connectToServer(); }
+    if (serverSocket->state() == QTcpSocket::UnconnectedState) {
+        connectToServer();
+    }
     int tries = 1;
     while (serverSocket->state() == QTcpSocket::UnconnectedState) {
         ui->attemptNumber->setText(std::to_string(tries).c_str());
@@ -115,7 +119,8 @@ void MainWindow::receiveData()
     } catch (const nlohmann::detail::type_error& e) {
         qWarning() << "receiveData(): " << e.what();
     }
-    if (!inStream.commitTransaction()) return;
+    if (!inStream.commitTransaction())
+        return;
 
     // if (serverSocket->canReadLine()) receiveData();
 }
@@ -159,7 +164,8 @@ void MainWindow::loginUser()
 
 void MainWindow::showUsernameSettings()
 {
-    if (!user.has_value()) return;
+    if (!user.has_value())
+        return;
     ui->changeUsernameLine->setText(user->getUsername().c_str());
 }
 
@@ -267,7 +273,8 @@ void MainWindow::handleMessage(MessageType messageType, const json& messageData)
                 ui->labelRegisterStatus->setText("The fileds are empty!");
                 user = std::nullopt;
             }
-        } catch (const nlohmann::detail::type_error& e) { }
+        } catch (const nlohmann::detail::type_error& e) {
+        }
         break;
 
     case MessageType::LOGIN:
@@ -284,7 +291,8 @@ void MainWindow::handleMessage(MessageType messageType, const json& messageData)
                 switchPage(2);
                 // requestAllBooks();
             }
-        } catch (const nlohmann::detail::type_error& e) { }
+        } catch (const nlohmann::detail::type_error& e) {
+        }
         break;
 
     case MessageType::CHANGE_USERNAME:
@@ -295,7 +303,8 @@ void MainWindow::handleMessage(MessageType messageType, const json& messageData)
                 user->setUsername(ui->changeUsernameLine->text().toStdString());
                 ui->changeUsernamePasswordLabel->setText("Username updated!");
             }
-        } catch (const nlohmann::detail::type_error& e) { }
+        } catch (const nlohmann::detail::type_error& e) {
+        }
         break;
 
     case MessageType::CHANGE_PASSWORD:
@@ -312,7 +321,8 @@ void MainWindow::handleMessage(MessageType messageType, const json& messageData)
                 ui->changeUsernamePasswordLabel->setText("Password updated!");
             }
 
-        } catch (const nlohmann::detail::type_error& e) { }
+        } catch (const nlohmann::detail::type_error& e) {
+        }
         break;
 
     case MessageType::LOGOUT:

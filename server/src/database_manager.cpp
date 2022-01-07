@@ -17,13 +17,16 @@ DatabaseManager::DatabaseManager()
     databaseDir = "./";
 #endif
 
-    if (!QDir(databaseDir.c_str()).exists()) QDir().mkpath(databaseDir.c_str());
+    if (!QDir(databaseDir.c_str()).exists())
+        QDir().mkpath(databaseDir.c_str());
 
-    if (!QDir(databaseDir.c_str()).exists()) databaseDir = "./";
+    if (!QDir(databaseDir.c_str()).exists())
+        databaseDir = "./";
     database.setDatabaseName((databaseDir + "library.sqlite").c_str());
 
     if (!database.open()) {
-        qWarning() << "Error creating database file. Using in-memory database.\n" << database.lastError();
+        qWarning() << "Error creating database file. Using in-memory database.\n"
+                   << database.lastError();
         database.setDatabaseName(":memory:");
         databaseDir = "";
     }
@@ -76,7 +79,8 @@ void DatabaseManager::deleteRowFromUsersBooksTable(int userId, int bookId)
     query.bindValue(":user_id", userId);
     query.bindValue(":book_id", bookId);
 
-    if (!query.exec()) qDebug() << "Error deleting row." << query.lastError().text();
+    if (!query.exec())
+        qDebug() << "Error deleting row." << query.lastError().text();
 }
 
 void DatabaseManager::deleteUsersTable()
@@ -103,7 +107,8 @@ void DatabaseManager::deleteBook(QString title)
     query.prepare("DELETE FROM Books WHERE title =  (:title)");
     query.bindValue(":title", title);
 
-    if (!query.exec()) qDebug() << "Error deleting a book." << query.lastError().text();
+    if (!query.exec())
+        qDebug() << "Error deleting a book." << query.lastError().text();
 }
 
 void DatabaseManager::deleteUser(QString username)
@@ -112,7 +117,8 @@ void DatabaseManager::deleteUser(QString username)
     query.prepare("DELETE FROM Users WHERE username =  (:username)");
     query.bindValue(":username", username);
 
-    if (!query.exec()) qDebug() << "Error deleting a user." << query.lastError().text();
+    if (!query.exec())
+        qDebug() << "Error deleting a user." << query.lastError().text();
 }
 
 bool DatabaseManager::addValuesIntoBookTable(int id, QString title, QString authors, QString language,
@@ -228,7 +234,8 @@ void DatabaseManager::insertBooksIntoDataBase()
     qDebug() << "Importing books from the CSV file into the database...";
     QFile inputFile((databaseDir + "books.csv").c_str());
     inputFile.open(QIODevice::ReadOnly);
-    if (!inputFile.isOpen()) qDebug() << "Error";
+    if (!inputFile.isOpen())
+        qDebug() << "Error";
 
     QTextStream stream(&inputFile);
     for (QString line = stream.readLine(); !line.isNull(); line = stream.readLine()) {
@@ -249,7 +256,8 @@ void DatabaseManager::getUsersForBook(int book_id)
 
     query.bindValue(":book_id", book_id);
 
-    if (!query.exec()) qDebug() << "Error selecting users for this book!" << query.lastError().text();
+    if (!query.exec())
+        qDebug() << "Error selecting users for this book!" << query.lastError().text();
 }
 
 int DatabaseManager::getUserId(QString username)
@@ -260,13 +268,32 @@ int DatabaseManager::getUserId(QString username)
 
     query.bindValue(":username", username);
 
-    if (!query.exec()) qDebug() << "Error getting id for this user!" << query.lastError().text();
+    if (!query.exec())
+        qDebug() << "Error getting id for this user!" << query.lastError().text();
     query.next();
 
     id = query.value(0).toInt();
 
     return id;
 }
+
+int DatabaseManager::getBookId(QString title)
+{
+    QSqlQuery query;
+    int id;
+    query.prepare("SELECT * FROM Books b WHERE b.title =  (:title) ");
+
+    query.bindValue(":title", title);
+
+    if (!query.exec())
+        qDebug() << "Error getting id for this book!" << query.lastError().text();
+    query.next();
+
+    id = query.value(0).toInt();
+
+    return id;
+}
+
 std::vector<Book> DatabaseManager::getBorrowedBooksForUser(int userId)
 {
     QSqlQuery query;
@@ -445,7 +472,9 @@ bool DatabaseManager::validUsername(QString username)
 
     name = query.value(0).toString();
 
-    if (name == nullptr) { return false; }
+    if (name == nullptr) {
+        return false;
+    }
 
     return true;
 }
@@ -461,7 +490,9 @@ bool DatabaseManager::uniquePassword(QString password)
 
     pass = query.value(0).toString();
 
-    if (pass == nullptr) { return false; }
+    if (pass == nullptr) {
+        return false;
+    }
 
     return true;
 }
@@ -477,7 +508,9 @@ bool DatabaseManager::validPassword(QString username, QString password)
     query.next();
     pass = query.value(0).toString();
 
-    if (pass != password) { return false; }
+    if (pass != password) {
+        return false;
+    }
 
     return true;
 }
@@ -495,7 +528,8 @@ std::vector<Book> DatabaseManager::createBooksArray()
 
     QFile inputFile((databaseDir + "books.csv").c_str());
     inputFile.open(QIODevice::ReadOnly);
-    if (!inputFile.isOpen()) qDebug() << "Error";
+    if (!inputFile.isOpen())
+        qDebug() << "Error";
 
     QTextStream stream(&inputFile);
     for (QString line = stream.readLine(); !line.isNull(); line = stream.readLine()) {

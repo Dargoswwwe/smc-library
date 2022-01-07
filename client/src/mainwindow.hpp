@@ -46,8 +46,6 @@ public slots:
     void getBorrowedBooks();
     void getAllBooks();
 
-    // void borrowBook();
-
 private:
     void connectToServer(const QHostAddress& address = QHostAddress::LocalHost, qint16 port = 4200);
     void handleMessage(MessageType messageType, const nlohmann::json& messageData);
