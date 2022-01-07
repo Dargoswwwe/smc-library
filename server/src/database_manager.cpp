@@ -559,6 +559,22 @@ std::vector<Book> DatabaseManager::createBooksArray()
     return booksArray;
 }
 
+bool DatabaseManager::isBookAvailable(int book_id)
+{
+    int available;
+
+    QSqlQuery query;
+    query.prepare("SELECT available_books FROM Books b WHERE b.book_id=(:book_id)");
+    query.bindValue(":book_id", book_id);
+    query.exec();
+    query.next();
+    available = query.value(0).toInt();
+
+    if (available > 0)
+        return true;
+    return false;
+}
+
 void DatabaseManager::updateAvailableBook(QString title, int available_books)
 {
     QSqlQuery query;
@@ -580,18 +596,13 @@ void DatabaseManager::decreaseAvailableBook(QString title)
     query.exec();
     query.next();
     available = query.value(0).toInt();
+    available--;
+    QSqlQuery query2;
+    query2.prepare("UPDATE Books SET available_books = (:available_books) WHERE title = (:title)");
+    query2.bindValue(":available_books", available);
+    query2.bindValue(":title", title);
 
-    if (available == 0) {
-        qDebug() << "The book required is not available.";
-    } else {
-        available--;
-        QSqlQuery query2;
-        query2.prepare("UPDATE Books SET available_books = (:available_books) WHERE title = (:title)");
-        query2.bindValue(":available_books", available);
-        query2.bindValue(":title", title);
-
-        query2.exec();
-    }
+    query2.exec();
 }
 
 void DatabaseManager::increaseAvailableBook(QString title)
