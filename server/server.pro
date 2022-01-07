@@ -1,8 +1,8 @@
 TEMPLATE = app
 TARGET = server
-INCLUDEPATH += . ../shared/src/
 
-QT       += core network sql
+QT += core network sql
+QT -= gui
 
 CONFIG += c++latest
 
@@ -22,11 +22,8 @@ HEADERS += \
 DESTDIR=bin                 #Target file directory
 OBJECTS_DIR=intermediates   #Intermediate object files directory
 MOC_DIR=intermediates       #Intermediate moc files directory
-UI_DIR=intermediates        #Intermediate uic files directory
 
 unix|win32: LIBS += -L$$PWD/../shared/lib/ -lsmclibrary
 
 INCLUDEPATH += $$PWD/../shared/src
 DEPENDPATH += $$PWD/../shared/src
-
-DISTFILES +=

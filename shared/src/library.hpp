@@ -44,4 +44,4 @@ public:
 
     ~Library();
 };
-#endif /* LIBRARY_HPP */
+#endif // LIBRARY_HPP

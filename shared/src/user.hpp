@@ -49,4 +49,4 @@ public:
     bool checkPassword(std::string& pswrd);
     bool getActivity() const;
 };
-#endif /* USER_HPP */
+#endif // USER_HPP

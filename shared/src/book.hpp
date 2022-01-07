@@ -103,4 +103,4 @@ public:
         j.at("availability").get_to(b.available);
     }
 };
-#endif /* BOOK_HPP */
+#endif // BOOK_HPP
