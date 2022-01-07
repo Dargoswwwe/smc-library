@@ -18,8 +18,7 @@ class MainWindow;
 }
 QT_END_NAMESPACE
 
-class MainWindow : public QMainWindow
-{
+class MainWindow : public QMainWindow {
     Q_OBJECT
 
 private:
@@ -35,7 +34,7 @@ public slots:
     void switchPage(int pageIndex);
     void connected();
     void receiveData();
-    void sendData(QTcpSocket* serverSocket, const json& data);
+    void sendData(/*QTcpSocket* serverSocket,*/ const json& data);
 
     void registerUser();
     void loginUser();
@@ -46,6 +45,8 @@ public slots:
     void deleteAccount();
     void getBorrowedBooks();
     void getAllBooks();
+
+    void borrowBook();
 
 private:
     void connectToServer(const QHostAddress& address = QHostAddress::LocalHost, qint16 port = 4200);

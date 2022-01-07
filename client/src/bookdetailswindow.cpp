@@ -31,4 +31,13 @@ void BookDetailsWindow::imageDownloaded(QNetworkReply* resp)
     ui->coverBookLabel->setPixmap(bookCover);
 }
 
-BookDetailsWindow::~BookDetailsWindow() { delete ui; }
+BookDetailsWindow::~BookDetailsWindow()
+{
+    delete ui;
+}
+
+//void BookDetailsWindow::on_borrowButton_clicked()
+//{
+//   auto mainWindow = static_cast<MainWindow*>(this->parent());
+
+//}

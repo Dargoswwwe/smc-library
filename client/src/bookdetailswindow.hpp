@@ -2,6 +2,7 @@
 #define BOOKDETAILSWINDOW_H
 
 #include "book.hpp"
+#include "mainwindow.hpp"
 
 #include <QDialog>
 #include <QNetworkAccessManager>
@@ -20,6 +21,7 @@ private:
     QPixmap bookCover;
 public slots:
     void imageDownloaded(QNetworkReply* response);
+    // void on_borrowButton_clicked();
 
 public:
     explicit BookDetailsWindow(Book book, QWidget* parent = nullptr);
