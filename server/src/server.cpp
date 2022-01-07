@@ -171,13 +171,13 @@ void Server::deleteAccount(const std::string& name, QTcpSocket* clientSocket)
     sendData(clientSocket, R"({"type": "deleteAccount", "data": "Success"})"_json);
 }
 
-void Server::sendBooksArray(std::vector<Book> books, QTcpSocket* clientSocket)
+void Server::sendBooksArray(MessageType messageType, std::vector<Book> books, QTcpSocket* clientSocket)
 {
     size_t messageSize = 50;
 
     for (size_t i = 0; i < books.size() / messageSize; ++i) {
         json message;
-        message["type"] = MessageType::GET_ALL_BOOKS;
+        message["type"] = messageType;
         message["data"] = json::array({});
         for (size_t j = 0; j < messageSize; j++)
             message["data"][j] = books[i + j];
@@ -187,7 +187,7 @@ void Server::sendBooksArray(std::vector<Book> books, QTcpSocket* clientSocket)
 
     for (size_t i = books.size() - books.size() % messageSize; i < books.size(); ++i) {
         json message;
-        message["type"] = MessageType::GET_ALL_BOOKS;
+        message["type"] = messageType;
         message["data"] = json::array({});
         for (size_t j = 0; j < messageSize; j++)
             message["data"][j] = books[i + j];
@@ -200,7 +200,8 @@ void Server::sendBooksArray(std::vector<Book> books, QTcpSocket* clientSocket)
 void Server::sendAllBooks(QTcpSocket* clientSocket)
 {
     auto books = library.getAllBooks();
-    sendBooksArray(books, clientSocket);
+    books = std::vector<Book>(books.begin(), books.begin() + 100);
+    sendBooksArray(MessageType::GET_ALL_BOOKS, books, clientSocket);
 }
 
 void Server::sendUserBooks(const std::string& name, QTcpSocket* clientSocket)
@@ -213,7 +214,7 @@ void Server::sendUserBooks(const std::string& name, QTcpSocket* clientSocket)
     int userId = database.getUserId(name.c_str());
     auto userBooks = database.getBorrowedBooksForUser(userId);
 
-    sendBooksArray(userBooks, clientSocket);
+    sendBooksArray(MessageType::GET_USER_BOOKS, userBooks, clientSocket);
 }
 
 void Server::handleMessage(QTcpSocket* clientSocket, MessageType messageType, const json& messageData)
