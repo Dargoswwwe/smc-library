@@ -34,7 +34,7 @@ public slots:
     void switchPage(int pageIndex);
     void connected();
     void receiveData();
-    void sendData(/*QTcpSocket* serverSocket,*/ const json& data);
+    void sendData(const json& data);
 
     void registerUser();
     void loginUser();
@@ -46,7 +46,7 @@ public slots:
     void getBorrowedBooks();
     void getAllBooks();
 
-    void borrowBook();
+    // void borrowBook();
 
 private:
     void connectToServer(const QHostAddress& address = QHostAddress::LocalHost, qint16 port = 4200);

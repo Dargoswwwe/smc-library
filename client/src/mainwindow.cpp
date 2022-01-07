@@ -120,7 +120,7 @@ void MainWindow::receiveData()
     // if (serverSocket->canReadLine()) receiveData();
 }
 
-void MainWindow::sendData(QTcpSocket* serverSocket, const json& data)
+void MainWindow::sendData(const json& data)
 {
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
@@ -143,7 +143,7 @@ void MainWindow::registerUser()
     userForHashing.setPassword(confirmPassword.toStdString());
     message["data"]["confirmpassword"] = userForHashing.getPassword();
 
-    sendData(serverSocket, message);
+    sendData(message);
 }
 
 void MainWindow::loginUser()
@@ -154,7 +154,7 @@ void MainWindow::loginUser()
     message["data"]["username"] = user->getUsername();
     message["data"]["password"] = user->getPassword();
 
-    sendData(serverSocket, message);
+    sendData(message);
 }
 
 void MainWindow::showUsernameSettings()
@@ -171,7 +171,7 @@ void MainWindow::changeUsername()
     message["data"]["newusername"] = newUsername.toStdString();
     message["data"]["password"] = user->getPassword();
 
-    sendData(serverSocket, message);
+    sendData(message);
 }
 
 void MainWindow::changePassword()
@@ -194,7 +194,7 @@ void MainWindow::changePassword()
     message["data"]["newpassword"] = userNewForHashing.getPassword();
     message["data"]["confirmpassword"] = userConfirmForHashing.getPassword();
 
-    sendData(serverSocket, message);
+    sendData(message);
 }
 
 void MainWindow::logoutUser()
@@ -202,7 +202,7 @@ void MainWindow::logoutUser()
     json message;
     message["type"] = MessageType::LOGOUT;
 
-    sendData(serverSocket, message);
+    sendData(message);
 }
 
 void MainWindow::deleteAccount()
@@ -211,7 +211,7 @@ void MainWindow::deleteAccount()
     message["type"] = MessageType::DELETE_ACCOUNT;
     message["data"]["username"] = user->getUsername();
 
-    sendData(serverSocket, message);
+    sendData(message);
 }
 void MainWindow::getBorrowedBooks()
 {
@@ -219,7 +219,7 @@ void MainWindow::getBorrowedBooks()
         json message;
         message["type"] = MessageType::GET_USER_BOOKS;
         message["data"]["username"] = user->getUsername();
-        sendData(serverSocket, message);
+        sendData(message);
         userBooks.clear();
     }
 }
@@ -229,7 +229,7 @@ void MainWindow::getAllBooks()
     if (allBooks.size() == 0) {
         json message;
         message["type"] = MessageType::GET_ALL_BOOKS;
-        sendData(serverSocket, message);
+        sendData(message);
         allBooks.clear();
     }
 }
