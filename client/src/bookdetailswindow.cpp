@@ -36,8 +36,13 @@ BookDetailsWindow::~BookDetailsWindow()
     delete ui;
 }
 
-//void BookDetailsWindow::on_borrowButton_clicked()
-//{
-//   auto mainWindow = static_cast<MainWindow*>(this->parent());
+void BookDetailsWindow::on_borrowButton_clicked()
+{
+    MainWindow* mainWindow = nullptr;
+    QObject* parent;
+    for (parent = this->parent(); !dynamic_cast<MainWindow*>(parent); parent = parent->parent())
+        ;
 
-//}
+    mainWindow = dynamic_cast<MainWindow*>(parent);
+    mainWindow->borrowBook(book.getTitle());
+}
