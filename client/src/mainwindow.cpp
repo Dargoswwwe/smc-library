@@ -122,7 +122,8 @@ void MainWindow::receiveData()
     if (!inStream.commitTransaction())
         return;
 
-    // if (serverSocket->canReadLine()) receiveData();
+    if (serverSocket->canReadLine())
+        receiveData();
 }
 
 void MainWindow::sendData(const json& data)
@@ -225,7 +226,7 @@ void MainWindow::deleteAccount()
 }
 void MainWindow::getBorrowedBooks()
 {
-    if (user.has_value() && userBooks.size() == 0) {
+    if (user.has_value()) {
         json message;
         message["type"] = MessageType::GET_USER_BOOKS;
         message["data"]["username"] = user->getUsername();

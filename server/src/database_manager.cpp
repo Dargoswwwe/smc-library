@@ -299,7 +299,7 @@ std::vector<Book> DatabaseManager::getBorrowedBooksForUser(int userId)
     QSqlQuery query;
     query.prepare(
         "SELECT b.title, b.authors, b.language, b.original_publication_year, b.average_rating,"
-        " b.ratings_count, b.isbn, ub.date_of_borrowing FROM UsersBooks ub INNER JOIN Books b on ub.book_id=b.book_id "
+        " b.ratings_count, b.isbn,b.image_url, ub.date_of_borrowing FROM UsersBooks ub INNER JOIN Books b on ub.book_id=b.book_id "
         "WHERE ub.user_id = (:user_id)");
 
     query.bindValue(":user_id", userId);
@@ -310,7 +310,7 @@ std::vector<Book> DatabaseManager::getBorrowedBooksForUser(int userId)
     }
 
     std::vector<std::string> fieldNames = { "title", "authors", "language", "original_publication_year",
-        "average_rating", "ratings_count", "isbn", "date_of_borrowing" };
+        "average_rating", "ratings_count", "isbn", "image_url", "date_of_borrowing" };
     std::unordered_map<std::string, int> valueIndex;
 
     for (auto& fieldName : fieldNames)
@@ -332,9 +332,9 @@ std::vector<Book> DatabaseManager::getBorrowedBooksForUser(int userId)
         book.setAuthors(authors);
 
         book.setLanguage(query.value(valueIndex["language"]).toString().toStdString());
-        book.setOriginalPublication(query.value(valueIndex["language"]).toInt());
+        book.setOriginalPublication(query.value(valueIndex["original_publication_year"]).toUInt());
         book.setAverageRating(query.value(valueIndex["average_rating"]).toFloat());
-        book.setRatingsCount(query.value(valueIndex["average_rating"]).toInt());
+        book.setRatingsCount(query.value(valueIndex["ratings_count"]).toUInt());
         book.setIsbn(query.value(valueIndex["isbn"]).toString().toStdString());
         book.setUrl(query.value(valueIndex["image_url"]).toString().toStdString());
 
@@ -400,7 +400,7 @@ std::vector<Book> DatabaseManager::getAllBooks()
 {
     QSqlQuery query;
     query.prepare("SELECT b.title, b.authors, b.language, b.original_publication_year, b.average_rating, "
-                  "b.ratings_count, b.isbn FROM Books b");
+                  "b.ratings_count, b.isbn, b.image_url FROM Books b");
 
     if (!query.exec()) {
         qDebug() << query.executedQuery();
@@ -416,6 +416,7 @@ std::vector<Book> DatabaseManager::getAllBooks()
         "average_rating",
         "ratings_count",
         "isbn",
+        "image_url",
     };
 
     std::unordered_map<std::string, int> valueIndex;

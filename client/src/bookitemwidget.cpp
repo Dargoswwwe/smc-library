@@ -20,7 +20,7 @@ BookItemWidget::~BookItemWidget() { delete ui; }
 
 void BookItemWidget::on_detailsButton_clicked()
 {
-    BookDetailsWindow bookDetailsWindow(book);
+    BookDetailsWindow bookDetailsWindow(book, this);
     bookDetailsWindow.setModal(true);
     bookDetailsWindow.exec();
 }

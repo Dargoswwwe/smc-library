@@ -185,15 +185,18 @@ void Server::sendBooksArray(MessageType messageType, std::vector<Book> books, QT
         sendData(clientSocket, message);
     }
 
-    for (size_t i = books.size() - books.size() % messageSize; i < books.size(); ++i) {
-        json message;
-        message["type"] = messageType;
-        message["data"] = json::array({});
-        for (size_t j = 0; j < messageSize; j++)
-            message["data"][j] = books[i + j];
+    json message;
+    message["type"] = messageType;
+    message["data"] = json::array({});
 
-        sendData(clientSocket, message);
-    }
+    qDebug() << books.size() << books.size() - books.size() % messageSize;
+
+    for (size_t i = books.size() - books.size() % messageSize; i < books.size(); ++i)
+        message["data"][i] = books[i];
+
+    std::cout << message["data"] << std::endl;
+    sendData(clientSocket, message);
+
     sendData(clientSocket, R"({"type": "finished", "data": ""})"_json);
 }
 
