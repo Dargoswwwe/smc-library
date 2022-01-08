@@ -17,8 +17,7 @@
 #include <string>
 #include <unordered_map>
 
-class Server : public QObject
-{
+class Server : public QObject {
     Q_OBJECT
 
 private:
@@ -49,6 +48,8 @@ private:
 
     void sendAllBooks(QTcpSocket* clientSocket);
     void sendUserBooks(const std::string& name, QTcpSocket* clientSocket);
+
+    void borrowBook(const std::string& booktitle, const std::string& name, QTcpSocket* clientSocket);
 
     void handleMessage(QTcpSocket* clientSocket, MessageType messageType, const nlohmann::json& messageData);
 

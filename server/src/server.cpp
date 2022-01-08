@@ -23,12 +23,15 @@ void Server::initServer()
     if (!tcpServer->listen(QHostAddress::Any, 4200)) {
         qWarning() << "Cannot start server: " << tcpServer->serverError();
         throw tcpServer->serverError();
-    } else qDebug() << "Started library server on port" << tcpServer->serverPort();
+    } else
+        qDebug() << "Started library server on port" << tcpServer->serverPort();
 
     connect(tcpServer, &QTcpServer::newConnection, this, &Server::newConnection);
 
-    if (database.countBooks() < 10000) database.insertBooksIntoDataBase();
-    else qDebug() << "The library already has all the books.";
+    if (database.countBooks() < 10000)
+        database.insertBooksIntoDataBase();
+    else
+        qDebug() << "The library already has all the books.";
 
     library.setAllBooks(database.getAllBooks());
 }
@@ -81,7 +84,8 @@ void Server::receiveData()
         qWarning() << e.what();
     }
 
-    if (!inStream->commitTransaction()) return;
+    if (!inStream->commitTransaction())
+        return;
 }
 
 void Server::disconnect()
@@ -220,6 +224,21 @@ void Server::sendUserBooks(const std::string& name, QTcpSocket* clientSocket)
     sendBooksArray(MessageType::GET_USER_BOOKS, userBooks, clientSocket);
 }
 
+void Server::borrowBook(const std::string& booktitle, const std::string& name, QTcpSocket* clientSocket)
+{
+    int bookId = database.getBookId(booktitle.c_str());
+    int userId = database.getUserId(name.c_str());
+
+    if (!database.isBookAvailable(bookId))
+        sendData(clientSocket, R"({"type": "borrowBook", "data": "NotAvailable"})"_json);
+    else {
+        database.decreaseAvailableBook(booktitle.c_str());
+        database.addValuesIntoUsersBooksTable(userId, bookId);
+
+        sendData(clientSocket, R"({"type": "borrowBook", "data": "Success"})"_json);
+    }
+}
+
 void Server::handleMessage(QTcpSocket* clientSocket, MessageType messageType, const json& messageData)
 {
     switch (messageType) {
@@ -227,7 +246,8 @@ void Server::handleMessage(QTcpSocket* clientSocket, MessageType messageType, co
         try {
             registerUser(
                 messageData["username"], messageData["password"], messageData["confirmpassword"], clientSocket);
-        } catch (const nlohmann::detail::type_error& e) { }
+        } catch (const nlohmann::detail::type_error& e) {
+        }
         break;
 
     case MessageType::LOGIN:
@@ -255,6 +275,9 @@ void Server::handleMessage(QTcpSocket* clientSocket, MessageType messageType, co
         break;
     case MessageType::GET_USER_BOOKS:
         sendUserBooks(messageData["username"], clientSocket);
+        break;
+    case MessageType::BORROW_BOOK:
+        borrowBook(messageData["booktitle"], messageData["username"], clientSocket);
         break;
     }
 }

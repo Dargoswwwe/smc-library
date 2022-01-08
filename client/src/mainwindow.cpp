@@ -398,5 +398,16 @@ void MainWindow::handleMessage(MessageType messageType, const json& messageData)
             qWarning() << "FINISHED: " << e.what();
         }
         break;
+    case MessageType::BORROW_BOOK:
+        try {
+            if (messageData == "NotAvailable")
+                qDebug() << "This book is not available at the moment! Please check it later!";
+            if (messageData == "Success") {
+                qDebug() << "Book borrowed succesfully, enjoy your reading!";
+            }
+        } catch (const nlohmann::detail::type_error& e) {
+            qWarning() << "BORROW_BOOK: " << e.what();
+        }
+        break;
     }
 }
