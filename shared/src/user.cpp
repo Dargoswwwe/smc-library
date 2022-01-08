@@ -2,48 +2,32 @@
 
 #include <random>
 
-std::string User::hash(const std::string& pswrd)
-{
-    std::string pswrdhash;
-    pswrdhash = QCryptographicHash::hash(pswrd.c_str(), QCryptographicHash::Sha3_256).toBase64().toStdString();
-    return pswrdhash;
-}
-
 User::User()
+    : User("", "", {}, {}, {}, false) {};
+
+User::User(const std::string& name, const std::string& password)
+    : User(name, password, {}, {}, {}, true) {};
+
+User::User(const std::string& name, const std::string& password, const std::vector<Book>& booksRead,
+    const std::vector<Book>& booksBorrowing, const std::vector<Book>& booksBorrowed, const bool& active)
+    : username(name)
+    , read(booksRead)
+    , borrowing(booksBorrowing)
+    , borrowed(booksBorrowed)
+    , active(active)
 {
-    genSalt();
-    username = "\0";
-    password = "\0";
-    read = {};
-    borrowed = {};
-    borrowing = {};
-    active = 0;
+    generateSalt();
+    setPassword(password);
 }
 
-User::User(const std::string& name, const std::string& pswrd)
+std::string User::hash(const std::string& string) const
 {
-    genSalt();
-    username = name;
-    password = pswrd + salt;
-    password = hash(password);
-    read = {};
-    borrowed = {};
-    borrowing = {};
-    active = 1;
+    std::string hash;
+    hash = QCryptographicHash::hash(string.c_str(), QCryptographicHash::Sha3_256).toBase64().toStdString();
+    return hash;
 }
 
-User::User(const std::string& name, const std::string& pswrd, const std::vector<Book>& booksRead,
-    const std::vector<Book>& booksBorrowing, const std::vector<Book>& booksBorrowed, const bool& activ)
-{
-    genSalt();
-    username = name;
-    password = pswrd + salt;
-    password = hash(password);
-    read = booksRead;
-    borrowed = booksBorrowed;
-    borrowing = booksBorrowing;
-    active = activ;
-}
+std::string User::saltedHash(const std::string& password) const { return hash(password + salt); }
 
 void User::borrowBook(const Book& book)
 {
@@ -68,14 +52,14 @@ bool User::hasBook(const Book& book)
     else return false;
 }
 
-std::string User::gen_random(const int len)
+std::string User::generateRandom(const int len)
 {
 
     static const char alphanum[] = "0123456789"
                                    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                                    "abcdefghijklmnopqrstuvwxyz";
-    std::string tmp_s;
-    tmp_s.reserve(len);
+    std::string result;
+    result.reserve(len);
 
     for (int i = 0; i < len; ++i) {
         std::random_device rd;
@@ -83,27 +67,23 @@ std::string User::gen_random(const int len)
         std::uniform_int_distribution<> distr(0, 999999);
 
         int randomIndex = distr(gen);
-        tmp_s += alphanum[randomIndex % (sizeof(alphanum) - 1)];
+        result += alphanum[randomIndex % (sizeof(alphanum) - 1)];
     }
 
-    return tmp_s;
+    return result;
 }
 
-void User::genSalt() { salt = gen_random(SALT_LENGTH); }
+void User::generateSalt() { salt = generateRandom(SALT_LENGTH); }
 
-void User::setSalt(const std::string& slt) { salt = slt; }
+void User::setSalt(const std::string& salt) { this->salt = salt; }
 
-void User::setActivity(const bool& actv) { active = actv; }
+void User::setActivity(const bool& active) { this->active = active; }
 
-void User::setUsername(const std::string& name) { username = name; }
+void User::setUsername(const std::string& username) { this->username = username; }
 
-void User::setPassword(const std::string& pswrd)
-{
-    password = pswrd + salt;
-    password = hash(password);
-}
+void User::setPassword(const std::string& password) { this->password = saltedHash(password); }
 
-void User::setHashedPassword(const std::string& hashedPswrd) { password = hashedPswrd; }
+void User::setHashedPassword(const std::string& hashedPassword) { password = hashedPassword; }
 
 void User::setRead(const std::vector<Book>& booksRead) { read = booksRead; }
 
@@ -123,12 +103,6 @@ std::string User::getPassword() const { return password; }
 
 std::string User::getSalt() const { return salt; }
 
-bool User::checkPassword(std::string& pswrd)
-{
-    pswrd = pswrd + salt;
-    if (password == hash(password)) {
-        return true;
-    } else return false;
-}
+bool User::checkPassword(std::string const& password) { return this->password == saltedHash(password); }
 
 bool User::getActivity() const { return active; }
