@@ -135,6 +135,21 @@ void MainWindow::sendData(const json& data)
     serverSocket->write(block);
 }
 
+bool MainWindow::passwordChecks(std::string const& password, std::string const& confirmPassword, QLabel* errorLabel)
+{
+    if (password != confirmPassword) {
+        errorLabel->setText("Passwords don't match!");
+        return false;
+    }
+
+    if (password.length() < 8) {
+        errorLabel->setText("The password must have at least 8 characters");
+        return false;
+    }
+
+    return true;
+}
+
 void MainWindow::registerUser()
 {
     user = User(ui->lineRegisterUsername->text().toStdString(), ui->lineRegisterPassword->text().toStdString());

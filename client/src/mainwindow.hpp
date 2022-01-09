@@ -8,6 +8,7 @@
 
 #include <QMainWindow>
 #include <QtNetwork>
+#include <QtWidgets>
 #include <optional>
 
 using nlohmann::json;
@@ -25,6 +26,8 @@ private:
     std::optional<User> user;
     std::vector<Book> allBooks;
     std::vector<Book> userBooks;
+
+    bool passwordChecks(std::string const& password, std::string const& confirmPassword, QLabel* errorLabel);
 
 public:
     MainWindow(QWidget* parent = nullptr);
