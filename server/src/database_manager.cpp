@@ -1,7 +1,5 @@
 #include "database_manager.hpp"
 
-#include "user.hpp"
-
 #include <unordered_map>
 
 DatabaseManager::DatabaseManager()
@@ -38,15 +36,15 @@ DatabaseManager::DatabaseManager()
     if (!database.contains(QLatin1String("Books"))) {
         QSqlQuery query;
         query.exec("create table Books "
-                   "(book_id integer primary key, "
-                   "title varchar(50), "
-                   "authors varchar(100), "
-                   "language varchar(20), "
+                   "(book_id        integer primary key, "
+                   "title           text, "
+                   "authors         text, "
+                   "language        text, "
                    "original_publication_year integer, "
-                   "average_rating real, "
-                   "ratings_count integer, "
-                   "isbn varchar(50), "
-                   "image_url varchar(100),"
+                   "average_rating  real, "
+                   "ratings_count   integer, "
+                   "isbn            text,"
+                   "image_url       text,"
                    "available_books integer)");
     }
 
@@ -55,19 +53,21 @@ DatabaseManager::DatabaseManager()
         QSqlQuery query;
         query.exec("create table Users "
                    "(user_id integer primary key,"
-                   "username varchar(50), "
-                   "password varchar(50))");
+                   "username text, "
+                   "password text,"
+                   "salt     text,"
+                   "active   boolean)");
     }
 
     // Check if data base is empty and create UsersBooks table into it
     if (!database.contains(QLatin1String("UsersBooks"))) {
         QSqlQuery query;
         query.exec("create table UsersBooks "
-                   "(user_id integer,"
-                   "book_id integer,"
+                   "(user_id    integer,"
+                   "book_id     integer,"
                    "date_of_borrowing text,"
-                   "FOREIGN KEY(user_id) REFERENCES Users(user_id)ON DELETE CASCADE,"
-                   "FOREIGN KEY(book_id) REFERENCES Books(book_id)ON DELETE CASCADE,"
+                   "FOREIGN KEY(user_id) REFERENCES Users(user_id) ON DELETE CASCADE,"
+                   "FOREIGN KEY(book_id) REFERENCES Books(book_id) ON DELETE CASCADE,"
                    "UNIQUE (user_id, book_id))");
     }
 }
@@ -159,18 +159,22 @@ bool DatabaseManager::addValuesIntoBookTable(int id, QString title, QString auth
     return true;
 }
 
-bool DatabaseManager::addValuesIntoUsersTable(QString username, QString password)
+bool DatabaseManager::addValuesIntoUsersTable(User const& user)
 {
     QSqlQuery query;
 
     query.prepare("INSERT into Users ("
                   "username, "
-                  "password)"
+                  "password,"
+                  "salt,"
+                  "active)"
 
-                  "VALUES (?,?);");
+                  "VALUES (?,?,?,?);");
 
-    query.addBindValue(username);
-    query.addBindValue(password);
+    query.addBindValue(user.getUsername().c_str());
+    query.addBindValue(user.getPassword().c_str());
+    query.addBindValue(user.getSalt().c_str());
+    query.addBindValue(user.getActivity());
 
     if (!query.exec()) {
         qDebug() << "Error adding user.";
@@ -245,7 +249,36 @@ void DatabaseManager::insertBooksIntoDataBase()
             word.at(5).toFloat(), word.at(6).toInt(), word.at(7), word.at(8), word.at(9).toInt());
     };
 
-    qDebug() << "Done. Imported" << valuesAdded;
+    qDebug() << "Done. Imported " << valuesAdded << " books into the database.";
+}
+
+std::optional<User> DatabaseManager::getUser(QString username) {
+    QSqlQuery query;
+
+    query.prepare("SELECT * FROM Users u WHERE u.username=(:username)");
+    query.bindValue(":username", username);
+
+    if (!query.exec()) {
+        qDebug() << "Error finding user" << username << query.lastError().text();
+        return std::nullopt;
+    }
+
+    if(!query.next()) {
+        qDebug() << "Error finding user" << username << query.lastError().text();
+        return std::nullopt;
+    }
+
+    auto password = query.value(2).toString().toStdString();
+    auto salt = query.value(3).toString().toStdString();
+    bool active = query.value(4).toBool();
+
+    User user;
+    user.setUsername(username.toStdString());
+    user.setSalt(salt);
+    user.setHashedPassword(password);
+    user.setActivity(active);
+
+    return user;
 }
 
 void DatabaseManager::getUsersForBook(int book_id)
@@ -469,51 +502,7 @@ bool DatabaseManager::validUsername(QString username)
     query.prepare("SELECT * FROM Users u WHERE u.username=(:username)");
     query.bindValue(":username", username);
     query.exec();
-    query.next();
-
-    name = query.value(0).toString();
-
-    if (name == nullptr) {
-        return false;
-    }
-
-    return true;
-}
-
-bool DatabaseManager::uniquePassword(QString password)
-{
-    QSqlQuery query;
-    QString pass;
-    query.prepare("SELECT * FROM Users u WHERE u.password=(:password)");
-    query.bindValue(":password", password);
-    query.exec();
-    query.next();
-
-    pass = query.value(0).toString();
-
-    if (pass == nullptr) {
-        return false;
-    }
-
-    return true;
-}
-
-bool DatabaseManager::validPassword(QString username, QString password)
-{
-    QSqlQuery query;
-    QString pass;
-
-    query.prepare("SELECT password FROM Users u WHERE u.username=(:username)");
-    query.bindValue(":username", username);
-    query.exec();
-    query.next();
-    pass = query.value(0).toString();
-
-    if (pass != password) {
-        return false;
-    }
-
-    return true;
+    return query.next();
 }
 
 std::vector<std::string> separator(std::string str, std::regex delimitator)

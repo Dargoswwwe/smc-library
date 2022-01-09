@@ -2,6 +2,7 @@
 #define DATABASE_MANAGEMENT_H
 
 #include "book.hpp"
+#include "user.hpp"
 
 #include <QDate>
 #include <QJsonObject>
@@ -11,6 +12,7 @@
 #include <QSqlQuery>
 #include <QSqlRecord>
 #include <QtNetwork>
+#include <optional>
 #include <vector>
 
 class DatabaseManager {
@@ -30,7 +32,7 @@ public:
 
     bool addValuesIntoBookTable(int id, QString title, QString authors, QString language, int originalPublicationYear,
         float averageRating, int ratingsCount, QString isbn, QString imageUrl, int availableBooks);
-    bool addValuesIntoUsersTable(QString username, QString password);
+    bool addValuesIntoUsersTable(User const& user);
     bool addValuesIntoUsersBooksTable(int userId, int bookId);
 
     void changeUserPassword(QString username, QString password);
@@ -42,6 +44,7 @@ public:
     void decreaseAvailableBook(QString title);
     void increaseAvailableBook(QString title);
 
+    std::optional<User> getUser(QString username);
     void getUsersForBook(int bookId);
     // std::vector<std::pair<Book, std::string>> getBorrowedBooksForUser(int userId);
     std::vector<Book> getBorrowedBooksForUser(int userId);
@@ -51,8 +54,6 @@ public:
 
     int countBooks();
     bool validUsername(QString username);
-    bool validPassword(QString username, QString password);
-    bool uniquePassword(QString password);
 
     std::vector<Book> createBooksArray();
 };
