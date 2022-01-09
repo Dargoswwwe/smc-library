@@ -13,8 +13,6 @@
 
 class SHARED_EXPORT Book
 {
-    using json = nlohmann::json;
-
 private:
     std::string title;
     std::vector<std::string> authors;
@@ -74,7 +72,9 @@ public:
     void availability();
     void readBookFromFile(int index);
 
-    friend void to_json(json& j, const Book& b)
+    using json = nlohmann::json;
+
+    friend void to_json(json& j, Book const& b)
     {
         j = json();
         j["title"] = b.title;
@@ -89,7 +89,7 @@ public:
         j["availability"] = b.available;
     }
 
-    friend void from_json(const json& j, Book& b)
+    friend void from_json(json const& j, Book& b)
     {
         j.at("title").get_to(b.title);
         j.at("authors").get_to(b.authors);

@@ -8,15 +8,23 @@ User::User()
 User::User(const std::string& name, const std::string& password)
     : User(name, password, {}, {}, {}, true) {};
 
+User::User(const std::string& name, const std::string& password, const std::string& salt)
+    : User(name, password, {}, {}, {}, true, salt) {};
+
 User::User(const std::string& name, const std::string& password, const std::vector<Book>& booksRead,
     const std::vector<Book>& booksBorrowing, const std::vector<Book>& booksBorrowed, const bool& active)
+    : User(name, password, booksRead, booksBorrowing, booksBorrowed, active, generateSalt()) {};
+
+User::User(const std::string& name, const std::string& password, const std::vector<Book>& booksRead,
+    const std::vector<Book>& booksBorrowing, const std::vector<Book>& booksBorrowed, const bool& active,
+    const std::string& salt)
     : username(name)
     , read(booksRead)
     , borrowing(booksBorrowing)
     , borrowed(booksBorrowed)
     , active(active)
+    , salt(salt)
 {
-    generateSalt();
     setPassword(password);
 }
 
@@ -73,7 +81,7 @@ std::string User::generateRandom(const int len)
     return result;
 }
 
-void User::generateSalt() { salt = generateRandom(SALT_LENGTH); }
+std::string User::generateSalt() { return generateRandom(SALT_LENGTH); }
 
 void User::setSalt(const std::string& salt) { this->salt = salt; }
 

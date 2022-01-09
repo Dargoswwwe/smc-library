@@ -1,7 +1,5 @@
 #include "book.hpp"
 
-using nlohmann::json;
-
 // Auxiliary functions & operators
 Book& Book::operator=(const Book& book)
 {
