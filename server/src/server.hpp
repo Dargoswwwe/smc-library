@@ -35,9 +35,8 @@ private slots:
 
 private:
     void initServer();
-    void loginUser(const std::string& name, const std::string& password, QTcpSocket* clientSocket);
-    void registerUser(const std::string& name, const std::string& password, const std::string& confirmpassword,
-        QTcpSocket* clientSocket);
+    void loginUser(const User& name, QTcpSocket* clientSocket);
+    void registerUser(const User& user, QTcpSocket* clientSocket);
     void changeUsername(const std::string& name, const std::string& password, QTcpSocket* clientSocket);
     void changePassword(const std::string& name, const std::string& password, const std::string& oldpassword,
         const std::string& newpassword, const std::string& confirmpassword, QTcpSocket* clientSocket);

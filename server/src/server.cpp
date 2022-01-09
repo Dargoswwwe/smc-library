@@ -97,44 +97,40 @@ void Server::disconnect()
     qDebug() << "Connections: " << connections.size();
 }
 
-void Server::loginUser(const std::string& name, const std::string& password, QTcpSocket* clientSocket)
+void Server::loginUser(const User& user, QTcpSocket* clientSocket)
 {
-    if (!database.validUsername(name.c_str())) {
-        sendData(clientSocket, R"({"type": "login", "data": "NameError"})"_json);
-    } else {
-        if (database.validPassword(name.c_str(), password.c_str())) {
-            User newUser(name, password);
-            newUser.setPassword(password);
-            connections[clientSocket].first = newUser;
+    auto dbUser = database.getUser(user.getUsername().c_str());
 
-            sendData(clientSocket, R"({"type": "login", "data": "Success"})"_json);
-        } else {
-            sendData(clientSocket, R"({"type": "login", "data": "PasswordError"})"_json);
-        }
+    if (!dbUser.has_value()) {
+        sendData(clientSocket, R"({"type": "login", "data": "NameError"})"_json);
+        return;
     }
+
+    if (dbUser->getPassword() != dbUser->saltedHash(user.getPassword())) {
+        sendData(clientSocket, R"({"type": "login", "data": "PasswordError"})"_json);
+        return;
+    }
+
+    sendData(clientSocket, R"({"type": "login", "data": "Success"})"_json);
+    connections[clientSocket].first = user;
 }
 
-void Server::registerUser(const std::string& name, const std::string& password, const ::std::string& confirmpassword,
-    QTcpSocket* clientSocket)
+void Server::registerUser(const User& user, QTcpSocket* clientSocket)
 {
-    if (name == "" && password == "YvJ2aYwAckEF+e/xayGqJ0tqHm12fyFg9srQ9O4iMmE=") {
-        sendData(clientSocket, R"({"type": "register", "data": "EmptyFields"})"_json);
-    } else if (name == "" && password != "YvJ2aYwAckEF+e/xayGqJ0tqHm12fyFg9srQ9O4iMmE=") {
-        sendData(clientSocket, R"({"type": "register", "data": "EmptyNameField"})"_json);
-    } else if (name != "" && password == "YvJ2aYwAckEF+e/xayGqJ0tqHm12fyFg9srQ9O4iMmE=") {
-        sendData(clientSocket, R"({"type": "register", "data": "EmptyPasswordField"})"_json);
-    } else if (name != "" && password != "YvJ2aYwAckEF+e/xayGqJ0tqHm12fyFg9srQ9O4iMmE=") {
-        if (database.validUsername(name.c_str())) {
-            sendData(clientSocket, R"({"type": "register", "data": "UsernameAlreadyTaken"})"_json);
-        } else if (password != confirmpassword) {
-            sendData(clientSocket, R"({"type": "register", "data": "NotMatchingPasswords"})"_json);
-        } else if (database.uniquePassword(password.c_str())) {
-            sendData(clientSocket, R"({"type": "register", "data": "PasswordAlreadyTaken"})"_json);
-        } else {
-            database.addValuesIntoUsersTable(name.c_str(), password.c_str());
-            sendData(clientSocket, R"({"type": "register", "data": "Success"})"_json);
-        }
+    if (database.validUsername(user.getUsername().c_str())) {
+        sendData(clientSocket, R"({"type": "register", "data": "UsernameAlreadyTaken"})"_json);
+        return;
     }
+
+    User dbUser;
+    dbUser.setUsername(user.getUsername());
+    dbUser.setPassword(user.getPassword());
+
+    database.addValuesIntoUsersTable(dbUser);
+
+    connections[clientSocket].first = dbUser;
+
+    sendData(clientSocket, R"({"type": "register", "data": "Success"})"_json);
 }
 
 void Server::changeUsername(const std::string& name, const std::string& password, QTcpSocket* clientSocket)
@@ -165,6 +161,7 @@ void Server::changePassword(const std::string& name, const std::string& password
 
 void Server::logout(QTcpSocket* clientSocket)
 {
+    connections[clientSocket].first = std::nullopt;
     sendData(clientSocket, R"({"type": "logout", "data": "Success"})"_json);
 }
 
@@ -244,14 +241,12 @@ void Server::handleMessage(QTcpSocket* clientSocket, MessageType messageType, co
     switch (messageType) {
     case MessageType::REGISTER:
         try {
-            registerUser(
-                messageData["username"], messageData["password"], messageData["confirmpassword"], clientSocket);
-        } catch (const nlohmann::detail::type_error& e) {
-        }
+            registerUser(messageData["user"], clientSocket);
+        } catch (const nlohmann::detail::type_error& e) { }
         break;
 
     case MessageType::LOGIN:
-        loginUser(messageData["username"], messageData["password"], clientSocket);
+        loginUser(messageData["user"], clientSocket);
         break;
 
     case MessageType::CHANGE_USERNAME:

@@ -152,32 +152,39 @@ bool MainWindow::passwordChecks(std::string const& password, std::string const& 
 
 void MainWindow::registerUser()
 {
-    user = User(ui->lineRegisterUsername->text().toStdString(), ui->lineRegisterPassword->text().toStdString());
+    auto username = ui->lineRegisterUsername->text().toStdString();
+    auto password = ui->lineRegisterPassword->text().toStdString();
+    auto confirmPassword = ui->lineRegisterConfirmPassword->text().toStdString();
+
+    if (username.length() < 4) {
+        ui->labelRegisterStatus->setText("Username too short");
+        return;
+    }
+
+    if (!passwordChecks(password, confirmPassword, ui->labelRegisterStatus)) return;
+
     json message;
-    QString confirmPassword = ui->lineRegisterConfirmPassword->text();
+    user = User(username, password, username);
 
     message["type"] = MessageType::REGISTER;
-    message["data"]["username"] = user->getUsername();
-    message["data"]["password"] = user->getPassword();
-
-    User userForHashing;
-    userForHashing.setPassword(confirmPassword.toStdString());
-    message["data"]["confirmpassword"] = userForHashing.getPassword();
-
-    sendData(message);
+    message["data"]["user"] = *user;
 
     ui->lineRegisterUsername->setText("");
     ui->lineRegisterPassword->setText("");
     ui->lineRegisterConfirmPassword->setText("");
+
+    sendData(message);
 }
 
 void MainWindow::loginUser()
 {
-    user = User(ui->lineLoginUsername->text().toStdString(), ui->lineLoginPassword->text().toStdString());
+    std::string username = ui->lineLoginUsername->text().toStdString();
+    std::string password = ui->lineLoginPassword->text().toStdString();
+
+    user = User(username, password, username);
     json message;
     message["type"] = MessageType::LOGIN;
-    message["data"]["username"] = user->getUsername();
-    message["data"]["password"] = user->getPassword();
+    message["data"]["user"] = *user;
 
     sendData(message);
 }
@@ -278,10 +285,6 @@ void MainWindow::handleMessage(MessageType messageType, const json& messageData)
         try {
             if (messageData == "UsernameAlreadyTaken") {
                 ui->labelRegisterStatus->setText("Username taken");
-                user = std::nullopt;
-            }
-            if (messageData == "NotMatchingPasswords") {
-                ui->labelRegisterStatus->setText("Passwords don't match!");
                 user = std::nullopt;
             }
             if (messageData == "PasswordAlreadyTaken") {
