@@ -49,6 +49,7 @@ private:
     void sendUserBooks(const std::string& name, QTcpSocket* clientSocket);
 
     void borrowBook(const std::string& booktitle, const std::string& name, QTcpSocket* clientSocket);
+    void returnBook(const std::string& booktitle, const std::string& name, QTcpSocket* clientSocket);
 
     void handleMessage(QTcpSocket* clientSocket, MessageType messageType, const nlohmann::json& messageData);
 

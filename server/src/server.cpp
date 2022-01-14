@@ -236,13 +236,24 @@ void Server::borrowBook(const std::string& booktitle, const std::string& name, Q
     }
 }
 
+void Server::returnBook(const std::string& booktitle, const std::string& name, QTcpSocket* clientSocket)
+{
+    int bookId = database.getBookId(booktitle.c_str());
+    int userId = database.getUserId(name.c_str());
+    database.increaseAvailableBook(booktitle.c_str());
+    database.deleteRowFromUsersBooksTable(userId, bookId);
+
+    sendData(clientSocket, R"({"type": "returnBook", "data": "Success"})"_json);
+}
+
 void Server::handleMessage(QTcpSocket* clientSocket, MessageType messageType, const json& messageData)
 {
     switch (messageType) {
     case MessageType::REGISTER:
         try {
             registerUser(messageData["user"], clientSocket);
-        } catch (const nlohmann::detail::type_error& e) { }
+        } catch (const nlohmann::detail::type_error& e) {
+        }
         break;
 
     case MessageType::LOGIN:
@@ -273,6 +284,9 @@ void Server::handleMessage(QTcpSocket* clientSocket, MessageType messageType, co
         break;
     case MessageType::BORROW_BOOK:
         borrowBook(messageData["booktitle"], messageData["username"], clientSocket);
+        break;
+    case MessageType::RETURN_BOOK:
+        returnBook(messageData["booktitle"], messageData["username"], clientSocket);
         break;
     }
 }

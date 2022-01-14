@@ -161,7 +161,8 @@ void MainWindow::registerUser()
         return;
     }
 
-    if (!passwordChecks(password, confirmPassword, ui->labelRegisterStatus)) return;
+    if (!passwordChecks(password, confirmPassword, ui->labelRegisterStatus))
+        return;
 
     json message;
     user = User(username, password, username);
@@ -436,6 +437,15 @@ void MainWindow::handleMessage(MessageType messageType, const json& messageData)
             }
         } catch (const nlohmann::detail::type_error& e) {
             qWarning() << "BORROW_BOOK: " << e.what();
+        }
+        break;
+    case MessageType::RETURN_BOOK:
+        try {
+            if (messageData == "Success") {
+                qDebug() << "Book returned succesfully!";
+            }
+        } catch (const nlohmann::detail::type_error& e) {
+            qWarning() << "RETURN_BOOK: " << e.what();
         }
         break;
     }
