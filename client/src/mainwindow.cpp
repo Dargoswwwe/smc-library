@@ -278,6 +278,17 @@ void MainWindow::borrowBook(std::string book_title)
     sendData(message);
 }
 
+void MainWindow::returnBook(std::string book_title)
+{
+    std::cout << user.has_value() << std::endl;
+    json message;
+    message["type"] = MessageType::RETURN_BOOK;
+    message["data"]["booktitle"] = book_title;
+    message["data"]["username"] = user->getUsername();
+
+    sendData(message);
+}
+
 void MainWindow::handleMessage(MessageType messageType, const json& messageData)
 {
     switch (messageType) {

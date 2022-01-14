@@ -27,6 +27,9 @@ public:
     explicit BookDetailsWindow(Book book, QWidget* parent = nullptr);
     ~BookDetailsWindow();
 
+private slots:
+    void on_returnButton_clicked();
+
 private:
     Ui::BookDetailsWindow* ui;
 };

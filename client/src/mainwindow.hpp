@@ -49,6 +49,7 @@ public slots:
     void getBorrowedBooks();
     void getAllBooks();
     void borrowBook(std::string book_title);
+    void returnBook(std::string book_title);
 
 private:
     void connectToServer(const QHostAddress& address = QHostAddress::LocalHost, qint16 port = 4200);

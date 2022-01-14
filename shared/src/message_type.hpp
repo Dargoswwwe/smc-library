@@ -3,8 +3,7 @@
 
 #include "json.hpp"
 
-enum class MessageType
-{
+enum class MessageType {
     REGISTER,
     LOGIN,
     GET_ALL_BOOKS,
@@ -15,20 +14,22 @@ enum class MessageType
     DELETE_ACCOUNT,
     CHANGE_PASSWORD,
     BORROW_BOOK,
+    RETURN_BOOK,
 };
 
 NLOHMANN_JSON_SERIALIZE_ENUM(MessageType,
     {
-        { MessageType::REGISTER,        "register"      },
-        { MessageType::LOGIN,           "login"         },
-        { MessageType::GET_USER_BOOKS,  "getUserBooks"  },
-        { MessageType::GET_ALL_BOOKS,   "getAllBooks"   },
-        { MessageType::FINISHED,        "finished"      },
-        { MessageType::CHANGE_USERNAME, "changeUsername"},
-        { MessageType::LOGOUT,          "logout"        },
-        { MessageType::DELETE_ACCOUNT,  "deleteAccount" },
-        { MessageType::CHANGE_PASSWORD, "changePassword"},
-        { MessageType::BORROW_BOOK,     "borrowBook"    },
-});
+        { MessageType::REGISTER, "register" },
+        { MessageType::LOGIN, "login" },
+        { MessageType::GET_USER_BOOKS, "getUserBooks" },
+        { MessageType::GET_ALL_BOOKS, "getAllBooks" },
+        { MessageType::FINISHED, "finished" },
+        { MessageType::CHANGE_USERNAME, "changeUsername" },
+        { MessageType::LOGOUT, "logout" },
+        { MessageType::DELETE_ACCOUNT, "deleteAccount" },
+        { MessageType::CHANGE_PASSWORD, "changePassword" },
+        { MessageType::BORROW_BOOK, "borrowBook" },
+        { MessageType::RETURN_BOOK, "returnBook" },
+    });
 
 #endif // MESSAGE_TYPE_H
