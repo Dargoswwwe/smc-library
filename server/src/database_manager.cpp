@@ -252,7 +252,8 @@ void DatabaseManager::insertBooksIntoDataBase()
     qDebug() << "Done. Imported " << valuesAdded << " books into the database.";
 }
 
-std::optional<User> DatabaseManager::getUser(QString username) {
+std::optional<User> DatabaseManager::getUser(QString username)
+{
     QSqlQuery query;
 
     query.prepare("SELECT * FROM Users u WHERE u.username=(:username)");
@@ -263,7 +264,7 @@ std::optional<User> DatabaseManager::getUser(QString username) {
         return std::nullopt;
     }
 
-    if(!query.next()) {
+    if (!query.next()) {
         qDebug() << "Error finding user" << username << query.lastError().text();
         return std::nullopt;
     }

@@ -9,8 +9,7 @@
 #include <string>
 #include <vector>
 
-class SHARED_EXPORT User
-{
+class SHARED_EXPORT User {
 private:
     static const int SALT_LENGTH = 8;
 

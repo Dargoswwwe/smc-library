@@ -11,8 +11,7 @@
 #include <string>
 #include <vector>
 
-class SHARED_EXPORT Book
-{
+class SHARED_EXPORT Book {
 private:
     std::string title;
     std::vector<std::string> authors;
@@ -24,7 +23,6 @@ private:
     uint32_t exemplarsAvailable;
     std::string content;
     std::string url;
-
     bool available;
 
 public:

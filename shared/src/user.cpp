@@ -56,8 +56,10 @@ void User::returnBook(const Book& book)
 
 bool User::hasBook(const Book& book)
 {
-    if (std::find(borrowing.begin(), borrowing.end(), book) != borrowing.end()) return true;
-    else return false;
+    if (std::find(borrowing.begin(), borrowing.end(), book) != borrowing.end())
+        return true;
+    else
+        return false;
 }
 
 std::string User::generateRandom(const int len)

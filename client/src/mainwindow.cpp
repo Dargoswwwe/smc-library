@@ -21,8 +21,7 @@ MainWindow::MainWindow(QWidget* parent)
     QObject::connect(ui->lineLoginPassword, &QLineEdit::returnPressed, ui->buttonLogin, &QPushButton::click);
     QObject::connect(ui->lineRegisterUsername, &QLineEdit::returnPressed, ui->buttonRegister, &QPushButton::click);
     QObject::connect(ui->lineRegisterPassword, &QLineEdit::returnPressed, ui->buttonRegister, &QPushButton::click);
-    QObject::connect(
-        ui->lineRegisterConfirmPassword, &QLineEdit::returnPressed, ui->buttonRegister, &QPushButton::click);
+    QObject::connect(ui->lineRegisterConfirmPassword, &QLineEdit::returnPressed, ui->buttonRegister, &QPushButton::click);
 
     QObject::connect(ui->buttonRegister, &QPushButton::clicked, this, &MainWindow::registerUser);
     QObject::connect(ui->buttonLogin, &QPushButton::clicked, this, &MainWindow::loginUser);
@@ -37,10 +36,7 @@ MainWindow::MainWindow(QWidget* parent)
     QObject::connect(ui->logoutButton_2, &QPushButton::clicked, this, &MainWindow::logoutUser);
     QObject::connect(ui->logoutButton, &QPushButton::clicked, this, &MainWindow::logoutUser);
 
-    QObject::connect(ui->deleteAccountButton, &QPushButton::clicked, this, &MainWindow::deleteAccount);
-
     QObject::connect(ui->buttonRegisterGuest, &QPushButton::clicked, this, [this] { switchPage(2); });
-
     QObject::connect(ui->buttonLoginGuest, &QPushButton::clicked, this, [this] { switchPage(2); });
 
     QObject::connect(ui->accountSettingsButton, &QPushButton::clicked, this, [this] { switchPage(3); });
@@ -48,6 +44,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     QObject::connect(ui->logoutButton_2, &QPushButton::clicked, this, [this] { switchPage(0); });
     QObject::connect(ui->logoutButton, &QPushButton::clicked, this, [this] { switchPage(0); });
+    QObject::connect(ui->deleteAccountButton, &QPushButton::clicked, this, &MainWindow::deleteAccount);
     QObject::connect(ui->deleteAccountButton, &QPushButton::clicked, this, [this] { switchPage(0); });
 
     QObject::connect(ui->viewMyBooksButton, &QPushButton::clicked, this, &MainWindow::getBorrowedBooks);

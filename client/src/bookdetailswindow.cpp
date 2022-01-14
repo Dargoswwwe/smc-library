@@ -19,7 +19,6 @@ BookDetailsWindow::BookDetailsWindow(Book book, QWidget* parent)
 
     QNetworkAccessManager* manager = new QNetworkAccessManager(this);
     connect(manager, &QNetworkAccessManager::finished, this, &BookDetailsWindow::imageDownloaded);
-
     manager->get(QNetworkRequest(QUrl(book.getUrl().c_str())));
 }
 
@@ -42,7 +41,6 @@ void BookDetailsWindow::on_borrowButton_clicked()
     QObject* parent;
     for (parent = this->parent(); !dynamic_cast<MainWindow*>(parent); parent = parent->parent())
         ;
-
     mainWindow = dynamic_cast<MainWindow*>(parent);
     mainWindow->borrowBook(book.getTitle());
 }
@@ -51,9 +49,7 @@ void BookDetailsWindow::on_returnButton_clicked()
 {
     MainWindow* mainWindow = nullptr;
     QObject* parent;
-    for (parent = this->parent(); !dynamic_cast<MainWindow*>(parent); parent = parent->parent())
-        ;
-
+    for (parent = this->parent(); !dynamic_cast<MainWindow*>(parent); parent = parent->parent());
     mainWindow = dynamic_cast<MainWindow*>(parent);
     mainWindow->returnBook(book.getTitle());
 }

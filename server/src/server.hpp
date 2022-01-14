@@ -44,7 +44,6 @@ private:
     void deleteAccount(const std::string& name, QTcpSocket* clientSocket);
 
     void sendBooksArray(MessageType messageType, std::vector<Book> books, QTcpSocket* clientSocket);
-
     void sendAllBooks(QTcpSocket* clientSocket);
     void sendUserBooks(const std::string& name, QTcpSocket* clientSocket);
 

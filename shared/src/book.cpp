@@ -1,107 +1,5 @@
 #include "book.hpp"
 
-// Auxiliary functions & operators
-Book& Book::operator=(const Book& book)
-{
-    this->title = book.title;
-    this->authors = book.authors;
-    this->language = book.language;
-    this->originalPublication = book.originalPublication;
-    this->averageRating = book.averageRating;
-    this->ratingsCount = book.ratingsCount;
-    this->isbn = book.isbn;
-    this->exemplarsAvailable = book.exemplarsAvailable;
-    this->content = book.content;
-    this->available = book.available;
-    this->url = book.url;
-
-    return *this;
-}
-
-bool Book::operator==(const Book& book)
-{
-    if (this->authors == book.authors && this->content == book.content && this->isbn == book.isbn
-        && this->averageRating == book.averageRating && this->language == book.language
-        && this->originalPublication == book.originalPublication && this->ratingsCount == book.ratingsCount
-        && this->title == book.title && this->url == book.url)
-        return true;
-    return false;
-}
-
-void Book::availability()
-{
-    if (getExemplarsAvailable() == 0) { this->available = false; }
-}
-
-std::ostream& operator<<(std::ostream& fout, const std::vector<std::string>& authorsOrContent)
-{
-    for (uint32_t index = 0; index < authorsOrContent.size(); index++)
-        fout << authorsOrContent[index] << " ";
-    return fout;
-}
-
-std::ostream& operator<<(std::ostream& fout, const Book& book)
-{
-
-    fout << book.getTitle() << std::endl
-         << book.getAuthors() << std::endl
-         << book.getLanguage() << std::endl
-         << book.getOriginalPublication() << std::endl
-         << book.getAverageRating() << std::endl
-         << book.getRatingsCount() << std::endl
-         << book.getIsbn() << std::endl
-         << book.getExemplarsAvailable() << std::endl
-         << book.getContent() << std::endl
-         << book.getAvailability() << std::endl;
-    return fout;
-}
-
-void Book::readBookFromFile(int index)
-{
-    rapidcsv::Document doc("smc-library-project\\shared\\books.csv", rapidcsv::LabelParams(0, 0));
-
-    // get row from index "index"
-    std::vector<std::string> line;
-    line = doc.GetRow<std::string>(index);
-
-    // Assign to the specific attribute
-    //
-    // Title
-    if (!line[0].empty()) title = line[0];
-
-    // Authors
-    if (!line[1].empty()) {
-        std::string lineOfAuthors = line[1];
-        std::regex dividers(";");
-
-        std::sregex_token_iterator iterator(lineOfAuthors.begin(), lineOfAuthors.end(), dividers, -1);
-        std::sregex_token_iterator end;
-
-        for (/*Empty*/; iterator != end; iterator++) {
-            std::string aux = *iterator;
-            authors.push_back(aux);
-        }
-    }
-
-    // Language
-    if (!line[2].empty()) language = line[2];
-
-    // Original publication
-    if (!line[3].empty()) originalPublication = std::stof(line[3]);
-
-    // Average rating
-    if (!line[4].empty()) averageRating = std::stof(line[4]);
-
-    // Ratings count
-    if (!line[5].empty()) ratingsCount = std::stof(line[5]);
-
-    // Read isbn
-    if (!line[6].empty()) isbn = line[6];
-
-    // Read URL
-    if (!line[7].empty()) url = line[7];
-}
-
 // Constructors
 Book::Book()
 {
@@ -151,9 +49,10 @@ Book::Book(const Book& book)
     , content { book.content }
     , available { book.available }
     , url { book.url }
-{ }
+{
+}
 
-// getters and setters
+// Getters & Setters
 
 std::string Book::getTitle() const { return title; }
 
@@ -164,7 +63,8 @@ std::string Book::getAuthorsString() const
     std::string authorsString;
     for (size_t index = 0; index < authors.size(); index++) {
         authorsString += authors[index];
-        if (index != authors.size() - 1) authorsString += ", ";
+        if (index != authors.size() - 1)
+            authorsString += ", ";
     }
     return authorsString;
 }
@@ -211,3 +111,114 @@ void Book::setContent(std::string& content) { this->content = content; }
 void Book::setAvailability(const bool& available) { this->available = available; }
 
 void Book::setUrl(const std::string& url) { this->url = url; }
+
+// Auxiliary functions & operators
+Book& Book::operator=(const Book& book)
+{
+    this->title = book.title;
+    this->authors = book.authors;
+    this->language = book.language;
+    this->originalPublication = book.originalPublication;
+    this->averageRating = book.averageRating;
+    this->ratingsCount = book.ratingsCount;
+    this->isbn = book.isbn;
+    this->exemplarsAvailable = book.exemplarsAvailable;
+    this->content = book.content;
+    this->available = book.available;
+    this->url = book.url;
+
+    return *this;
+}
+
+bool Book::operator==(const Book& book)
+{
+    if (this->authors == book.authors && this->content == book.content && this->isbn == book.isbn
+        && this->averageRating == book.averageRating && this->language == book.language
+        && this->originalPublication == book.originalPublication && this->ratingsCount == book.ratingsCount
+        && this->title == book.title && this->url == book.url)
+        return true;
+    return false;
+}
+
+std::ostream& operator<<(std::ostream& fout, const std::vector<std::string>& authorsOrContent)
+{
+    for (uint32_t index = 0; index < authorsOrContent.size(); index++)
+        fout << authorsOrContent[index] << " ";
+    return fout;
+}
+
+std::ostream& operator<<(std::ostream& fout, const Book& book)
+{
+
+    fout << book.getTitle() << std::endl
+         << book.getAuthors() << std::endl
+         << book.getLanguage() << std::endl
+         << book.getOriginalPublication() << std::endl
+         << book.getAverageRating() << std::endl
+         << book.getRatingsCount() << std::endl
+         << book.getIsbn() << std::endl
+         << book.getExemplarsAvailable() << std::endl
+         << book.getContent() << std::endl
+         << book.getAvailability() << std::endl;
+    return fout;
+}
+
+void Book::availability()
+{
+    if (getExemplarsAvailable() == 0) {
+        this->available = false;
+    }
+}
+
+void Book::readBookFromFile(int index)
+{
+    rapidcsv::Document doc("smc-library-project\\shared\\books.csv", rapidcsv::LabelParams(0, 0));
+
+    // get row from index "index"
+    std::vector<std::string> line;
+    line = doc.GetRow<std::string>(index);
+
+    // Assign to the specific attribute
+
+    // Title
+    if (!line[0].empty())
+        title = line[0];
+
+    // Authors
+    if (!line[1].empty()) {
+        std::string lineOfAuthors = line[1];
+        std::regex dividers(";");
+
+        std::sregex_token_iterator iterator(lineOfAuthors.begin(), lineOfAuthors.end(), dividers, -1);
+        std::sregex_token_iterator end;
+
+        for (/*Empty*/; iterator != end; iterator++) {
+            std::string aux = *iterator;
+            authors.push_back(aux);
+        }
+    }
+
+    // Language
+    if (!line[2].empty())
+        language = line[2];
+
+    // Original publication
+    if (!line[3].empty())
+        originalPublication = std::stof(line[3]);
+
+    // Average rating
+    if (!line[4].empty())
+        averageRating = std::stof(line[4]);
+
+    // Ratings count
+    if (!line[5].empty())
+        ratingsCount = std::stof(line[5]);
+
+    // Read isbn
+    if (!line[6].empty())
+        isbn = line[6];
+
+    // Read URL
+    if (!line[7].empty())
+        url = line[7];
+}

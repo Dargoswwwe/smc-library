@@ -277,15 +277,19 @@ void Server::handleMessage(QTcpSocket* clientSocket, MessageType messageType, co
     case MessageType::DELETE_ACCOUNT:
         deleteAccount(messageData["username"], clientSocket);
         break;
+
     case MessageType::GET_ALL_BOOKS:
         sendAllBooks(clientSocket);
         break;
+
     case MessageType::GET_USER_BOOKS:
         sendUserBooks(messageData["username"], clientSocket);
         break;
+
     case MessageType::BORROW_BOOK:
         borrowBook(messageData["booktitle"], messageData["username"], clientSocket);
         break;
+
     case MessageType::RETURN_BOOK:
         returnBook(messageData["booktitle"], messageData["username"], clientSocket);
         break;

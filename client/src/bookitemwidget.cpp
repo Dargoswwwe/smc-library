@@ -11,7 +11,6 @@ BookItemWidget::BookItemWidget(Book book, QWidget* parent)
     ui->setupUi(this);
     ui->titleLabel->setText(book.getTitle().c_str());
     ui->authorLabel->setText(book.getAuthorsString().c_str());
-
     QString rating = QString::number(book.getAverageRating());
     ui->ratingLabel->setText(rating);
 }
