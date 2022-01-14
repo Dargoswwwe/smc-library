@@ -220,6 +220,7 @@ void MainWindow::changePassword()
     userNewForHashing.setPassword(newPassword.toStdString());
     User userConfirmForHashing;
     userConfirmForHashing.setPassword(confirmPassword.toStdString());
+
     json message;
     message["type"] = MessageType::CHANGE_PASSWORD;
     message["data"]["username"] = user->getUsername();
@@ -247,6 +248,7 @@ void MainWindow::deleteAccount()
 
     sendData(message);
 }
+
 void MainWindow::getBorrowedBooks()
 {
     if (user.has_value()) {
@@ -270,7 +272,6 @@ void MainWindow::getAllBooks()
 
 void MainWindow::borrowBook(std::string book_title)
 {
-    std::cout << user.has_value() << std::endl;
     json message;
     message["type"] = MessageType::BORROW_BOOK;
     message["data"]["booktitle"] = book_title;
@@ -281,13 +282,20 @@ void MainWindow::borrowBook(std::string book_title)
 
 void MainWindow::returnBook(std::string book_title)
 {
-    std::cout << user.has_value() << std::endl;
     json message;
     message["type"] = MessageType::RETURN_BOOK;
     message["data"]["booktitle"] = book_title;
     message["data"]["username"] = user->getUsername();
 
     sendData(message);
+}
+
+void MainWindow::popupMessage(std::string message)
+{
+    QMessageBox::information(
+        this,
+        "Info",
+        message.c_str());
 }
 
 void MainWindow::handleMessage(MessageType messageType, const json& messageData)
@@ -387,6 +395,8 @@ void MainWindow::handleMessage(MessageType messageType, const json& messageData)
     case MessageType::DELETE_ACCOUNT:
         try {
             if (messageData == "Success") {
+                std::string info = "Account deleted";
+                popupMessage(info);
                 switchPage(0);
                 ui->lineLoginUsername->setText("");
                 ui->lineLoginPassword->setText("");
@@ -428,21 +438,29 @@ void MainWindow::handleMessage(MessageType messageType, const json& messageData)
             qWarning() << "FINISHED: " << e.what();
         }
         break;
+
     case MessageType::BORROW_BOOK:
         try {
-            if (messageData == "NotAvailable")
-                qDebug() << "This book is not available at the moment! Please check it later!";
+            if (messageData == "NotAvailable") {
+                std::string info = "This book is not available at the moment! Please check it later!";
+                popupMessage(info);
+            }
             if (messageData == "Success") {
-                qDebug() << "Book borrowed succesfully, enjoy your reading!";
+                {
+                    std::string info = "Book borrowed succesfully, enjoy your reading!";
+                    popupMessage(info);
+                }
             }
         } catch (const nlohmann::detail::type_error& e) {
             qWarning() << "BORROW_BOOK: " << e.what();
         }
         break;
+
     case MessageType::RETURN_BOOK:
         try {
             if (messageData == "Success") {
-                qDebug() << "Book returned succesfully!";
+                std::string info = "Book returned succesfully!";
+                popupMessage(info);
             }
         } catch (const nlohmann::detail::type_error& e) {
             qWarning() << "RETURN_BOOK: " << e.what();

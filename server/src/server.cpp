@@ -240,6 +240,7 @@ void Server::returnBook(const std::string& booktitle, const std::string& name, Q
 {
     int bookId = database.getBookId(booktitle.c_str());
     int userId = database.getUserId(name.c_str());
+
     database.increaseAvailableBook(booktitle.c_str());
     database.deleteRowFromUsersBooksTable(userId, bookId);
 
