@@ -32,7 +32,7 @@ DatabaseManager::DatabaseManager()
     QSqlQuery query(database);
     query.exec("PRAGMA foreign_keys = ON;");
 
-    // Check if data base is empty and create book table into it
+    // Check if data base is empty and create Book table into it
     if (!database.contains(QLatin1String("Books"))) {
         QSqlQuery query;
         query.exec("create table Books "
@@ -48,7 +48,7 @@ DatabaseManager::DatabaseManager()
                    "available_books integer)");
     }
 
-    // Check if data base is empty and create user table into it
+    // Check if data base is empty and create User table into it
     if (!database.contains(QLatin1String("Users"))) {
         QSqlQuery query;
         query.exec("create table Users "
@@ -174,7 +174,13 @@ bool DatabaseManager::addValuesIntoUsersTable(User const& user)
     query.addBindValue(user.getUsername().c_str());
     query.addBindValue(user.getPassword().c_str());
     query.addBindValue(user.getSalt().c_str());
-    query.addBindValue(user.getActivity());
+
+    std::string active;
+    if (user.getActivity())
+        active = "true";
+    else
+        active = "false";
+    query.addBindValue(active.c_str());
 
     if (!query.exec()) {
         qDebug() << "Error adding user.";
@@ -564,17 +570,6 @@ bool DatabaseManager::isBookAvailable(int book_id)
     if (available > 0)
         return true;
     return false;
-}
-
-void DatabaseManager::updateAvailableBook(QString title, int available_books)
-{
-    QSqlQuery query;
-
-    query.prepare("UPDATE Books SET available_books = (:available_books) WHERE title = (:title)");
-    query.bindValue(":available_books", available_books);
-    query.bindValue(":title", title);
-
-    query.exec();
 }
 
 void DatabaseManager::decreaseAvailableBook(QString title)

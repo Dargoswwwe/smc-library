@@ -125,6 +125,7 @@ void Server::registerUser(const User& user, QTcpSocket* clientSocket)
     User dbUser;
     dbUser.setUsername(user.getUsername());
     dbUser.setPassword(user.getPassword());
+    dbUser.setActivity(user.getActivity());
 
     database.addValuesIntoUsersTable(dbUser);
 

@@ -40,7 +40,6 @@ public:
 
     void insertBooksIntoDataBase();
     bool isBookAvailable(int book_id);
-    void updateAvailableBook(QString title, int availableBooks);
     void decreaseAvailableBook(QString title);
     void increaseAvailableBook(QString title);
 
