@@ -20,7 +20,7 @@ private:
     QSqlDatabase database;
     std::string databaseDir;
 
-    bool loadSpellfix();
+    bool loadExtensions(std::vector<std::string> extensions);
 
 public:
     DatabaseManager();
