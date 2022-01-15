@@ -54,7 +54,7 @@ public slots:
 
 private:
     void connectToServer(const QHostAddress& address = QHostAddress::LocalHost, qint16 port = 4200);
-    void handleMessage(MessageType messageType, const nlohmann::json& messageData);
+    void handleMessage(MessageType messageType, const json& messageData);
     void verifyConnection();
 
     void handleRegister(const json& messageData);
@@ -65,7 +65,7 @@ private:
     void handleDelete(const json& messageData);
     void handleGetAllBooks(const json& messageData);
     void handleGetUserBooks(const json& messageData);
-    void handleFinished(const json& messageData);
+    void handleFinished();
     void handleBorrowBook(const json& messageData);
     void handleReturnBook(const json& messageData);
 

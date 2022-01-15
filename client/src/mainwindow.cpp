@@ -437,7 +437,7 @@ void MainWindow::handleGetUserBooks(const json& messageData)
     }
 }
 
-void MainWindow::handleFinished(const json& messageData)
+void MainWindow::handleFinished()
 {
     try {
         ui->verticalLayout_4->addStretch();
@@ -480,178 +480,19 @@ void MainWindow::handleReturnBook(const json& messageData)
 
 void MainWindow::handleMessage(MessageType messageType, const json& messageData)
 {
-    switch (messageType) {
-    case MessageType::REGISTER:
-        try {
-            if (messageData == "UsernameAlreadyTaken") {
-                ui->labelRegisterStatus->setText("Username taken");
-                user = std::nullopt;
-            }
-            if (messageData == "PasswordAlreadyTaken") {
-                ui->labelRegisterStatus->setText("Password already taken. Type another password!");
-                user = std::nullopt;
-            }
-            if (messageData == "Success") {
-                switchPage(2);
-                // requestAllBooks();
-            }
-            if (messageData == "EmptyNameField") {
-                ui->labelRegisterStatus->setText("The username filed is empty!");
-                user = std::nullopt;
-            }
-            if (messageData == "EmptyPasswordField") {
-                ui->labelRegisterStatus->setText("The password filed is empty!");
-                user = std::nullopt;
-            }
-            if (messageData == "EmptyFields") {
-                ui->labelRegisterStatus->setText("The fileds are empty!");
-                user = std::nullopt;
-            }
-        } catch (const nlohmann::detail::type_error& e) {
-        }
-        break;
+    std::unordered_map<MessageType, std::function<void()>> handle_messages = {
+        { MessageType::REGISTER, [&] { handleRegister(messageData); } },
+        { MessageType::LOGIN, [&] { handleLogin(messageData); } },
+        { MessageType::CHANGE_USERNAME, [&] { handleChangeUsername(messageData); } },
+        { MessageType::CHANGE_PASSWORD, [&] { handleChangePassword(messageData); } },
+        { MessageType::LOGOUT, [&] { handleLogout(messageData); } },
+        { MessageType::DELETE_ACCOUNT, [&] { handleDelete(messageData); } },
+        { MessageType::GET_ALL_BOOKS, [&] { handleGetAllBooks(messageData); } },
+        { MessageType::GET_USER_BOOKS, [&] { handleGetUserBooks(messageData); } },
+        { MessageType::FINISHED, [&] { handleFinished(); } },
+        { MessageType::BORROW_BOOK, [&] { handleBorrowBook(messageData); } },
+        { MessageType::RETURN_BOOK, [&] { handleReturnBook(messageData); } }
+    };
 
-    case MessageType::LOGIN:
-        try {
-            if (messageData == "NameError") {
-                ui->labelLoginStatus->setText("This username is not registered.");
-                user = std::nullopt;
-            }
-            if (messageData == "PasswordError") {
-                ui->labelLoginStatus->setText("Wrong password.");
-                user = std::nullopt;
-            }
-            if (messageData == "Success") {
-                switchPage(2);
-                // requestAllBooks();
-            }
-        } catch (const nlohmann::detail::type_error& e) {
-        }
-        break;
-
-    case MessageType::CHANGE_USERNAME:
-        try {
-            if (messageData == "AlreadyTaken")
-                ui->changeUsernamePasswordLabel->setText("This username is already taken.");
-            if (messageData == "Success") {
-                user->setUsername(ui->changeUsernameLine->text().toStdString());
-                ui->changeUsernamePasswordLabel->setText("Username updated!");
-            }
-        } catch (const nlohmann::detail::type_error& e) {
-        }
-        break;
-
-    case MessageType::CHANGE_PASSWORD:
-
-        try {
-            if (messageData == "IncorrectOldPassword")
-                ui->changeUsernamePasswordLabel->setText("The old password is incorrect!");
-            if (messageData == "SameWithOldPassword")
-                ui->changeUsernamePasswordLabel->setText("Type a different password from the old one!");
-            if (messageData == "NotMatchingPasswords")
-                ui->changeUsernamePasswordLabel->setText("Passwords don't match!");
-            if (messageData == "Success") {
-                user->setPassword(ui->newPasswordLine->text().toStdString());
-                ui->changeUsernamePasswordLabel->setText("Password updated!");
-            }
-
-        } catch (const nlohmann::detail::type_error& e) {
-        }
-        break;
-
-    case MessageType::LOGOUT:
-        try {
-            if (messageData == "Success") {
-                switchPage(0);
-                ui->lineLoginUsername->setText("");
-                ui->lineLoginPassword->setText("");
-                user = std::nullopt;
-            }
-        } catch (const nlohmann::detail::type_error& e) {
-            qWarning() << "LOGOUT: " << e.what();
-        }
-        break;
-
-    case MessageType::DELETE_ACCOUNT:
-        try {
-            if (messageData == "Success") {
-                std::string info = "Account deleted";
-                popupMessage(info);
-                switchPage(0);
-                ui->lineLoginUsername->setText("");
-                ui->lineLoginPassword->setText("");
-                user = std::nullopt;
-            }
-            if (messageData == "BorrowedBooks") {
-                std::string info = "You have to return the borrowed books first!";
-                popupMessage(info);
-                switchPage(2);
-            }
-        } catch (const nlohmann::detail::type_error& e) {
-            qWarning() << "DELETE_ACCOUNT: " << e.what();
-        }
-        break;
-
-    case MessageType::GET_ALL_BOOKS:
-        try {
-            for (Book b : messageData) {
-                BookItemWidget* bookItem = new BookItemWidget(b, ui->scrollAreaWidgetContents);
-                allBooks.push_back(b);
-                ui->verticalLayout_4->addWidget(bookItem);
-            }
-        } catch (const nlohmann::detail::type_error& e) {
-            qWarning() << "GET_ALL_BOOKS: " << e.what();
-        }
-        break;
-
-    case MessageType::GET_USER_BOOKS:
-        try {
-            for (Book b : messageData) {
-                BookItemWidget* bookItem = new BookItemWidget(b, ui->scrollAreaWidgetContents);
-                userBooks.push_back(b);
-                ui->verticalLayout_4->addWidget(bookItem);
-            }
-        } catch (const nlohmann::detail::type_error& e) {
-            qWarning() << "GET_USER_BOOKS: " << e.what();
-        }
-        break;
-
-    case MessageType::FINISHED:
-        try {
-            ui->verticalLayout_4->addStretch();
-        } catch (const nlohmann::detail::type_error& e) {
-            qWarning() << "FINISHED: " << e.what();
-        }
-        break;
-
-    case MessageType::BORROW_BOOK:
-        try {
-            if (messageData == "NotAvailable") {
-                std::string info = "This book is not available at the moment! Please check it later!";
-                popupMessage(info);
-            }
-            if (messageData == "Success") {
-                std::string info = "Book borrowed succesfully, enjoy your reading!";
-                popupMessage(info);
-            }
-            if (messageData == "AlreadyFiveBooks") {
-                std::string info = "You have already five borrowed books!";
-                popupMessage(info);
-            }
-        } catch (const nlohmann::detail::type_error& e) {
-            qWarning() << "BORROW_BOOK: " << e.what();
-        }
-        break;
-
-    case MessageType::RETURN_BOOK:
-        try {
-            if (messageData == "Success") {
-                std::string info = "Book returned succesfully!";
-                popupMessage(info);
-            }
-        } catch (const nlohmann::detail::type_error& e) {
-            qWarning() << "RETURN_BOOK: " << e.what();
-        }
-        break;
-    }
+    handle_messages[messageType]();
 }

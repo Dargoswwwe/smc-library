@@ -200,8 +200,10 @@ void Server::sendBooksArray(MessageType messageType, std::vector<Book> books, QT
     for (size_t i = books.size() - books.size() % messageSize; i < books.size(); ++i)
         message["data"][i] = books[i];
 
-    std::cout << message["data"] << std::endl;
-    sendData(clientSocket, message);
+    if (message["data"].size()) {
+        std::cout << message["data"] << std::endl;
+        sendData(clientSocket, message);
+    }
 
     sendData(clientSocket, R"({"type": "finished", "data": ""})"_json);
 }
@@ -295,5 +297,5 @@ void Server::handleMessage(QTcpSocket* clientSocket, MessageType messageType, co
                                               clientSocket); } }
     };
 
-    handle_messages[messageType];
+    handle_messages[messageType]();
 }
