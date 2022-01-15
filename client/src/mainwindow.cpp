@@ -295,6 +295,27 @@ void MainWindow::popupMessage(std::string message)
         message.c_str());
 }
 
+void MainWindow::handleDelete(const json& messageData)
+{
+    try {
+        if (messageData == "Success") {
+            std::string info = "Account deleted";
+            popupMessage(info);
+            switchPage(0);
+            ui->lineLoginUsername->setText("");
+            ui->lineLoginPassword->setText("");
+            user = std::nullopt;
+        }
+        if (messageData == "BorrowedBooks") {
+            std::string info = "You have to return the borrowed books first!";
+            popupMessage(info);
+            switchPage(2);
+        }
+    } catch (const nlohmann::detail::type_error& e) {
+        qWarning() << "DELETE_ACCOUNT: " << e.what();
+    }
+}
+
 void MainWindow::handleMessage(MessageType messageType, const json& messageData)
 {
     switch (messageType) {

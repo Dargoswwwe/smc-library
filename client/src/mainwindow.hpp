@@ -56,6 +56,7 @@ private:
     void connectToServer(const QHostAddress& address = QHostAddress::LocalHost, qint16 port = 4200);
     void handleMessage(MessageType messageType, const nlohmann::json& messageData);
     void verifyConnection();
+    void handleDelete(const json& messageData);
     Ui::MainWindow* ui;
     QTcpSocket* serverSocket;
     QDataStream inStream;

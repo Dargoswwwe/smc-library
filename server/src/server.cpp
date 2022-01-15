@@ -260,49 +260,40 @@ void Server::returnBook(const std::string& booktitle, const std::string& name, Q
 
 void Server::handleMessage(QTcpSocket* clientSocket, MessageType messageType, const json& messageData)
 {
-    switch (messageType) {
-    case MessageType::REGISTER:
-        try {
-            registerUser(messageData["user"], clientSocket);
-        } catch (const nlohmann::detail::type_error& e) {
-        }
-        break;
+    std::unordered_map<MessageType, std::function<void()>> handle_messages = {
+        { MessageType::REGISTER, [&] { registerUser(
+                                           messageData["user"],
+                                           clientSocket); } },
+        { MessageType::LOGIN, [&] { loginUser(
+                                        messageData["user"],
+                                        clientSocket); } },
+        { MessageType::CHANGE_USERNAME, [&] { changeUsername(
+                                                  messageData["newusername"],
+                                                  messageData["password"],
+                                                  clientSocket); } },
+        { MessageType::CHANGE_PASSWORD, [&] { changePassword(
+                                                  messageData["username"],
+                                                  messageData["password"],
+                                                  messageData["oldpassword"],
+                                                  messageData["newpassword"],
+                                                  messageData["confirmpassword"],
+                                                  clientSocket); } },
+        { MessageType::LOGOUT, [&] { logout(clientSocket); } },
+        { MessageType::DELETE_ACCOUNT, [&] { deleteAccount(
+                                                 messageData["username"],
+                                                 clientSocket); } },
+        { MessageType::GET_ALL_BOOKS, [&] { sendAllBooks(clientSocket); } },
+        { MessageType::GET_USER_BOOKS, [&] { sendUserBooks(
+                                                 messageData["username"],
+                                                 clientSocket); } },
+        { MessageType::BORROW_BOOK, [&] { borrowBook(
+                                              messageData["booktitle"],
+                                              messageData["username"],
+                                              clientSocket); } },
+        { MessageType::RETURN_BOOK, [&] { returnBook(messageData["booktitle"],
+                                              messageData["username"],
+                                              clientSocket); } }
+    };
 
-    case MessageType::LOGIN:
-        loginUser(messageData["user"], clientSocket);
-        break;
-
-    case MessageType::CHANGE_USERNAME:
-        changeUsername(messageData["newusername"], messageData["password"], clientSocket);
-        break;
-
-    case MessageType::CHANGE_PASSWORD:
-        changePassword(messageData["username"], messageData["password"], messageData["oldpassword"],
-            messageData["newpassword"], messageData["confirmpassword"], clientSocket);
-        break;
-
-    case MessageType::LOGOUT:
-        logout(clientSocket);
-        break;
-
-    case MessageType::DELETE_ACCOUNT:
-        deleteAccount(messageData["username"], clientSocket);
-        break;
-
-    case MessageType::GET_ALL_BOOKS:
-        sendAllBooks(clientSocket);
-        break;
-
-    case MessageType::GET_USER_BOOKS:
-        sendUserBooks(messageData["username"], clientSocket);
-        break;
-
-    case MessageType::BORROW_BOOK:
-        borrowBook(messageData["booktitle"], messageData["username"], clientSocket);
-        break;
-
-    case MessageType::RETURN_BOOK:
-        returnBook(messageData["booktitle"], messageData["username"], clientSocket);
-        break;
-    }
+    handle_messages[messageType];
 }
