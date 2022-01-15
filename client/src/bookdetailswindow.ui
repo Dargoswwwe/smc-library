@@ -620,6 +620,13 @@ background-color: rgb(117, 75, 28);</string>
          </widget>
         </item>
         <item>
+         <widget class="QPushButton" name="extendButton">
+          <property name="text">
+           <string>Extend</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <spacer name="horizontalSpacer_5">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>

@@ -66,6 +66,7 @@ DatabaseManager::DatabaseManager()
                    "(user_id    integer,"
                    "book_id     integer,"
                    "date_of_borrowing text,"
+                   "atempts integer,"
                    "FOREIGN KEY(user_id) REFERENCES Users(user_id) ON DELETE CASCADE,"
                    "FOREIGN KEY(book_id) REFERENCES Books(book_id) ON DELETE CASCADE,"
                    "UNIQUE (user_id, book_id))");
@@ -193,19 +194,22 @@ bool DatabaseManager::addValuesIntoUsersBooksTable(int userId, int bookId)
 {
     QSqlQuery query;
     QDate borrowingDate;
+    int atempts = 0;
 
     query.prepare("INSERT into UsersBooks ("
                   "user_id, "
                   "book_id,"
-                  "date_of_borrowing)"
+                  "date_of_borrowing,"
+                  "atempts)"
 
-                  "VALUES (?,?,?);");
+                  "VALUES (?,?,?,?);");
 
     borrowingDate = QDate::currentDate();
 
     query.addBindValue(userId);
     query.addBindValue(bookId);
     query.addBindValue(borrowingDate);
+    query.addBindValue(atempts);
 
     if (!query.exec()) {
         qDebug() << "Error binding book with user.";
@@ -589,6 +593,37 @@ std::vector<Book> DatabaseManager::getAllBooks()
     }
 
     return books;
+}
+
+bool DatabaseManager::checkDateOfBorrowing(QDate date)
+{
+    QDate current_date = QDate::currentDate();
+    if (date.addDays(14) < current_date)
+        return false; //is not available
+    return true; //is still available
+}
+
+bool DatabaseManager::tooManyUnreturned(QString userId)
+{
+    QSqlQuery query;
+    int count = 0;
+    query.exec("SELECT date_of_borrowing FROM UserBooks ub WHERE ub.user_id=(:user_id)");
+    query.bindValue(":user_id", userId);
+    query.next();
+
+    if (checkDateOfBorrowing(query.value(0).toDate()) == false) {
+        count++;
+    }
+
+    if (count >= 5)
+        return true;
+    return false;
+}
+
+QDate DatabaseManager::extendDate(QDate date)
+{
+    date = date.addDays(14);
+    return date;
 }
 
 int DatabaseManager::countBooks()
