@@ -641,8 +641,9 @@ int DatabaseManager::countBorrowedBooks(QString username)
     QSqlQuery query;
     int count;
     int user_id = getUserId(username);
-    query.exec("SELECT COUNT (*) FROM UsersBooks ub where ub.user_id=(user_id)");
+    query.prepare("SELECT COUNT (*) FROM UsersBooks ub WHERE ub.user_id=(:user_id)");
     query.bindValue(":user_id", user_id);
+    query.exec();
     query.next();
     count = query.value(0).toInt();
     return count;

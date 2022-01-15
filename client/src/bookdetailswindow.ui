@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>459</width>
+    <width>546</width>
     <height>388</height>
    </rect>
   </property>
@@ -621,6 +621,11 @@ background-color: rgb(117, 75, 28);</string>
         </item>
         <item>
          <widget class="QPushButton" name="extendButton">
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(117, 75, 28);
+color: rgb(255, 255, 255);
+</string>
+          </property>
           <property name="text">
            <string>Extend</string>
           </property>
