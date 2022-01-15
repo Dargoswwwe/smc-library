@@ -56,7 +56,19 @@ private:
     void connectToServer(const QHostAddress& address = QHostAddress::LocalHost, qint16 port = 4200);
     void handleMessage(MessageType messageType, const nlohmann::json& messageData);
     void verifyConnection();
+
+    void handleRegister(const json& messageData);
+    void handleLogin(const json& messageData);
+    void handleChangeUsername(const json& messageData);
+    void handleChangePassword(const json& messageData);
+    void handleLogout(const json& messageData);
     void handleDelete(const json& messageData);
+    void handleGetAllBooks(const json& messageData);
+    void handleGetUserBooks(const json& messageData);
+    void handleFinished(const json& messageData);
+    void handleBorrowBook(const json& messageData);
+    void handleReturnBook(const json& messageData);
+
     Ui::MainWindow* ui;
     QTcpSocket* serverSocket;
     QDataStream inStream;

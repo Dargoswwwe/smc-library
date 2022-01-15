@@ -295,6 +295,101 @@ void MainWindow::popupMessage(std::string message)
         message.c_str());
 }
 
+void MainWindow::handleRegister(const json& messageData)
+{
+    try {
+        if (messageData == "UsernameAlreadyTaken") {
+            ui->labelRegisterStatus->setText("Username taken");
+            user = std::nullopt;
+        }
+        if (messageData == "PasswordAlreadyTaken") {
+            ui->labelRegisterStatus->setText("Password already taken. Type another password!");
+            user = std::nullopt;
+        }
+        if (messageData == "Success") {
+            switchPage(2);
+            // requestAllBooks();
+        }
+        if (messageData == "EmptyNameField") {
+            ui->labelRegisterStatus->setText("The username filed is empty!");
+            user = std::nullopt;
+        }
+        if (messageData == "EmptyPasswordField") {
+            ui->labelRegisterStatus->setText("The password filed is empty!");
+            user = std::nullopt;
+        }
+        if (messageData == "EmptyFields") {
+            ui->labelRegisterStatus->setText("The fileds are empty!");
+            user = std::nullopt;
+        }
+    } catch (const nlohmann::detail::type_error& e) {
+    }
+}
+
+void MainWindow::handleLogin(const json& messageData)
+{
+    try {
+        if (messageData == "NameError") {
+            ui->labelLoginStatus->setText("This username is not registered.");
+            user = std::nullopt;
+        }
+        if (messageData == "PasswordError") {
+            ui->labelLoginStatus->setText("Wrong password.");
+            user = std::nullopt;
+        }
+        if (messageData == "Success") {
+            switchPage(2);
+            // requestAllBooks();
+        }
+    } catch (const nlohmann::detail::type_error& e) {
+    }
+}
+
+void MainWindow::handleChangeUsername(const json& messageData)
+{
+    try {
+        if (messageData == "AlreadyTaken")
+            ui->changeUsernamePasswordLabel->setText("This username is already taken.");
+        if (messageData == "Success") {
+            user->setUsername(ui->changeUsernameLine->text().toStdString());
+            ui->changeUsernamePasswordLabel->setText("Username updated!");
+        }
+    } catch (const nlohmann::detail::type_error& e) {
+    }
+}
+
+void MainWindow::handleChangePassword(const json& messageData)
+{
+    try {
+        if (messageData == "IncorrectOldPassword")
+            ui->changeUsernamePasswordLabel->setText("The old password is incorrect!");
+        if (messageData == "SameWithOldPassword")
+            ui->changeUsernamePasswordLabel->setText("Type a different password from the old one!");
+        if (messageData == "NotMatchingPasswords")
+            ui->changeUsernamePasswordLabel->setText("Passwords don't match!");
+        if (messageData == "Success") {
+            user->setPassword(ui->newPasswordLine->text().toStdString());
+            ui->changeUsernamePasswordLabel->setText("Password updated!");
+        }
+
+    } catch (const nlohmann::detail::type_error& e) {
+    }
+}
+
+void MainWindow::handleLogout(const json& messageData)
+{
+    try {
+        if (messageData == "Success") {
+            switchPage(0);
+            ui->lineLoginUsername->setText("");
+            ui->lineLoginPassword->setText("");
+            user = std::nullopt;
+        }
+    } catch (const nlohmann::detail::type_error& e) {
+        qWarning() << "LOGOUT: " << e.what();
+    }
+}
+
 void MainWindow::handleDelete(const json& messageData)
 {
     try {
@@ -313,6 +408,73 @@ void MainWindow::handleDelete(const json& messageData)
         }
     } catch (const nlohmann::detail::type_error& e) {
         qWarning() << "DELETE_ACCOUNT: " << e.what();
+    }
+}
+
+void MainWindow::handleGetAllBooks(const json& messageData)
+{
+    try {
+        for (Book b : messageData) {
+            BookItemWidget* bookItem = new BookItemWidget(b, ui->scrollAreaWidgetContents);
+            allBooks.push_back(b);
+            ui->verticalLayout_4->addWidget(bookItem);
+        }
+    } catch (const nlohmann::detail::type_error& e) {
+        qWarning() << "GET_ALL_BOOKS: " << e.what();
+    }
+}
+
+void MainWindow::handleGetUserBooks(const json& messageData)
+{
+    try {
+        for (Book b : messageData) {
+            BookItemWidget* bookItem = new BookItemWidget(b, ui->scrollAreaWidgetContents);
+            userBooks.push_back(b);
+            ui->verticalLayout_4->addWidget(bookItem);
+        }
+    } catch (const nlohmann::detail::type_error& e) {
+        qWarning() << "GET_USER_BOOKS: " << e.what();
+    }
+}
+
+void MainWindow::handleFinished(const json& messageData)
+{
+    try {
+        ui->verticalLayout_4->addStretch();
+    } catch (const nlohmann::detail::type_error& e) {
+        qWarning() << "FINISHED: " << e.what();
+    }
+}
+
+void MainWindow::handleBorrowBook(const json& messageData)
+{
+    try {
+        if (messageData == "NotAvailable") {
+            std::string info = "This book is not available at the moment! Please check it later!";
+            popupMessage(info);
+        }
+        if (messageData == "Success") {
+            std::string info = "Book borrowed succesfully, enjoy your reading!";
+            popupMessage(info);
+        }
+        if (messageData == "AlreadyFiveBooks") {
+            std::string info = "You have already five borrowed books!";
+            popupMessage(info);
+        }
+    } catch (const nlohmann::detail::type_error& e) {
+        qWarning() << "BORROW_BOOK: " << e.what();
+    }
+}
+
+void MainWindow::handleReturnBook(const json& messageData)
+{
+    try {
+        if (messageData == "Success") {
+            std::string info = "Book returned succesfully!";
+            popupMessage(info);
+        }
+    } catch (const nlohmann::detail::type_error& e) {
+        qWarning() << "RETURN_BOOK: " << e.what();
     }
 }
 
