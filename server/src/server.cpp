@@ -169,8 +169,12 @@ void Server::logout(QTcpSocket* clientSocket)
 void Server::deleteAccount(const std::string& name, QTcpSocket* clientSocket)
 {
 
-    database.deleteUser(name.c_str());
-    sendData(clientSocket, R"({"type": "deleteAccount", "data": "Success"})"_json);
+    if (database.countBorrowedBooks(name.c_str()) == 0) {
+        database.deleteUser(name.c_str());
+        sendData(clientSocket, R"({"type": "deleteAccount", "data": "Success"})"_json);
+    } else {
+        sendData(clientSocket, R"({"type": "deleteAccount", "data": "BorrowedBooks"})"_json);
+    }
 }
 
 void Server::sendBooksArray(MessageType messageType, std::vector<Book> books, QTcpSocket* clientSocket)

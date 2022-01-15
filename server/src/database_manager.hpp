@@ -42,6 +42,7 @@ public:
     bool isBookAvailable(int book_id);
     void decreaseAvailableBook(QString title);
     void increaseAvailableBook(QString title);
+    std::vector<Book> createBooksArray();
 
     std::optional<User> getUser(QString username);
     void getUsersForBook(int bookId);
@@ -52,9 +53,8 @@ public:
     int getBookId(QString title);
 
     int countBooks();
+    int countBorrowedBooks(QString username);
     bool validUsername(QString username);
-
-    std::vector<Book> createBooksArray();
 };
 
 #endif // DATABASE_MANAGER_H

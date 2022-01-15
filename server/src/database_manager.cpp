@@ -258,6 +258,105 @@ void DatabaseManager::insertBooksIntoDataBase()
     qDebug() << "Done. Imported " << valuesAdded << " books into the database.";
 }
 
+bool DatabaseManager::isBookAvailable(int book_id)
+{
+    int available;
+
+    QSqlQuery query;
+    query.prepare("SELECT available_books FROM Books b WHERE b.book_id=(:book_id)");
+    query.bindValue(":book_id", book_id);
+    query.exec();
+    query.next();
+    available = query.value(0).toInt();
+
+    if (available > 0)
+        return true;
+    return false;
+}
+
+void DatabaseManager::decreaseAvailableBook(QString title)
+{
+    int available;
+
+    QSqlQuery query;
+    query.prepare("SELECT available_books FROM Books b WHERE b.title=(:title)");
+    query.bindValue(":title", title);
+    query.exec();
+    query.next();
+    available = query.value(0).toInt();
+    available--;
+    QSqlQuery query2;
+    query2.prepare("UPDATE Books SET available_books = (:available_books) WHERE title = (:title)");
+    query2.bindValue(":available_books", available);
+    query2.bindValue(":title", title);
+
+    query2.exec();
+}
+
+void DatabaseManager::increaseAvailableBook(QString title)
+{
+    int available;
+
+    QSqlQuery query;
+    query.prepare("SELECT available_books FROM Books b WHERE b.title=(:title)");
+    query.bindValue(":title", title);
+    query.exec();
+    query.next();
+    available = query.value(0).toInt();
+    available++;
+
+    QSqlQuery query2;
+    query2.prepare("UPDATE Books SET available_books = (:available_books) WHERE title = (:title)");
+    query2.bindValue(":available_books", available);
+    query2.bindValue(":title", title);
+
+    query2.exec();
+}
+
+std::vector<std::string> separator(std::string str, std::regex delimitator)
+{
+    std::sregex_token_iterator iterator { str.begin(), str.end(), delimitator, -1 };
+    std::vector<std::string> elemSeparate { iterator, {} };
+    return elemSeparate;
+}
+
+std::vector<Book> DatabaseManager::createBooksArray()
+{
+    std::vector<Book> booksArray;
+
+    QFile inputFile((databaseDir + "books.csv").c_str());
+    inputFile.open(QIODevice::ReadOnly);
+    if (!inputFile.isOpen())
+        qDebug() << "Error";
+
+    QTextStream stream(&inputFile);
+    for (QString line = stream.readLine(); !line.isNull(); line = stream.readLine()) {
+        Book newBook;
+        QStringList word = line.split(',');
+
+        newBook.setTitle(word.at(1).toStdString());
+
+        std::vector<std::string> authors;
+        std::regex divider(";");
+        std::vector<std::string> authorsToken = separator(word.at(2).toStdString(), divider);
+        for (std::string& author : authorsToken) {
+            authors.push_back(author);
+        }
+
+        newBook.setAuthors(authors);
+        newBook.setLanguage(word.at(3).toStdString());
+        newBook.setOriginalPublication(word.at(4).toInt());
+        newBook.setAverageRating(word.at(5).toFloat());
+        newBook.setRatingsCount(word.at(6).toInt());
+        newBook.setIsbn(word.at(7).toStdString());
+        newBook.setUrl(word.at(8).toStdString());
+        newBook.setExemplarsAvailable(word.at(9).toInt());
+        booksArray.push_back(newBook);
+    };
+
+    return booksArray;
+}
+
 std::optional<User> DatabaseManager::getUser(QString username)
 {
     QSqlQuery query;
@@ -502,6 +601,18 @@ int DatabaseManager::countBooks()
     return count;
 }
 
+int DatabaseManager::countBorrowedBooks(QString username)
+{
+    QSqlQuery query;
+    int count;
+    int user_id = getUserId(username);
+    query.exec("SELECT COUNT (*) FROM UsersBooks ub where ub.user_id=(user_id)");
+    query.bindValue(":user_id", user_id);
+    query.next();
+    count = query.value(0).toInt();
+    return count;
+}
+
 bool DatabaseManager::validUsername(QString username)
 {
     QSqlQuery query;
@@ -510,103 +621,4 @@ bool DatabaseManager::validUsername(QString username)
     query.bindValue(":username", username);
     query.exec();
     return query.next();
-}
-
-std::vector<std::string> separator(std::string str, std::regex delimitator)
-{
-    std::sregex_token_iterator iterator { str.begin(), str.end(), delimitator, -1 };
-    std::vector<std::string> elemSeparate { iterator, {} };
-    return elemSeparate;
-}
-
-std::vector<Book> DatabaseManager::createBooksArray()
-{
-    std::vector<Book> booksArray;
-
-    QFile inputFile((databaseDir + "books.csv").c_str());
-    inputFile.open(QIODevice::ReadOnly);
-    if (!inputFile.isOpen())
-        qDebug() << "Error";
-
-    QTextStream stream(&inputFile);
-    for (QString line = stream.readLine(); !line.isNull(); line = stream.readLine()) {
-        Book newBook;
-        QStringList word = line.split(',');
-
-        newBook.setTitle(word.at(1).toStdString());
-
-        std::vector<std::string> authors;
-        std::regex divider(";");
-        std::vector<std::string> authorsToken = separator(word.at(2).toStdString(), divider);
-        for (std::string& author : authorsToken) {
-            authors.push_back(author);
-        }
-
-        newBook.setAuthors(authors);
-        newBook.setLanguage(word.at(3).toStdString());
-        newBook.setOriginalPublication(word.at(4).toInt());
-        newBook.setAverageRating(word.at(5).toFloat());
-        newBook.setRatingsCount(word.at(6).toInt());
-        newBook.setIsbn(word.at(7).toStdString());
-        newBook.setUrl(word.at(8).toStdString());
-        newBook.setExemplarsAvailable(word.at(9).toInt());
-        booksArray.push_back(newBook);
-    };
-
-    return booksArray;
-}
-
-bool DatabaseManager::isBookAvailable(int book_id)
-{
-    int available;
-
-    QSqlQuery query;
-    query.prepare("SELECT available_books FROM Books b WHERE b.book_id=(:book_id)");
-    query.bindValue(":book_id", book_id);
-    query.exec();
-    query.next();
-    available = query.value(0).toInt();
-
-    if (available > 0)
-        return true;
-    return false;
-}
-
-void DatabaseManager::decreaseAvailableBook(QString title)
-{
-    int available;
-
-    QSqlQuery query;
-    query.prepare("SELECT available_books FROM Books b WHERE b.title=(:title)");
-    query.bindValue(":title", title);
-    query.exec();
-    query.next();
-    available = query.value(0).toInt();
-    available--;
-    QSqlQuery query2;
-    query2.prepare("UPDATE Books SET available_books = (:available_books) WHERE title = (:title)");
-    query2.bindValue(":available_books", available);
-    query2.bindValue(":title", title);
-
-    query2.exec();
-}
-
-void DatabaseManager::increaseAvailableBook(QString title)
-{
-    int available;
-
-    QSqlQuery query;
-    query.prepare("SELECT available_books FROM Books b WHERE b.title=(:title)");
-    query.bindValue(":title", title);
-    query.exec();
-    query.next();
-    available = query.value(0).toInt();
-    available++;
-
-    QSqlQuery query2;
-    query2.prepare("UPDATE Books SET available_books = (:available_books) WHERE title = (:title)");
-    query2.bindValue(":available_books", available);
-    query2.bindValue(":title", title);
-
-    query2.exec();
 }

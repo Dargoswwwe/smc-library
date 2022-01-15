@@ -399,6 +399,11 @@ void MainWindow::handleMessage(MessageType messageType, const json& messageData)
                 ui->lineLoginPassword->setText("");
                 user = std::nullopt;
             }
+            if (messageData == "BorrowedBooks") {
+                std::string info = "You have to return the borrowed books first!";
+                popupMessage(info);
+                switchPage(2);
+            }
         } catch (const nlohmann::detail::type_error& e) {
             qWarning() << "DELETE_ACCOUNT: " << e.what();
         }

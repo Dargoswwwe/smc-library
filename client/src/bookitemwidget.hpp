@@ -9,8 +9,7 @@ namespace Ui {
 class BookItemWidget;
 }
 
-class BookItemWidget : public QWidget
-{
+class BookItemWidget : public QWidget {
     Q_OBJECT
 
 private:
