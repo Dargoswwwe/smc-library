@@ -231,13 +231,19 @@ void Server::borrowBook(const std::string& booktitle, const std::string& name, Q
     int bookId = database.getBookId(booktitle.c_str());
     int userId = database.getUserId(name.c_str());
 
-    if (!database.isBookAvailable(bookId))
-        sendData(clientSocket, R"({"type": "borrowBook", "data": "NotAvailable"})"_json);
-    else {
-        database.decreaseAvailableBook(booktitle.c_str());
-        database.addValuesIntoUsersBooksTable(userId, bookId);
+    if (database.countBorrowedBooks(name.c_str()) >= 5) {
 
-        sendData(clientSocket, R"({"type": "borrowBook", "data": "Success"})"_json);
+        sendData(clientSocket, R"({"type": "borrowBook", "data": "AlreadyFiveBooks"})"_json);
+    } else {
+        if (!database.isBookAvailable(bookId))
+
+            sendData(clientSocket, R"({"type": "borrowBook", "data": "NotAvailable"})"_json);
+        else {
+            database.decreaseAvailableBook(booktitle.c_str());
+            database.addValuesIntoUsersBooksTable(userId, bookId);
+
+            sendData(clientSocket, R"({"type": "borrowBook", "data": "Success"})"_json);
+        }
     }
 }
 

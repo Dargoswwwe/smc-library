@@ -448,10 +448,12 @@ void MainWindow::handleMessage(MessageType messageType, const json& messageData)
                 popupMessage(info);
             }
             if (messageData == "Success") {
-                {
-                    std::string info = "Book borrowed succesfully, enjoy your reading!";
-                    popupMessage(info);
-                }
+                std::string info = "Book borrowed succesfully, enjoy your reading!";
+                popupMessage(info);
+            }
+            if (messageData == "AlreadyFiveBooks") {
+                std::string info = "You have already five borrowed books!";
+                popupMessage(info);
             }
         } catch (const nlohmann::detail::type_error& e) {
             qWarning() << "BORROW_BOOK: " << e.what();
