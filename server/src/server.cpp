@@ -19,6 +19,7 @@ Server::~Server()
 
 void Server::initServer()
 {
+    // clang-format off
     messageHandler = {
         { MessageType::REGISTER, [this](const json& messageData, QTcpSocket* clientSocket) { registerUser(
                                                                                                  messageData["user"],
@@ -51,12 +52,14 @@ void Server::initServer()
                                                                                                     clientSocket); } },
         { MessageType::RETURN_BOOK, [this](const json& messageData, QTcpSocket* clientSocket) { returnBook(messageData["booktitle"],
                                                                                                     messageData["username"],
-                                                                                                    clientSocket); } } { MessageType::BORROW_BOOK, [this](const json& messageData, QTcpSocket* clientSocket) { getBorrowedBooksDate(
-                                                                                                                                                                                                                                                                             messageData["booktitle"],
-                                                                                                                                                                                                                                                                             messageData["username"],
-                                                                                                                                                                                                                                                                             clientSocket); } },
-
+                                                                                                    clientSocket); } },
+        { MessageType::GET_BORROWED_DATE, [this](const json& messageData, QTcpSocket* clientSocket) { getBorrowedBooksDate(
+                                                                                                    messageData["booktitle"],
+                                                                                                    messageData["username"],
+                                                                                                    clientSocket); } }
     };
+
+    // clang-format on
     tcpServer = new QTcpServer(this);
     if (!tcpServer->listen(QHostAddress::Any, 4200)) {
         qWarning() << "Cannot start server: " << tcpServer->serverError();
@@ -116,7 +119,7 @@ void Server::receiveData()
         qDebug() << message.dump().c_str();
 
         MessageType messageType = message["type"];
-        messageHandler[messageType](message["data"], clientSocket);
+        messageHandler.at(messageType)(message["data"], clientSocket);
     } catch (const nlohmann::detail::parse_error& e) {
         qWarning() << e.what();
     } catch (const nlohmann::detail::type_error& e) {
@@ -301,8 +304,6 @@ void Server::getBorrowedBooksDate(const std::string& booktitle, const std::strin
     message["data"]["booktitle"] = booktitle;
 
     sendData(clientSocket, message);
-
-    sendData(clientSocket, R"({"type": "returnBorrowedDate", "data": "Success"})"_json);
 }
 
 void Server::returnBook(const std::string& booktitle, const std::string& name, QTcpSocket* clientSocket)

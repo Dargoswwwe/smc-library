@@ -20,6 +20,18 @@ BookDetailsWindow::BookDetailsWindow(Book book, QWidget* parent)
     QNetworkAccessManager* manager = new QNetworkAccessManager(this);
     connect(manager, &QNetworkAccessManager::finished, this, &BookDetailsWindow::imageDownloaded);
     manager->get(QNetworkRequest(QUrl(book.getUrl().c_str())));
+
+    setMainWindow();
+    connect(mainWindow, &MainWindow::receivedBorrowDate, this, &BookDetailsWindow::setBorrowedDate);
+
+    mainWindow->getBorrowedDate(book.getTitle().c_str());
+}
+
+void BookDetailsWindow::setMainWindow()
+{
+    QObject* parent;
+    for (parent = this->parent(); !dynamic_cast<MainWindow*>(parent); parent = parent->parent()) { }
+    mainWindow = dynamic_cast<MainWindow*>(parent);
 }
 
 void BookDetailsWindow::imageDownloaded(QNetworkReply* resp)
@@ -30,26 +42,14 @@ void BookDetailsWindow::imageDownloaded(QNetworkReply* resp)
     ui->coverBookLabel->setPixmap(bookCover);
 }
 
-BookDetailsWindow::~BookDetailsWindow()
+void BookDetailsWindow::setBorrowedDate(std::string bookTitle, QDate borrowedDate)
 {
-    delete ui;
+    if (bookTitle == book.getTitle()) this->borrowedDate = borrowedDate;
+    qDebug() << borrowedDate;
 }
 
-void BookDetailsWindow::on_borrowButton_clicked()
-{
-    MainWindow* mainWindow = nullptr;
-    QObject* parent;
-    for (parent = this->parent(); !dynamic_cast<MainWindow*>(parent); parent = parent->parent())
-        ;
-    mainWindow = dynamic_cast<MainWindow*>(parent);
-    mainWindow->borrowBook(book.getTitle());
-}
+BookDetailsWindow::~BookDetailsWindow() { delete ui; }
 
-void BookDetailsWindow::on_returnButton_clicked()
-{
-    MainWindow* mainWindow = nullptr;
-    QObject* parent;
-    for (parent = this->parent(); !dynamic_cast<MainWindow*>(parent); parent = parent->parent());
-    mainWindow = dynamic_cast<MainWindow*>(parent);
-    mainWindow->returnBook(book.getTitle());
-}
+void BookDetailsWindow::on_borrowButton_clicked() { mainWindow->borrowBook(book.getTitle()); }
+
+void BookDetailsWindow::on_returnButton_clicked() { mainWindow->returnBook(book.getTitle()); }

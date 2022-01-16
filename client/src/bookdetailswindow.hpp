@@ -18,10 +18,15 @@ class BookDetailsWindow : public QDialog {
 private:
     Book book;
     QPixmap bookCover;
+    MainWindow* mainWindow;
+    std::optional<QDate> borrowedDate;
+
+    void setMainWindow();
 
 public slots:
     void imageDownloaded(QNetworkReply* response);
     void on_borrowButton_clicked();
+    void setBorrowedDate(std::string bookTitle, QDate borrowedDate);
 
 public:
     explicit BookDetailsWindow(Book book, QWidget* parent = nullptr);

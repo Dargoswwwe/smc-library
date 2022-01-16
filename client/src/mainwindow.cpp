@@ -8,6 +8,9 @@ MainWindow::MainWindow(QWidget* parent)
     , ui(new Ui::MainWindow)
     , serverSocket(new QTcpSocket)
 {
+    refreshTimer.setInterval(1000);
+    refreshTimer.start();
+    connect(&refreshTimer, &QTimer::timeout, this, &MainWindow::receiveData);
 
     messageHandler = {
         { MessageType::REGISTER, [this] (const json& messageData) { handleRegister(messageData); } },
@@ -18,9 +21,11 @@ MainWindow::MainWindow(QWidget* parent)
         { MessageType::DELETE_ACCOUNT, [this] (const json& messageData) { handleDelete(messageData); } },
         { MessageType::GET_ALL_BOOKS, [this] (const json& messageData) { handleGetAllBooks(messageData); } },
         { MessageType::GET_USER_BOOKS, [this] (const json& messageData) { handleGetUserBooks(messageData); } },
+        { MessageType::GET_BORROWED_DATE, [this] (const json& messageData) { handleGetDate(messageData); } },
         { MessageType::FINISHED, [this] (const json& messageData) { handleFinished(); } },
         { MessageType::BORROW_BOOK, [this] (const json& messageData) { handleBorrowBook(messageData); } },
-        { MessageType::RETURN_BOOK, [this] (const json& messageData) { handleReturnBook(messageData); } }
+        { MessageType::RETURN_BOOK, [this] (const json& messageData) { handleReturnBook(messageData); } },
+        { MessageType::RETURN_BOOK, [this] (const json& messageData) { handleGetDate(messageData); } }
     };
 
     // Set background
@@ -116,6 +121,7 @@ void MainWindow::connected()
 
 void MainWindow::receiveData()
 {
+    if (inStream.atEnd()) return;
     inStream.startTransaction();
     QString messageString;
     inStream >> messageString;
@@ -126,7 +132,7 @@ void MainWindow::receiveData()
 
     try {
         MessageType messageType = message["type"];
-        messageHandler[messageType](message["data"]);
+        messageHandler.at(messageType)(message["data"]);
     } catch (const nlohmann::detail::parse_error& e) {
         qWarning() << "receiveData(): " << e.what();
     } catch (const nlohmann::detail::type_error& e) {
@@ -503,14 +509,17 @@ void MainWindow::handleReturnBook(const json& messageData)
         qWarning() << "RETURN_BOOK: " << e.what();
     }
 }
+
 void MainWindow::handleGetDate(const json& messageData)
 {
     try {
-        if (messageData == "Success") {
-            std::string info = "Date returned succesfully!";
-            qDebug() << info.c_str();
-        }
-    } catch (const nlohmann::detail::type_error& e) {
+        QString dateString = messageData["date"].get<std::string>().c_str();
+        if (!dateString.length()) return;
+        QDate borrowedDate = QDate::fromString(dateString, Qt::ISODate);
+        std::string bookTitle = messageData["booktitle"];
+        borrowedDates[bookTitle] = QDate::fromString(dateString, Qt::ISODate);
+        emit receivedBorrowDate(bookTitle, borrowedDate);
+     } catch (const nlohmann::detail::type_error& e) {
         qWarning() << "GET_DATE: " << e.what();
     }
 }

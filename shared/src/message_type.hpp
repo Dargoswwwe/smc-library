@@ -31,7 +31,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(MessageType,
         { MessageType::CHANGE_PASSWORD, "changePassword" },
         { MessageType::BORROW_BOOK, "borrowBook" },
         { MessageType::RETURN_BOOK, "returnBook" },
-        { MessageType::GET_BORROWED_DATE, "returnBorrowedDate" },
+        { MessageType::GET_BORROWED_DATE, "getBorrowedDate" },
     });
 
 #endif // MESSAGE_TYPE_H

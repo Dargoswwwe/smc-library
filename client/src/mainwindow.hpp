@@ -27,6 +27,8 @@ private:
     std::vector<Book> allBooks;
     std::vector<Book> userBooks;
     std::unordered_map<MessageType, std::function<void(json const&)>> messageHandler;
+    std::unordered_map<std::string, QDate> borrowedDates;
+    QTimer refreshTimer;
 
     bool passwordChecks(std::string const& password, std::string const& confirmPassword, QLabel* errorLabel);
 
@@ -53,6 +55,9 @@ public slots:
     void returnBook(std::string book_title);
     void popupMessage(std::string message);
     void getBorrowedDate(std::string book_title);
+
+signals:
+    void receivedBorrowDate(std::string bookTitle, QDate borrowedDate);
 
 private:
     void connectToServer(const QHostAddress& address = QHostAddress::LocalHost, qint16 port = 4200);

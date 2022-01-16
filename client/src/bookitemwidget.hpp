@@ -2,6 +2,7 @@
 #define BOOKITEMWIDGET_HPP
 
 #include "book.hpp"
+#include "mainwindow.hpp"
 
 #include <QWidget>
 
@@ -14,6 +15,7 @@ class BookItemWidget : public QWidget {
 
 private:
     Book book;
+    QDate borrowedDate;
 
 public:
     explicit BookItemWidget(Book book, QWidget* parent = nullptr);
