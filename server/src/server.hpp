@@ -22,6 +22,7 @@ class Server : public QObject {
 
 private:
     Library library;
+    std::unordered_map<MessageType, std::function<void(nlohmann::json const&, QTcpSocket*)>> messageHandler;
 
 public:
     explicit Server(QObject* parent = nullptr);
@@ -42,15 +43,12 @@ private:
         const std::string& newpassword, const std::string& confirmpassword, QTcpSocket* clientSocket);
     void logout(QTcpSocket* clientSocket);
     void deleteAccount(const std::string& name, QTcpSocket* clientSocket);
-
     void sendBooksArray(MessageType messageType, std::vector<Book> books, QTcpSocket* clientSocket);
     void sendAllBooks(QTcpSocket* clientSocket);
     void sendUserBooks(const std::string& name, QTcpSocket* clientSocket);
 
     void borrowBook(const std::string& booktitle, const std::string& name, QTcpSocket* clientSocket);
     void returnBook(const std::string& booktitle, const std::string& name, QTcpSocket* clientSocket);
-
-    void handleMessage(QTcpSocket* clientSocket, MessageType messageType, const nlohmann::json& messageData);
 
     DatabaseManager database;
     QTcpServer* tcpServer = nullptr;

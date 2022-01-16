@@ -19,6 +19,40 @@ Server::~Server()
 
 void Server::initServer()
 {
+    messageHandler = {
+        { MessageType::REGISTER, [this] (const json& messageData, QTcpSocket* clientSocket) { registerUser(
+                                           messageData["user"],
+                                           clientSocket); } },
+        { MessageType::LOGIN, [this] (const json& messageData, QTcpSocket* clientSocket) { loginUser(
+                                        messageData["user"],
+                                        clientSocket); } },
+        { MessageType::CHANGE_USERNAME, [this] (const json& messageData, QTcpSocket* clientSocket) { changeUsername(
+                                                  messageData["newusername"],
+                                                  messageData["password"],
+                                                  clientSocket); } },
+        { MessageType::CHANGE_PASSWORD, [this] (const json& messageData, QTcpSocket* clientSocket) { changePassword(
+                                                  messageData["username"],
+                                                  messageData["password"],
+                                                  messageData["oldpassword"],
+                                                  messageData["newpassword"],
+                                                  messageData["confirmpassword"],
+                                                  clientSocket); } },
+        { MessageType::LOGOUT, [this] (const json& messageData, QTcpSocket* clientSocket) { logout(clientSocket); } },
+        { MessageType::DELETE_ACCOUNT, [this] (const json& messageData, QTcpSocket* clientSocket) { deleteAccount(
+                                                 messageData["username"],
+                                                 clientSocket); } },
+        { MessageType::GET_ALL_BOOKS, [this] (const json& messageData, QTcpSocket* clientSocket) { sendAllBooks(clientSocket); } },
+        { MessageType::GET_USER_BOOKS, [this] (const json& messageData, QTcpSocket* clientSocket) { sendUserBooks(
+                                                 messageData["username"],
+                                                 clientSocket); } },
+        { MessageType::BORROW_BOOK, [this] (const json& messageData, QTcpSocket* clientSocket) { borrowBook(
+                                              messageData["booktitle"],
+                                              messageData["username"],
+                                              clientSocket); } },
+        { MessageType::RETURN_BOOK, [this] (const json& messageData, QTcpSocket* clientSocket) { returnBook(messageData["booktitle"],
+                                              messageData["username"],
+                                              clientSocket); } }
+    };
     tcpServer = new QTcpServer(this);
     if (!tcpServer->listen(QHostAddress::Any, 4200)) {
         qWarning() << "Cannot start server: " << tcpServer->serverError();
@@ -77,7 +111,8 @@ void Server::receiveData()
 
         qDebug() << message.dump().c_str();
 
-        handleMessage(clientSocket, message["type"], message["data"]);
+        MessageType messageType = message["type"];
+        messageHandler[messageType](message["data"], clientSocket);
     } catch (const nlohmann::detail::parse_error& e) {
         qWarning() << e.what();
     } catch (const nlohmann::detail::type_error& e) {
@@ -258,44 +293,4 @@ void Server::returnBook(const std::string& booktitle, const std::string& name, Q
     database.deleteRowFromUsersBooksTable(userId, bookId);
 
     sendData(clientSocket, R"({"type": "returnBook", "data": "Success"})"_json);
-}
-
-void Server::handleMessage(QTcpSocket* clientSocket, MessageType messageType, const json& messageData)
-{
-    std::unordered_map<MessageType, std::function<void()>> handle_messages = {
-        { MessageType::REGISTER, [&] { registerUser(
-                                           messageData["user"],
-                                           clientSocket); } },
-        { MessageType::LOGIN, [&] { loginUser(
-                                        messageData["user"],
-                                        clientSocket); } },
-        { MessageType::CHANGE_USERNAME, [&] { changeUsername(
-                                                  messageData["newusername"],
-                                                  messageData["password"],
-                                                  clientSocket); } },
-        { MessageType::CHANGE_PASSWORD, [&] { changePassword(
-                                                  messageData["username"],
-                                                  messageData["password"],
-                                                  messageData["oldpassword"],
-                                                  messageData["newpassword"],
-                                                  messageData["confirmpassword"],
-                                                  clientSocket); } },
-        { MessageType::LOGOUT, [&] { logout(clientSocket); } },
-        { MessageType::DELETE_ACCOUNT, [&] { deleteAccount(
-                                                 messageData["username"],
-                                                 clientSocket); } },
-        { MessageType::GET_ALL_BOOKS, [&] { sendAllBooks(clientSocket); } },
-        { MessageType::GET_USER_BOOKS, [&] { sendUserBooks(
-                                                 messageData["username"],
-                                                 clientSocket); } },
-        { MessageType::BORROW_BOOK, [&] { borrowBook(
-                                              messageData["booktitle"],
-                                              messageData["username"],
-                                              clientSocket); } },
-        { MessageType::RETURN_BOOK, [&] { returnBook(messageData["booktitle"],
-                                              messageData["username"],
-                                              clientSocket); } }
-    };
-
-    handle_messages[messageType]();
 }

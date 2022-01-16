@@ -8,6 +8,21 @@ MainWindow::MainWindow(QWidget* parent)
     , ui(new Ui::MainWindow)
     , serverSocket(new QTcpSocket)
 {
+
+    messageHandler = {
+        { MessageType::REGISTER, [this] (const json& messageData) { handleRegister(messageData); } },
+        { MessageType::LOGIN, [this] (const json& messageData) { handleLogin(messageData); } },
+        { MessageType::CHANGE_USERNAME, [this] (const json& messageData) { handleChangeUsername(messageData); } },
+        { MessageType::CHANGE_PASSWORD, [this] (const json& messageData) { handleChangePassword(messageData); } },
+        { MessageType::LOGOUT, [this] (const json& messageData) { handleLogout(messageData); } },
+        { MessageType::DELETE_ACCOUNT, [this] (const json& messageData) { handleDelete(messageData); } },
+        { MessageType::GET_ALL_BOOKS, [this] (const json& messageData) { handleGetAllBooks(messageData); } },
+        { MessageType::GET_USER_BOOKS, [this] (const json& messageData) { handleGetUserBooks(messageData); } },
+        { MessageType::FINISHED, [this] (const json& messageData) { handleFinished(); } },
+        { MessageType::BORROW_BOOK, [this] (const json& messageData) { handleBorrowBook(messageData); } },
+        { MessageType::RETURN_BOOK, [this] (const json& messageData) { handleReturnBook(messageData); } }
+    };
+
     // Set background
     QPixmap background(":/images_resources/library.jpg");
     background = background.scaled(this->size(), Qt::IgnoreAspectRatio);
@@ -110,7 +125,8 @@ void MainWindow::receiveData()
     qDebug() << message.dump().c_str();
 
     try {
-        handleMessage(message["type"], message["data"]);
+        MessageType messageType = message["type"];
+        messageHandler[messageType](message["data"]);
     } catch (const nlohmann::detail::parse_error& e) {
         qWarning() << "receiveData(): " << e.what();
     } catch (const nlohmann::detail::type_error& e) {
@@ -476,23 +492,4 @@ void MainWindow::handleReturnBook(const json& messageData)
     } catch (const nlohmann::detail::type_error& e) {
         qWarning() << "RETURN_BOOK: " << e.what();
     }
-}
-
-void MainWindow::handleMessage(MessageType messageType, const json& messageData)
-{
-    std::unordered_map<MessageType, std::function<void()>> handle_messages = {
-        { MessageType::REGISTER, [&] { handleRegister(messageData); } },
-        { MessageType::LOGIN, [&] { handleLogin(messageData); } },
-        { MessageType::CHANGE_USERNAME, [&] { handleChangeUsername(messageData); } },
-        { MessageType::CHANGE_PASSWORD, [&] { handleChangePassword(messageData); } },
-        { MessageType::LOGOUT, [&] { handleLogout(messageData); } },
-        { MessageType::DELETE_ACCOUNT, [&] { handleDelete(messageData); } },
-        { MessageType::GET_ALL_BOOKS, [&] { handleGetAllBooks(messageData); } },
-        { MessageType::GET_USER_BOOKS, [&] { handleGetUserBooks(messageData); } },
-        { MessageType::FINISHED, [&] { handleFinished(); } },
-        { MessageType::BORROW_BOOK, [&] { handleBorrowBook(messageData); } },
-        { MessageType::RETURN_BOOK, [&] { handleReturnBook(messageData); } }
-    };
-
-    handle_messages[messageType]();
 }

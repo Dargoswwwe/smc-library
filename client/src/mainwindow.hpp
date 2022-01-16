@@ -26,6 +26,7 @@ private:
     std::optional<User> user;
     std::vector<Book> allBooks;
     std::vector<Book> userBooks;
+    std::unordered_map<MessageType, std::function<void(json const&)>> messageHandler;
 
     bool passwordChecks(std::string const& password, std::string const& confirmPassword, QLabel* errorLabel);
 
@@ -54,7 +55,6 @@ public slots:
 
 private:
     void connectToServer(const QHostAddress& address = QHostAddress::LocalHost, qint16 port = 4200);
-    void handleMessage(MessageType messageType, const json& messageData);
     void verifyConnection();
 
     void handleRegister(const json& messageData);
