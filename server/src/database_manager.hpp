@@ -51,6 +51,7 @@ public:
     std::vector<Book> getAllBooks();
     int getUserId(QString username);
     int getBookId(QString title);
+    QDate getBorrowedDate(int user_id, int book_id);
     bool checkDateOfBorrowing(QDate date);
     bool tooManyUnreturned(QString userId);
     QDate extendDate(QDate date);

@@ -595,6 +595,20 @@ std::vector<Book> DatabaseManager::getAllBooks()
     return books;
 }
 
+QDate DatabaseManager::getBorrowedDate(int user_id, int book_id)
+{
+    QDate borrowed_date;
+    QSqlQuery query;
+    query.prepare("SELECT date_of_borrowing FROM UsersBooks ub INNER JOIN Users u on ub.user_id=u.user_id WHERE ub.book_id=(:book_id) and ub.user_id=(:user_id)");
+    query.bindValue(":user_id", user_id);
+    query.bindValue(":book_id", book_id);
+    query.exec();
+    query.next();
+
+    borrowed_date = query.value(0).toDate();
+    return borrowed_date;
+}
+
 bool DatabaseManager::checkDateOfBorrowing(QDate date)
 {
     QDate current_date = QDate::currentDate();
