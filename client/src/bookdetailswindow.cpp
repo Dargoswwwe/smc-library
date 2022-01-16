@@ -46,6 +46,10 @@ void BookDetailsWindow::setBorrowedDate(std::string bookTitle, QDate borrowedDat
 {
     if (bookTitle == book.getTitle()) this->borrowedDate = borrowedDate;
     qDebug() << borrowedDate;
+    ui->date_of_borrowing->setText(ui->date_of_borrowing->text() + borrowedDate.toString(Qt::ISODate));
+
+    QDate returnDate = mainWindow->getReturnDate(borrowedDate);
+    ui->date_of_return->setText(ui->date_of_return->text() + returnDate.toString(Qt::ISODate));
 }
 
 BookDetailsWindow::~BookDetailsWindow() { delete ui; }
