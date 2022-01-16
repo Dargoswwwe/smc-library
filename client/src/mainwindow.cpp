@@ -303,6 +303,16 @@ void MainWindow::returnBook(std::string book_title)
     sendData(message);
 }
 
+void MainWindow::getBorrowedDate(std::string book_title)
+{
+    json message;
+    message["type"] = MessageType::GET_BORROWED_DATE;
+    message["data"]["booktitle"] = book_title;
+    message["data"]["username"] = user->getUsername();
+
+    sendData(message);
+}
+
 void MainWindow::popupMessage(std::string message)
 {
     QMessageBox::information(
@@ -491,5 +501,16 @@ void MainWindow::handleReturnBook(const json& messageData)
         }
     } catch (const nlohmann::detail::type_error& e) {
         qWarning() << "RETURN_BOOK: " << e.what();
+    }
+}
+void MainWindow::handleGetDate(const json& messageData)
+{
+    try {
+        if (messageData == "Success") {
+            std::string info = "Date returned succesfully!";
+            qDebug() << info.c_str();
+        }
+    } catch (const nlohmann::detail::type_error& e) {
+        qWarning() << "GET_DATE: " << e.what();
     }
 }

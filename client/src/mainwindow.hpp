@@ -52,6 +52,7 @@ public slots:
     void borrowBook(std::string book_title);
     void returnBook(std::string book_title);
     void popupMessage(std::string message);
+    void getBorrowedDate(std::string book_title);
 
 private:
     void connectToServer(const QHostAddress& address = QHostAddress::LocalHost, qint16 port = 4200);
@@ -68,6 +69,7 @@ private:
     void handleFinished();
     void handleBorrowBook(const json& messageData);
     void handleReturnBook(const json& messageData);
+    void handleGetDate(const json& messageData);
 
     Ui::MainWindow* ui;
     QTcpSocket* serverSocket;
