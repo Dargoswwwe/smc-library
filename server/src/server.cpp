@@ -20,38 +20,42 @@ Server::~Server()
 void Server::initServer()
 {
     messageHandler = {
-        { MessageType::REGISTER, [this] (const json& messageData, QTcpSocket* clientSocket) { registerUser(
-                                           messageData["user"],
-                                           clientSocket); } },
-        { MessageType::LOGIN, [this] (const json& messageData, QTcpSocket* clientSocket) { loginUser(
-                                        messageData["user"],
-                                        clientSocket); } },
-        { MessageType::CHANGE_USERNAME, [this] (const json& messageData, QTcpSocket* clientSocket) { changeUsername(
-                                                  messageData["newusername"],
-                                                  messageData["password"],
-                                                  clientSocket); } },
-        { MessageType::CHANGE_PASSWORD, [this] (const json& messageData, QTcpSocket* clientSocket) { changePassword(
-                                                  messageData["username"],
-                                                  messageData["password"],
-                                                  messageData["oldpassword"],
-                                                  messageData["newpassword"],
-                                                  messageData["confirmpassword"],
-                                                  clientSocket); } },
-        { MessageType::LOGOUT, [this] (const json& messageData, QTcpSocket* clientSocket) { logout(clientSocket); } },
-        { MessageType::DELETE_ACCOUNT, [this] (const json& messageData, QTcpSocket* clientSocket) { deleteAccount(
-                                                 messageData["username"],
-                                                 clientSocket); } },
-        { MessageType::GET_ALL_BOOKS, [this] (const json& messageData, QTcpSocket* clientSocket) { sendAllBooks(clientSocket); } },
-        { MessageType::GET_USER_BOOKS, [this] (const json& messageData, QTcpSocket* clientSocket) { sendUserBooks(
-                                                 messageData["username"],
-                                                 clientSocket); } },
-        { MessageType::BORROW_BOOK, [this] (const json& messageData, QTcpSocket* clientSocket) { borrowBook(
-                                              messageData["booktitle"],
-                                              messageData["username"],
-                                              clientSocket); } },
-        { MessageType::RETURN_BOOK, [this] (const json& messageData, QTcpSocket* clientSocket) { returnBook(messageData["booktitle"],
-                                              messageData["username"],
-                                              clientSocket); } }
+        { MessageType::REGISTER, [this](const json& messageData, QTcpSocket* clientSocket) { registerUser(
+                                                                                                 messageData["user"],
+                                                                                                 clientSocket); } },
+        { MessageType::LOGIN, [this](const json& messageData, QTcpSocket* clientSocket) { loginUser(
+                                                                                              messageData["user"],
+                                                                                              clientSocket); } },
+        { MessageType::CHANGE_USERNAME, [this](const json& messageData, QTcpSocket* clientSocket) { changeUsername(
+                                                                                                        messageData["newusername"],
+                                                                                                        messageData["password"],
+                                                                                                        clientSocket); } },
+        { MessageType::CHANGE_PASSWORD, [this](const json& messageData, QTcpSocket* clientSocket) { changePassword(
+                                                                                                        messageData["username"],
+                                                                                                        messageData["password"],
+                                                                                                        messageData["oldpassword"],
+                                                                                                        messageData["newpassword"],
+                                                                                                        messageData["confirmpassword"],
+                                                                                                        clientSocket); } },
+        { MessageType::LOGOUT, [this](const json& messageData, QTcpSocket* clientSocket) { logout(clientSocket); } },
+        { MessageType::DELETE_ACCOUNT, [this](const json& messageData, QTcpSocket* clientSocket) { deleteAccount(
+                                                                                                       messageData["username"],
+                                                                                                       clientSocket); } },
+        { MessageType::GET_ALL_BOOKS, [this](const json& messageData, QTcpSocket* clientSocket) { sendAllBooks(clientSocket); } },
+        { MessageType::GET_USER_BOOKS, [this](const json& messageData, QTcpSocket* clientSocket) { sendUserBooks(
+                                                                                                       messageData["username"],
+                                                                                                       clientSocket); } },
+        { MessageType::BORROW_BOOK, [this](const json& messageData, QTcpSocket* clientSocket) { borrowBook(
+                                                                                                    messageData["booktitle"],
+                                                                                                    messageData["username"],
+                                                                                                    clientSocket); } },
+        { MessageType::RETURN_BOOK, [this](const json& messageData, QTcpSocket* clientSocket) { returnBook(messageData["booktitle"],
+                                                                                                    messageData["username"],
+                                                                                                    clientSocket); } } { MessageType::BORROW_BOOK, [this](const json& messageData, QTcpSocket* clientSocket) { getBorrowedBooksDate(
+                                                                                                                                                                                                                                                                             messageData["booktitle"],
+                                                                                                                                                                                                                                                                             messageData["username"],
+                                                                                                                                                                                                                                                                             clientSocket); } },
+
     };
     tcpServer = new QTcpServer(this);
     if (!tcpServer->listen(QHostAddress::Any, 4200)) {
@@ -282,6 +286,23 @@ void Server::borrowBook(const std::string& booktitle, const std::string& name, Q
             sendData(clientSocket, R"({"type": "borrowBook", "data": "Success"})"_json);
         }
     }
+}
+
+void Server::getBorrowedBooksDate(const std::string& booktitle, const std::string& name, QTcpSocket* clientSocket)
+{
+    int bookId = database.getBookId(booktitle.c_str());
+    int userId = database.getUserId(name.c_str());
+    QDate date = database.getBorrowedDate(userId, bookId);
+    std::string dateString = date.toString(Qt::ISODate).toStdString();
+
+    json message;
+    message["type"] = MessageType::GET_BORROWED_DATE;
+    message["data"]["date"] = dateString;
+    message["data"]["booktitle"] = booktitle;
+
+    sendData(clientSocket, message);
+
+    sendData(clientSocket, R"({"type": "returnBorrowedDate", "data": "Success"})"_json);
 }
 
 void Server::returnBook(const std::string& booktitle, const std::string& name, QTcpSocket* clientSocket)

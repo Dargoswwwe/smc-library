@@ -7,6 +7,7 @@
 #include "message_type.hpp"
 #include "user.hpp"
 
+#include <QDate>
 #include <QObject>
 #include <QSqlDatabase>
 #include <QSqlDriver>
@@ -48,6 +49,7 @@ private:
     void sendUserBooks(const std::string& name, QTcpSocket* clientSocket);
 
     void borrowBook(const std::string& booktitle, const std::string& name, QTcpSocket* clientSocket);
+    void getBorrowedBooksDate(const std::string& booktitle, const std::string& name, QTcpSocket* clientSocket);
     void returnBook(const std::string& booktitle, const std::string& name, QTcpSocket* clientSocket);
 
     DatabaseManager database;
