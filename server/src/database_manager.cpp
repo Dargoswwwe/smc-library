@@ -49,6 +49,20 @@ DatabaseManager::DatabaseManager()
                    "available_books integer)");
     }
 
+    // Check if fts table exists is empty and create it if it isn't
+    if (!database.contains(QLatin1String("fts5_data"))) {
+        QSqlQuery query;
+        query.exec("create virtual table if not exists fts5_data using fts5"
+                   "(title, authors, content='Books', content_rowid='book_id')");
+    }
+
+    // Create triggers to update the search index
+    query.exec("CREATE TRIGGER book_i AFTER INSERT ON Books"
+               "BEGIN"
+                   "INSERT INTO fts5_data (rowid, title, authors)"
+                   "VALUES (new.book_id, new.title, new.authors);"
+               "END;");
+
     // Check if data base is empty and create User table into it
     if (!database.contains(QLatin1String("Users"))) {
         QSqlQuery query;
@@ -152,6 +166,19 @@ bool DatabaseManager::addValuesIntoBookTable(int id, QString title, QString auth
     query.addBindValue(isbn);
     query.addBindValue(image_url);
     query.addBindValue(available_books);
+
+    if (!query.exec()) {
+        qDebug() << "Error adding value: " << query.lastError();
+        return false;
+    }
+
+    // Create triggers to update the search index
+    query.prepare("INSERT INTO fts5_data (rowid, title, authors)"
+                  "VALUES (:id, :title, :authors);");
+
+    query.bindValue(":id", id);
+    query.bindValue(":title", title);
+    query.bindValue(":authors", authors);
 
     if (!query.exec()) {
         qDebug() << "Error adding value: " << query.lastError();
@@ -522,9 +549,13 @@ std::vector<Book> DatabaseManager::searchBook(std::string const& title)
 {
     QSqlQuery query;
 
-    if (!loadExtension("spellfix")) return std::vector<Book>();
+    // if (!loadExtension("spellfix")) return std::vector<Book>();
 
-    query.prepare("SELECT * FROM Books WHERE editdist3(title, ?)");
+    // query.prepare("SELECT * FROM Books WHERE editdist3(title, ?)");
+
+    query.prepare("select Books.title, Books.authors, language, original_publication_year, "
+            "average_rating, ratings_count, isbn, image_url from fts5_data('hunger') "
+            "inner join Books on Books.book_id = fts5_data.rowid order by rank;");
     query.addBindValue(QString::fromStdString(title));
 
     if (!query.exec()) {
