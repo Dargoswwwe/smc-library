@@ -8,4 +8,4 @@ It is written in C++, with the GUI made in Qt5.
 
 It implements will implement a client-server architecture.
 
-[Project prezentation](https://youtu.be/FaR5sPNwjv0)
+[Project presentation](https://youtu.be/6z5pBt8ffQc)

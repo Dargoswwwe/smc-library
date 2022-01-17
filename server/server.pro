@@ -8,8 +8,6 @@ CONFIG += c++latest
 
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-LIBS += -lsqlite3
-
 # Input
 SOURCES += \
     src/database_manager.cpp \
@@ -25,7 +23,7 @@ DESTDIR=bin                 #Target file directory
 OBJECTS_DIR=intermediates   #Intermediate object files directory
 MOC_DIR=intermediates       #Intermediate moc files directory
 
-unix|win32: LIBS += -L$$PWD/../shared/lib/ -lsmclibrary
+unix|win32: LIBS += -L$$PWD/../shared/lib/ -lsmclibrary -lsqlite3
 
 INCLUDEPATH += $$PWD/../shared/src
 DEPENDPATH += $$PWD/../shared/src

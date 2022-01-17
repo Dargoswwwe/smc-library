@@ -12,7 +12,8 @@ CONFIG += c++latest
 SOURCES += \
     src/book.cpp \
     src/library.cpp \
-    src/user.cpp
+    src/user.cpp \
+    src/sqlite3.c
 
 HEADERS += \
     src/book.hpp \
@@ -34,6 +35,14 @@ unix {
 
 DISTFILES += \
     books.csv
+
+
+win32:sqlite3.target = sqlite3.dll
+win32:sqlite3.commands = gcc -O2 -fPIC -shared src/sqlite3.c -o lib/sqlite3.dll
+
+all.depends += sqlite3
+
+QMAKE_EXTRA_TARGETS += all sqlite3
 
 #unix:spellfix.target = spellfix.so
 #unix:spellfix.commands = gcc -O2 -fPIC -shared src/spellfix.c -o $(DESTDIR)/spellfix.so
