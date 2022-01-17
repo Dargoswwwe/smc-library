@@ -47,6 +47,7 @@ private:
     void sendBooksArray(MessageType messageType, std::vector<Book> books, QTcpSocket* clientSocket);
     void sendAllBooks(QTcpSocket* clientSocket);
     void sendUserBooks(const std::string& name, QTcpSocket* clientSocket);
+    void searchBooks(const std::string& query, QTcpSocket* clientSocket);
 
     void borrowBook(const std::string& booktitle, const std::string& name, QTcpSocket* clientSocket);
     void getBorrowedBooksDate(const std::string& booktitle, const std::string& name, QTcpSocket* clientSocket);

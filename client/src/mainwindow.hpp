@@ -49,6 +49,7 @@ public slots:
     void changeUsername();
     void changePassword();
     void deleteAccount();
+    void searchBooks(const std::string& query);
     void getBorrowedBooks();
     void getAllBooks();
     void borrowBook(std::string book_title);
@@ -76,6 +77,7 @@ private:
     void handleBorrowBook(const json& messageData);
     void handleReturnBook(const json& messageData);
     void handleGetDate(const json& messageData);
+    void handleSearchBooks(const json& messageData);
 
     Ui::MainWindow* ui;
     QTcpSocket* serverSocket;

@@ -56,7 +56,8 @@ void Server::initServer()
         { MessageType::GET_BORROWED_DATE, [this](const json& messageData, QTcpSocket* clientSocket) { getBorrowedBooksDate(
                                                                                                     messageData["booktitle"],
                                                                                                     messageData["username"],
-                                                                                                    clientSocket); } }
+                                                                                                    clientSocket); } },
+        { MessageType::SEARCH_BOOKS, [this](const json& messageData, QTcpSocket* clientSocket) { searchBooks(messageData, clientSocket); } }
     };
 
     // clang-format on
@@ -271,6 +272,11 @@ void Server::sendUserBooks(const std::string& name, QTcpSocket* clientSocket)
     auto userBooks = database.getBorrowedBooksForUser(userId);
 
     sendBooksArray(MessageType::GET_USER_BOOKS, userBooks, clientSocket);
+}
+
+void Server::searchBooks(const std::string& query, QTcpSocket* clientSocket) {
+    auto books = database.searchBook(query);
+    sendBooksArray(MessageType::SEARCH_BOOKS, books, clientSocket);
 }
 
 void Server::borrowBook(const std::string& booktitle, const std::string& name, QTcpSocket* clientSocket)

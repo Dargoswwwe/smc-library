@@ -16,6 +16,7 @@ enum class MessageType {
     BORROW_BOOK,
     RETURN_BOOK,
     GET_BORROWED_DATE,
+    SEARCH_BOOKS
 };
 
 NLOHMANN_JSON_SERIALIZE_ENUM(MessageType,
@@ -32,6 +33,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(MessageType,
         { MessageType::BORROW_BOOK, "borrowBook" },
         { MessageType::RETURN_BOOK, "returnBook" },
         { MessageType::GET_BORROWED_DATE, "getBorrowedDate" },
+        { MessageType::SEARCH_BOOKS, "searchBooks" },
     });
 
 #endif // MESSAGE_TYPE_H
