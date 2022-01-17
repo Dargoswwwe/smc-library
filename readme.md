@@ -6,4 +6,6 @@ It is an application that simulates a book library, allowing users to search and
 
 It is written in C++, with the GUI made in Qt5.
 
-It ~~implements~~ will implement a client-server architecture.
+It implements will implement a client-server architecture.
+
+[Project prezentation](https://youtu.be/FaR5sPNwjv0)
