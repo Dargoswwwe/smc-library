@@ -12,21 +12,20 @@ MainWindow::MainWindow(QWidget* parent)
     refreshTimer.start();
     connect(&refreshTimer, &QTimer::timeout, this, &MainWindow::receiveData);
 
-    messageHandler = {
-        { MessageType::REGISTER, [this] (const json& messageData) { handleRegister(messageData); } },
-        { MessageType::LOGIN, [this] (const json& messageData) { handleLogin(messageData); } },
-        { MessageType::CHANGE_USERNAME, [this] (const json& messageData) { handleChangeUsername(messageData); } },
-        { MessageType::CHANGE_PASSWORD, [this] (const json& messageData) { handleChangePassword(messageData); } },
-        { MessageType::LOGOUT, [this] (const json& messageData) { handleLogout(messageData); } },
-        { MessageType::DELETE_ACCOUNT, [this] (const json& messageData) { handleDelete(messageData); } },
-        { MessageType::GET_ALL_BOOKS, [this] (const json& messageData) { handleGetAllBooks(messageData); } },
-        { MessageType::GET_USER_BOOKS, [this] (const json& messageData) { handleGetUserBooks(messageData); } },
-        { MessageType::GET_BORROWED_DATE, [this] (const json& messageData) { handleGetDate(messageData); } },
-        { MessageType::FINISHED, [this] (const json& messageData) { handleFinished(); } },
-        { MessageType::BORROW_BOOK, [this] (const json& messageData) { handleBorrowBook(messageData); } },
-        { MessageType::RETURN_BOOK, [this] (const json& messageData) { handleReturnBook(messageData); } },
-        { MessageType::RETURN_BOOK, [this] (const json& messageData) { handleGetDate(messageData); } }
-    };
+    messageHandler = { { MessageType::REGISTER, [this](const json& messageData) { handleRegister(messageData); } },
+        { MessageType::LOGIN, [this](const json& messageData) { handleLogin(messageData); } },
+        { MessageType::CHANGE_USERNAME, [this](const json& messageData) { handleChangeUsername(messageData); } },
+        { MessageType::CHANGE_PASSWORD, [this](const json& messageData) { handleChangePassword(messageData); } },
+        { MessageType::LOGOUT, [this](const json& messageData) { handleLogout(messageData); } },
+        { MessageType::DELETE_ACCOUNT, [this](const json& messageData) { handleDelete(messageData); } },
+        { MessageType::GET_ALL_BOOKS, [this](const json& messageData) { handleGetAllBooks(messageData); } },
+        { MessageType::GET_USER_BOOKS, [this](const json& messageData) { handleGetUserBooks(messageData); } },
+        { MessageType::GET_BORROWED_DATE, [this](const json& messageData) { handleGetDate(messageData); } },
+        { MessageType::FINISHED, [this](const json& messageData) { handleFinished(); } },
+        { MessageType::BORROW_BOOK, [this](const json& messageData) { handleBorrowBook(messageData); } },
+        { MessageType::RETURN_BOOK, [this](const json& messageData) { handleReturnBook(messageData); } },
+        { MessageType::RETURN_BOOK, [this](const json& messageData) { handleGetDate(messageData); } },
+        { MessageType::SEARCH_BOOKS, [this](const json& messageData) { handleSearchBooks(messageData); } } };
 
     // Set background
     QPixmap background(":/images_resources/library.jpg");
@@ -41,7 +40,8 @@ MainWindow::MainWindow(QWidget* parent)
     QObject::connect(ui->lineLoginPassword, &QLineEdit::returnPressed, ui->buttonLogin, &QPushButton::click);
     QObject::connect(ui->lineRegisterUsername, &QLineEdit::returnPressed, ui->buttonRegister, &QPushButton::click);
     QObject::connect(ui->lineRegisterPassword, &QLineEdit::returnPressed, ui->buttonRegister, &QPushButton::click);
-    QObject::connect(ui->lineRegisterConfirmPassword, &QLineEdit::returnPressed, ui->buttonRegister, &QPushButton::click);
+    QObject::connect(
+        ui->lineRegisterConfirmPassword, &QLineEdit::returnPressed, ui->buttonRegister, &QPushButton::click);
 
     QObject::connect(ui->buttonRegister, &QPushButton::clicked, this, &MainWindow::registerUser);
     QObject::connect(ui->buttonLogin, &QPushButton::clicked, this, &MainWindow::loginUser);
@@ -69,6 +69,9 @@ MainWindow::MainWindow(QWidget* parent)
 
     QObject::connect(ui->viewMyBooksButton, &QPushButton::clicked, this, &MainWindow::getBorrowedBooks);
     QObject::connect(ui->viewAllBooksButton, &QPushButton::clicked, this, &MainWindow::getAllBooks);
+    QObject::connect(ui->searchButton, &QPushButton::clicked, this, [this] {
+        searchBooks(ui->bookNameSearch->text().toStdString());
+    });
 
     QObject::connect(serverSocket, &QTcpSocket::connected, this, &MainWindow::connected);
     QObject::connect(serverSocket, &QIODevice::readyRead, this, &MainWindow::receiveData);
@@ -87,11 +90,9 @@ MainWindow::~MainWindow()
 
 void MainWindow::switchPage(int pageIndex)
 {
-    if (pageIndex != 5)
-        verifyConnection();
+    if (pageIndex != 5) verifyConnection();
 
-    if (pageIndex == 3 && !user.has_value())
-        return;
+    if (pageIndex == 3 && !user.has_value()) return;
     ui->stackedWidget->setCurrentIndex(pageIndex);
 }
 
@@ -102,9 +103,7 @@ void MainWindow::connectToServer(const QHostAddress& address, qint16 port)
 
 void MainWindow::verifyConnection()
 {
-    if (serverSocket->state() == QTcpSocket::UnconnectedState) {
-        connectToServer();
-    }
+    if (serverSocket->state() == QTcpSocket::UnconnectedState) { connectToServer(); }
     int tries = 1;
     while (serverSocket->state() == QTcpSocket::UnconnectedState) {
         ui->attemptNumber->setText(std::to_string(tries).c_str());
@@ -138,11 +137,9 @@ void MainWindow::receiveData()
     } catch (const nlohmann::detail::type_error& e) {
         qWarning() << "receiveData(): " << e.what();
     }
-    if (!inStream.commitTransaction())
-        return;
+    if (!inStream.commitTransaction()) return;
 
-    if (serverSocket->canReadLine())
-        receiveData();
+    if (serverSocket->canReadLine()) receiveData();
 }
 
 void MainWindow::sendData(const json& data)
@@ -180,8 +177,7 @@ void MainWindow::registerUser()
         return;
     }
 
-    if (!passwordChecks(password, confirmPassword, ui->labelRegisterStatus))
-        return;
+    if (!passwordChecks(password, confirmPassword, ui->labelRegisterStatus)) return;
 
     json message;
     user = User(username, password, username);
@@ -211,8 +207,7 @@ void MainWindow::loginUser()
 
 void MainWindow::showUsernameSettings()
 {
-    if (!user.has_value())
-        return;
+    if (!user.has_value()) return;
     ui->changeUsernameLine->setText(user->getUsername().c_str());
 }
 
@@ -268,6 +263,16 @@ void MainWindow::deleteAccount()
     sendData(message);
 }
 
+void MainWindow::searchBooks(const std::string& query) {
+    qDebug() << query.c_str();
+    if (query.length()) {
+        json message;
+        message["type"] = MessageType::SEARCH_BOOKS;
+        message["data"] = query;
+        sendData(message);
+    }
+}
+
 void MainWindow::getBorrowedBooks()
 {
     clearBooksUi();
@@ -319,15 +324,10 @@ void MainWindow::getBorrowedDate(std::string book_title)
     sendData(message);
 }
 
-void MainWindow::popupMessage(std::string message)
-{
-    QMessageBox::information(
-        this,
-        "Info",
-        message.c_str());
-}
+void MainWindow::popupMessage(std::string message) { QMessageBox::information(this, "Info", message.c_str()); }
 
-void MainWindow::clearBooksUi() {
+void MainWindow::clearBooksUi()
+{
     qDebug() << ui->scrollAreaWidgetContents->children();
     // qDeleteAll(ui->scrollAreaWidgetContents->children());
 }
@@ -359,8 +359,7 @@ void MainWindow::handleRegister(const json& messageData)
             ui->labelRegisterStatus->setText("The fileds are empty!");
             user = std::nullopt;
         }
-    } catch (const nlohmann::detail::type_error& e) {
-    }
+    } catch (const nlohmann::detail::type_error& e) { }
 }
 
 void MainWindow::handleLogin(const json& messageData)
@@ -378,21 +377,18 @@ void MainWindow::handleLogin(const json& messageData)
             switchPage(2);
             // requestAllBooks();
         }
-    } catch (const nlohmann::detail::type_error& e) {
-    }
+    } catch (const nlohmann::detail::type_error& e) { }
 }
 
 void MainWindow::handleChangeUsername(const json& messageData)
 {
     try {
-        if (messageData == "AlreadyTaken")
-            ui->changeUsernamePasswordLabel->setText("This username is already taken.");
+        if (messageData == "AlreadyTaken") ui->changeUsernamePasswordLabel->setText("This username is already taken.");
         if (messageData == "Success") {
             user->setUsername(ui->changeUsernameLine->text().toStdString());
             ui->changeUsernamePasswordLabel->setText("Username updated!");
         }
-    } catch (const nlohmann::detail::type_error& e) {
-    }
+    } catch (const nlohmann::detail::type_error& e) { }
 }
 
 void MainWindow::handleChangePassword(const json& messageData)
@@ -402,15 +398,13 @@ void MainWindow::handleChangePassword(const json& messageData)
             ui->changeUsernamePasswordLabel->setText("The old password is incorrect!");
         if (messageData == "SameWithOldPassword")
             ui->changeUsernamePasswordLabel->setText("Type a different password from the old one!");
-        if (messageData == "NotMatchingPasswords")
-            ui->changeUsernamePasswordLabel->setText("Passwords don't match!");
+        if (messageData == "NotMatchingPasswords") ui->changeUsernamePasswordLabel->setText("Passwords don't match!");
         if (messageData == "Success") {
             user->setPassword(ui->newPasswordLine->text().toStdString());
             ui->changeUsernamePasswordLabel->setText("Password updated!");
         }
 
-    } catch (const nlohmann::detail::type_error& e) {
-    }
+    } catch (const nlohmann::detail::type_error& e) { }
 }
 
 void MainWindow::handleLogout(const json& messageData)
@@ -524,7 +518,20 @@ void MainWindow::handleGetDate(const json& messageData)
         std::string bookTitle = messageData["booktitle"];
         borrowedDates[bookTitle] = QDate::fromString(dateString, Qt::ISODate);
         emit receivedBorrowDate(bookTitle, borrowedDate);
-     } catch (const nlohmann::detail::type_error& e) {
+    } catch (const nlohmann::detail::type_error& e) {
         qWarning() << "GET_DATE: " << e.what();
+    }
+}
+
+void MainWindow::handleSearchBooks(const json& messageData)
+{
+    try {
+        for (Book b : messageData) {
+            BookItemWidget* bookItem = new BookItemWidget(b, ui->scrollAreaWidgetContents);
+            allBooks.push_back(b);
+            ui->bookListLayout->addWidget(bookItem);
+        }
+    } catch (const nlohmann::detail::type_error& e) {
+        qWarning() << "SEARCH_BOOKS: " << e.what();
     }
 }
