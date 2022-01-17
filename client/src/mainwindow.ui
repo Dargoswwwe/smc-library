@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>665</width>
-    <height>457</height>
+    <height>464</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -694,11 +694,11 @@ color: white</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>619</width>
-             <height>286</height>
+             <width>627</width>
+             <height>296</height>
             </rect>
            </property>
-           <layout class="QVBoxLayout" name="verticalLayout_4">
+           <layout class="QVBoxLayout" name="bookListLayout">
             <item>
              <widget class="QLabel" name="title">
               <property name="maximumSize">
@@ -1144,7 +1144,7 @@ color: white</string>
      <x>0</x>
      <y>0</y>
      <width>665</width>
-     <height>25</height>
+     <height>28</height>
     </rect>
    </property>
   </widget>

@@ -1,6 +1,7 @@
 BasedOnStyle: Webkit
 BreakBeforeBraces: Mozilla
-BinPackArguments: true
+BinPackArguments: false
+BinPackParameters: false
 IncludeBlocks: Regroup
 IndentWidth: 4
 TabWidth: 4
@@ -9,4 +10,4 @@ AccessModifierOffset: -4
 AllowShortEnumsOnASingleLine: true
 AllowShortIfStatementsOnASingleLine: AllIfsAndElse
 AlwaysBreakTemplateDeclarations: Yes
-AlignArrayOfStructures: Left
+AlignArrayOfStructures: None

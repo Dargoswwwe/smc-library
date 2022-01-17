@@ -554,7 +554,7 @@ std::vector<Book> DatabaseManager::searchBook(std::string const& title)
     // query.prepare("SELECT * FROM Books WHERE editdist3(title, ?)");
 
     query.prepare("select Books.title, Books.authors, language, original_publication_year, "
-            "average_rating, ratings_count, isbn, image_url from fts5_data('hunger') "
+            "average_rating, ratings_count, isbn, image_url from fts5_data(?) "
             "inner join Books on Books.book_id = fts5_data.rowid order by rank;");
     query.addBindValue(QString::fromStdString(title));
 

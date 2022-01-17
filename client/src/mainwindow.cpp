@@ -126,11 +126,11 @@ void MainWindow::receiveData()
     QString messageString;
     inStream >> messageString;
 
-    json message = json::parse(messageString.toStdString());
-
-    qDebug() << message.dump().c_str();
-
     try {
+        json message = json::parse(messageString.toStdString());
+
+        qDebug() << message.dump().c_str();
+
         MessageType messageType = message["type"];
         messageHandler.at(messageType)(message["data"]);
     } catch (const nlohmann::detail::parse_error& e) {
@@ -270,6 +270,7 @@ void MainWindow::deleteAccount()
 
 void MainWindow::getBorrowedBooks()
 {
+    clearBooksUi();
     if (user.has_value()) {
         json message;
         message["type"] = MessageType::GET_USER_BOOKS;
@@ -281,12 +282,11 @@ void MainWindow::getBorrowedBooks()
 
 void MainWindow::getAllBooks()
 {
-    if (allBooks.size() == 0) {
-        json message;
-        message["type"] = MessageType::GET_ALL_BOOKS;
-        sendData(message);
-        allBooks.clear();
-    }
+    clearBooksUi();
+    json message;
+    message["type"] = MessageType::GET_ALL_BOOKS;
+    sendData(message);
+    allBooks.clear();
 }
 
 void MainWindow::borrowBook(std::string book_title)
@@ -325,6 +325,11 @@ void MainWindow::popupMessage(std::string message)
         this,
         "Info",
         message.c_str());
+}
+
+void MainWindow::clearBooksUi() {
+    qDebug() << ui->scrollAreaWidgetContents->children();
+    // qDeleteAll(ui->scrollAreaWidgetContents->children());
 }
 
 void MainWindow::handleRegister(const json& messageData)
@@ -449,7 +454,7 @@ void MainWindow::handleGetAllBooks(const json& messageData)
         for (Book b : messageData) {
             BookItemWidget* bookItem = new BookItemWidget(b, ui->scrollAreaWidgetContents);
             allBooks.push_back(b);
-            ui->verticalLayout_4->addWidget(bookItem);
+            ui->bookListLayout->addWidget(bookItem);
         }
     } catch (const nlohmann::detail::type_error& e) {
         qWarning() << "GET_ALL_BOOKS: " << e.what();
@@ -462,7 +467,7 @@ void MainWindow::handleGetUserBooks(const json& messageData)
         for (Book b : messageData) {
             BookItemWidget* bookItem = new BookItemWidget(b, ui->scrollAreaWidgetContents);
             userBooks.push_back(b);
-            ui->verticalLayout_4->addWidget(bookItem);
+            ui->bookListLayout->addWidget(bookItem);
         }
     } catch (const nlohmann::detail::type_error& e) {
         qWarning() << "GET_USER_BOOKS: " << e.what();
@@ -472,7 +477,7 @@ void MainWindow::handleGetUserBooks(const json& messageData)
 void MainWindow::handleFinished()
 {
     try {
-        ui->verticalLayout_4->addStretch();
+        ui->bookListLayout->addStretch();
     } catch (const nlohmann::detail::type_error& e) {
         qWarning() << "FINISHED: " << e.what();
     }

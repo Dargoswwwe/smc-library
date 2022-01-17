@@ -62,6 +62,7 @@ signals:
 private:
     void connectToServer(const QHostAddress& address = QHostAddress::LocalHost, qint16 port = 4200);
     void verifyConnection();
+    void clearBooksUi();
 
     void handleRegister(const json& messageData);
     void handleLogin(const json& messageData);

@@ -587,7 +587,7 @@
         <item>
          <widget class="QLabel" name="date_of_borrowing">
           <property name="text">
-           <string>Date of borrowing:</string>
+           <string>Date of borrowing: </string>
           </property>
          </widget>
         </item>
@@ -607,7 +607,7 @@
         <item>
          <widget class="QLabel" name="date_of_return">
           <property name="text">
-           <string>To be returned on:</string>
+           <string>To be returned on: </string>
           </property>
          </widget>
         </item>
