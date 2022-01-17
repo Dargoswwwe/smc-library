@@ -492,6 +492,7 @@ std::vector<Book> DatabaseManager::getBorrowedBooksForUser(int userId)
     return booksFromQuery(query);
 }
 
+
 bool DatabaseManager::loadExtension(std::string extension)
 {
     QVariant v = database.driver()->handle();
