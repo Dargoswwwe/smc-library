@@ -76,7 +76,8 @@ void Server::initServer()
 
     library.setAllBooks(database.getAllBooks());
 
-    database.searchBook("");
+    json j = database.searchBook("animl farm");
+    std::cout << j[0] << j[1] << j[2];
 }
 
 void Server::newConnection()

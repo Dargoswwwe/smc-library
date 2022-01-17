@@ -34,3 +34,12 @@ unix {
 
 DISTFILES += \
     books.csv
+
+unix:spellfix.target = spellfix.so
+unix:spellfix.commands = gcc -O2 -fPIC -shared src/spellfix.c -o $(DESTDIR)/spellfix.so
+win32:sqlite.target = spellfix.dll
+win32:spellfix.commands = gcc -O2 -fPIC -shared src/spellfix.c -o $(DESTDIR)/spellfix.dll
+
+all.depends += spellfix
+
+QMAKE_EXTRA_TARGETS += all spellfix

@@ -438,21 +438,7 @@ int DatabaseManager::getBookId(QString title)
     return id;
 }
 
-std::vector<Book> DatabaseManager::getBorrowedBooksForUser(int userId)
-{
-    QSqlQuery query;
-    query.prepare(
-        "SELECT b.title, b.authors, b.language, b.original_publication_year, b.average_rating,"
-        " b.ratings_count, b.isbn,b.image_url, ub.date_of_borrowing FROM UsersBooks ub INNER JOIN Books b on ub.book_id=b.book_id "
-        "WHERE ub.user_id = (:user_id)");
-
-    query.bindValue(":user_id", userId);
-
-    if (!query.exec()) {
-        qDebug() << "Error selecting borrowed books for this user!" << query.lastError().text();
-        return std::vector<Book>();
-    }
-
+std::vector<Book> DatabaseManager::booksFromQuery(QSqlQuery& query) {
     std::vector<std::string> fieldNames = { "title", "authors", "language", "original_publication_year",
         "average_rating", "ratings_count", "isbn", "image_url", "date_of_borrowing" };
     std::unordered_map<std::string, int> valueIndex;
@@ -488,60 +474,25 @@ std::vector<Book> DatabaseManager::getBorrowedBooksForUser(int userId)
     return books;
 }
 
-// std::vector<std::pair<Book, std::string>> DatabaseManager::getBorrowedBooksForUser(int userId)
-//{
-//     QSqlQuery query;
-//     query.prepare(
-//                 "SELECT b.title, b.authors, b.language, b.original_publication_year, b.average_rating,"
-//                 " b.ratings_count, b.isbn, ub.date_of_borrowing FROM UsersBooks ub INNER JOIN Books b on
-//                 ub.book_id=b.book_id " "WHERE ub.user_id = (:user_id)");
+std::vector<Book> DatabaseManager::getBorrowedBooksForUser(int userId)
+{
+    QSqlQuery query;
+    query.prepare(
+        "SELECT b.title, b.authors, b.language, b.original_publication_year, b.average_rating,"
+        " b.ratings_count, b.isbn,b.image_url, ub.date_of_borrowing FROM UsersBooks ub INNER JOIN Books b on ub.book_id=b.book_id "
+        "WHERE ub.user_id = (:user_id)");
 
-//    query.bindValue(":user_id", userId);
+    query.bindValue(":user_id", userId);
 
-//    if (!query.exec()) {
-//        qDebug() << "Error selecting borrowed books for this user!" << query.lastError().text();
-//        return std::vector<std::pair<Book, std::string>>();
-//    }
+    if (!query.exec()) {
+        qDebug() << "Error selecting borrowed books for this user!" << query.lastError().text();
+        return std::vector<Book>();
+    }
 
-//    std::vector<std::string> fieldNames = { "title", "authors", "language", "original_publication_year",
-//                                            "average_rating", "ratings_count", "isbn", "date_of_borrowing" };
-//    std::unordered_map<std::string, int> valueIndex;
+    return booksFromQuery(query);
+}
 
-//    for (auto& fieldName : fieldNames)
-//        valueIndex[fieldName] = query.record().indexOf(fieldName.c_str());
-
-//    std::vector<std::pair<Book, std::string>> books;
-
-//    while (query.next()) {
-//        Book book;
-//        std::string date;
-
-//        book.setTitle(query.value(valueIndex["title"]).toString().toStdString());
-
-//        std::stringstream authorsStream(query.value(valueIndex["authors"]).toString().toStdString());
-
-//        std::vector<std::string> authors;
-//        std::string author;
-
-//        while (std::getline(authorsStream, author, ';'))
-//            authors.push_back(author);
-//        book.setAuthors(authors);
-
-//        book.setLanguage(query.value(valueIndex["language"]).toString().toStdString());
-//        book.setOriginalPublication(query.value(valueIndex["language"]).toInt());
-//        book.setAverageRating(query.value(valueIndex["average_rating"]).toFloat());
-//        book.setRatingsCount(query.value(valueIndex["average_rating"]).toInt());
-//        book.setIsbn(query.value(valueIndex["isbn"]).toString().toStdString());
-//        book.setUrl(query.value(valueIndex["image_url"]).toString().toStdString());
-
-//        date=query.value(valueIndex["date_of_borrowing"]).toString().toStdString();
-//        books.push_back(std::make_pair(book, date));
-//    }
-
-//    return books;
-//}
-
-bool DatabaseManager::loadExtensions(std::vector<std::string> extensions)
+bool DatabaseManager::loadExtension(std::string extension)
 {
     QVariant v = database.driver()->handle();
     if (!v.isValid() || v.typeName() != QString("sqlite3*")) return false;
@@ -555,20 +506,13 @@ bool DatabaseManager::loadExtensions(std::vector<std::string> extensions)
 
     QSqlQuery query;
 
-    for (auto& extension: extensions){
-        query.prepare("SELECT load_extension(':?')");
-        query.addBindValue(extension.c_str());
-        query.exec();
-        if (query.lastError().isValid())
-            qDebug() << "Error: cannot load the SQLite extension " << extension.c_str() << " (" << query.lastError().text() << ")";
-    }
-
+    query.prepare("SELECT load_extension(?)");
+    query.addBindValue(extension.c_str());
+    query.exec();
     sqlite3_enable_load_extension(db_handle, false);
 
-    if (query.lastError().isValid()) {
-        qDebug() << "Error: cannot load the Spellfix extension (" << query.lastError().text() << ")";
-        return false;
-    }
+    if (query.lastError().isValid())
+        qDebug() << "Error: cannot load the SQLite extension" << extension.c_str() << "(" << query.lastError().text() << ")";
 
     return true;
 }
@@ -577,9 +521,10 @@ std::vector<Book> DatabaseManager::searchBook(std::string const& title)
 {
     QSqlQuery query;
 
-    if (!loadExtensions({"spellfix"})) return std::vector<Book>();
+    if (!loadExtension("spellfix")) return std::vector<Book>();
 
-    query.prepare("SELECT * FROM Books WHERE editdist3(title, 'hnger gams')");
+    query.prepare("SELECT * FROM Books WHERE editdist3(title, ?)");
+    query.addBindValue(QString::fromStdString(title));
 
     if (!query.exec()) {
         qDebug() << query.executedQuery();
@@ -587,10 +532,7 @@ std::vector<Book> DatabaseManager::searchBook(std::string const& title)
         return std::vector<Book>();
     }
 
-    query.next();
-    qDebug() << query.value("Title");
-
-    return std::vector<Book>();
+    return booksFromQuery(query);
 }
 
 std::vector<Book> DatabaseManager::getAllBooks()
@@ -605,48 +547,7 @@ std::vector<Book> DatabaseManager::getAllBooks()
         return std::vector<Book>();
     }
 
-    std::vector<std::string> fieldNames = {
-        "title",
-        "authors",
-        "language",
-        "original_publication_year",
-        "average_rating",
-        "ratings_count",
-        "isbn",
-        "image_url",
-    };
-
-    std::unordered_map<std::string, int> valueIndex;
-
-    for (auto& fieldName : fieldNames)
-        valueIndex[fieldName] = query.record().indexOf(fieldName.c_str());
-
-    std::vector<Book> books;
-
-    while (query.next()) {
-        Book book;
-        book.setTitle(query.value(valueIndex["title"]).toString().toStdString());
-
-        std::stringstream authorsStream(query.value(valueIndex["authors"]).toString().toStdString());
-
-        std::vector<std::string> authors;
-        std::string author;
-
-        while (std::getline(authorsStream, author, ';'))
-            authors.push_back(author);
-        book.setAuthors(authors);
-
-        book.setLanguage(query.value(valueIndex["language"]).toString().toStdString());
-        book.setOriginalPublication(query.value(valueIndex["original_publication_year"]).toUInt());
-        book.setAverageRating(query.value(valueIndex["average_rating"]).toFloat());
-        book.setRatingsCount(query.value(valueIndex["ratings_count"]).toUInt());
-        book.setIsbn(query.value(valueIndex["isbn"]).toString().toStdString());
-        book.setUrl(query.value(valueIndex["image_url"]).toString().toStdString());
-
-        books.push_back(book);
-    }
-
-    return books;
+    return booksFromQuery(query);
 }
 
 QDate DatabaseManager::getBorrowedDate(int user_id, int book_id)

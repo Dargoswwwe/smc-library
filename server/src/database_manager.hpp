@@ -20,7 +20,7 @@ private:
     QSqlDatabase database;
     std::string databaseDir;
 
-    bool loadExtensions(std::vector<std::string> extensions);
+    bool loadExtension(std::string extension);
 
 public:
     DatabaseManager();
@@ -49,6 +49,7 @@ public:
     std::optional<User> getUser(QString username);
     void getUsersForBook(int bookId);
     // std::vector<std::pair<Book, std::string>> getBorrowedBooksForUser(int userId);
+    std::vector<Book> booksFromQuery(QSqlQuery& query);
     std::vector<Book> getBorrowedBooksForUser(int userId);
     std::vector<Book> searchBook(std::string const& title);
     std::vector<Book> getAllBooks();
